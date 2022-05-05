@@ -1,10 +1,10 @@
 "use strict";
 
-import clear from "rollup-plugin-clear";
-import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
-import typescript from "rollup-plugin-typescript2";
+import resolve from "@rollup/plugin-node-resolve";
 import fg from "fast-glob";
+import clear from "rollup-plugin-clear";
+import typescript from "rollup-plugin-typescript2";
 
 let targetArena = "";
 if (process.argv[3] === "--config-") {

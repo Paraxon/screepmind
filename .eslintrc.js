@@ -4,6 +4,8 @@ module.exports = {
     es6: true,
     node: true
   },
+  tabs : true,
+  indent : ["tab"],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",

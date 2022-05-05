@@ -1,19 +1,21 @@
-import { ATTACK, MOVE } from "game/constants";
-import { Creep, StructureSpawn } from "game/prototypes";
-import { getObjectsByPrototype } from "game/utils";
+import Flatten from "@flatten-js/core";
+import { Cluster } from "common/graph/cluster";
+import { KMeans } from "common/graph/clustering";
+import { draw } from "common/graph/span";
+import { TileGraph } from "common/graph/tilegraph";
+import { getTicks } from "game";
+import { Visual } from "game/visual";
 
-let attacker: Creep | undefined;
-export function loop(): void {
-  if (!attacker) {
-    const mySpawn = getObjectsByPrototype(StructureSpawn).find(i => i.my);
-    if (mySpawn) {
-      attacker = mySpawn.spawnCreep([MOVE, ATTACK]).object;
-    }
-  } else {
-    const enemySpawn = getObjectsByPrototype(StructureSpawn).find(i => !i.my);
-    if (enemySpawn) {
-      attacker.moveTo(enemySpawn);
-      attacker.attack(enemySpawn);
-    }
-  }
+let kmeans: KMeans;
+let regions: Array<Cluster>;
+
+export function loop() {
+	const visual = new Visual(1, false);
+	const tiles = new TileGraph();
+
+	kmeans ??= new KMeans(tiles, 25, 3);
+	regions = kmeans.execute(50);
+	for (const region of regions) {
+		region.draw(visual);
+	}
 }

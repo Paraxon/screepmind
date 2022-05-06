@@ -1,19 +1,21 @@
 import Flatten from "@flatten-js/core";
 import { GiftWrap } from "common/geometry/hull";
-import { SpanningTree } from "./span";
+import { ArraySpan, MapSpan } from "./span";
 import { Visual } from "game/visual";
+import { StateSpan } from "./stateSpan";
+import { ARENA_SHAPE } from "common/library";
 
-export class Cluster {
+export class Region {
 	public root: Flatten.Point;
-	public span: SpanningTree<Flatten.Point>;
+	public span: StateSpan;
 	public hull?: Flatten.Point[];
 	public constructor(root: Flatten.Point) {
 		this.root = root;
-		this.span = new SpanningTree(root);
+		this.span = new StateSpan(Flatten.vector(ARENA_SHAPE.width, ARENA_SHAPE.height), root);
 	}
 	public get centroid(): Flatten.Point {
 		if (this.span.size === 0) return this.root;
-		const centroid = this.span.vertices.reduce((sum, child) => sum.translate(child.x, child.y));
+		const centroid = Array.from(this.span.vertices).reduce((sum, child) => sum.translate(child.x, child.y));
 		centroid.x = Math.floor(centroid.x / this.span.size);
 		centroid.y = Math.floor(centroid.y / this.span.size);
 		return centroid;
@@ -32,7 +34,7 @@ export class Cluster {
 	public draw(visual: Visual, style: CircleStyle = {}) {
 		visual.circle(this.centroid, { fill: "#0000ff" });
 		visual.circle(this.root, style);
-		this.hull = GiftWrap(this.span.vertices);
+		this.hull ??= GiftWrap(Array.from(this.span.vertices));
 		visual.poly(this.hull, style);
 	}
 }

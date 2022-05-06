@@ -44,7 +44,7 @@ export class TileGraph implements DiGraph<Flatten.Point>  {
 		}
 	}
 	contains(vertex: Flatten.Point) {
-		return vertex.on(new Flatten.Polygon(this.bounds)) && Utils.getTerrainAt(vertex) != Consts.TERRAIN_WALL;
+		return vertex.x > this.bounds.xmin && vertex.x < this.bounds.xmax && vertex.y > this.bounds.ymin && vertex.y < this.bounds.ymax && Utils.getTerrainAt(vertex) != Consts.TERRAIN_WALL;
 	}
 	sample(count: number) {
 		const sample = new Array<Flatten.Point>();

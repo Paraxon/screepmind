@@ -4,6 +4,9 @@ import { ArraySpan, MapSpan } from "./span";
 import { Visual } from "game/visual";
 import { StateSpan } from "./stateSpan";
 import { ARENA_SHAPE } from "common/library";
+import concaveman from "concaveman";
+import { RoomPosition } from "game/prototypes";
+
 
 export class Region {
 	public root: Flatten.Point;
@@ -34,7 +37,13 @@ export class Region {
 	public draw(visual: Visual, style: CircleStyle = {}) {
 		visual.circle(this.centroid, { fill: "#0000ff" });
 		visual.circle(this.root, style);
-		this.hull ??= GiftWrap(Array.from(this.span.vertices));
+		this.hull ??= hull(this.span.vertices);
 		visual.poly(this.hull, style);
 	}
+}
+
+function hull(points: Iterable<RoomPosition>): Flatten.Point[] {
+	return concaveman(
+		Array.from(points).map(v => [v.x, v.y])
+	).map(v => Flatten.point(v[0], v[1]));
 }

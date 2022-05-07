@@ -15,12 +15,14 @@ export class StateSpan implements Span<Flatten.Point> {
     _openQueue = new Array<number>();
     _records: Array<StateRecord<Flatten.Point>>;
     _dimensions: Flatten.Vector;
+    _interior = 0;
 
     constructor(dimensions: Flatten.Vector, vertex: Flatten.Point) {
         this._dimensions = dimensions;
         this._records = new Array(dimensions.x * dimensions.y);
         for (let i = 0; i < this._records.length; i++)
             this._records[i] = new StateRecord(this.toPoint(i));
+        this.insertOpen(new StateRecord(vertex));
     }
     private toIndex(point: Flatten.Point): number {
         return point.x + point.y * this._dimensions.x;
@@ -38,7 +40,7 @@ export class StateSpan implements Span<Flatten.Point> {
         return this.exterior === 0;
     }
     get interior(): number {
-        return this._records.reduce((count, record) => record.state === RecordState.Closed ? count + 1 : count, 0);
+        return this._interior;
     }
     get open(): Iterable<VertexRecord<Flatten.Point>> {
         return this._openQueue.map(index => this._records[index]);
@@ -53,6 +55,7 @@ export class StateSpan implements Span<Flatten.Point> {
         const closed = this._records[this.toIndex(record.vertex)];
         closed.state = RecordState.Closed;
         Object.assign(closed, record);
+        this._interior++;
     }
     findClosed(vertex: Flatten.Point): VertexRecord<Flatten.Point> | undefined {
         const record = this._records[this.toIndex(vertex)];
@@ -82,6 +85,7 @@ export class StateSpan implements Span<Flatten.Point> {
     }
     removeClosed(record: VertexRecord<Flatten.Point>): void {
         this._records[this.toIndex(record.vertex)].state = RecordState.Unvisited;
+        this._interior--;
     }
     removeOpen(record: VertexRecord<Flatten.Point>): void {
         const index = this.toIndex(record.vertex);

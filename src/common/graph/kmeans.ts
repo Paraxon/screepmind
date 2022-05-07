@@ -2,6 +2,8 @@ import { Region } from "./region.js";
 import { DiGraph } from "./digraph.js";
 import Flatten from "@flatten-js/core";
 import { VertexRecord } from "./span.js";
+import { Summary } from "common/statistics/stats.js";
+import { stat } from "fs";
 
 export class KMeans {
 	public regions = new Array<Region>();
@@ -17,7 +19,8 @@ export class KMeans {
 	public execute(): Array<Region> {
 		for (let i = 1; i < this.iterations; i++) {
 			this.step();
-			if (this.reset() <= this.stable) break;
+			// if (this.reset() <= this.stable) break;
+			this.reset();
 		}
 		this.step();
 		return this.regions;
@@ -26,6 +29,7 @@ export class KMeans {
 		let region: Region | null;
 		while (region = this.next())
 			this.assign(region);
+		console.log(new Summary(this.regions.map(region => region.span.size)));
 	}
 	public assign(region: Region) {
 		const current = region.span.pop()!;

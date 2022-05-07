@@ -1,34 +1,19 @@
-import { KMeans } from "common/graph/kmeans";
-import { Region } from "common/graph/region";
-import { draw } from "common/graph/span";
-import { TileGraph } from "common/graph/tilegraph";
-import { remainingTimeMs } from "common/library";
-import { convert, MILLI, NANO } from "common/metric";
-import { getCpuTime, getTicks } from "game";
-import { Visual } from "game/visual";
+import { ScreepClassifier } from "common/statistics/classifier";
+import { getObjectsByPrototype } from "game";
+import { ATTACK, BodyPartConstant, CARRY, HEAL, MOVE, RANGED_ATTACK, WORK } from "game/constants";
+import { Creep } from "game/prototypes";
+import * as Actions from "common/decisions/action";
 
-let kmeans: KMeans;
-let regions: Array<Region>;
+const classifier = new ScreepClassifier();
+classifier.classifications.set("archer", new Map().set(RANGED_ATTACK, 1));
+classifier.classifications.set("harvester", new Map<BodyPartConstant, number>().set(WORK, 1));
+classifier.classifications.set("melee", new Map<BodyPartConstant, number>().set(ATTACK, 1));
+classifier.classifications.set("support", new Map<BodyPartConstant, number>().set(HEAL, 1));
 
 export function loop() {
-	const visual = new Visual(1, false);
-	const tiles = new TileGraph();
-	console.log(remainingTimeMs());
-
-	kmeans ??= new KMeans(tiles, 50, 3);
-	if (getTicks() == 1) {
-		const start = getCpuTime();
-		regions = kmeans.execute();
-		const end = getCpuTime();
-		console.log(`KMeans in ${convert(end - start, NANO, MILLI)}ms`);
-	}
-	// /* else
-	draw(visual, regions[getTicks() % regions.length].span);
-	const start = getCpuTime();
-	for (const region of regions) {
-		// console.log(region.span.exterior, region.span.interior);
-		region.draw(visual);
-	}
-	const end = getCpuTime();
-	console.log(`Concave Hull in ${convert(end - start, NANO, MILLI)}ms`);
+	console.log(Actions.CreepAction.canDoBoth(new Actions.Harvest(), new Actions.Attack()));
+	console.log(Actions.CreepAction.canDoBoth(new Actions.Attack(), new Actions.RangedAttack()));
+	console.log(Actions.CreepAction.comparePriority(new Actions.Harvest(), new Actions.Attack()));
+	console.log(Actions.CreepAction.comparePriority(new Actions.Attack(), new Actions.Harvest()));
+	console.log(Actions.CreepAction.comparePriority(new Actions.Harvest(), new Actions.Move()));
 }

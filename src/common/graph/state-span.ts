@@ -66,8 +66,8 @@ export class StateSpan implements Span<Flatten.Point> {
 		const record = this._records[this.toIndex(vertex)];
 		return record.state === RecordState.Open ? record : undefined;
 	}
-	public peek(): VertexRecord<Flatten.Point> | null {
-		return this._openQueue.length > 0 ? this._records[this._openQueue[0]] : null;
+	public peek(): VertexRecord<Flatten.Point> | undefined {
+		return this._records[this._openQueue[0]];
 	}
 	public pop(): VertexRecord<Flatten.Point> | undefined {
 		const index = this._openQueue.shift();

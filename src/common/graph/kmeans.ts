@@ -31,18 +31,19 @@ export class KMeans {
 	}
 	public assign(region: Region) {
 		const current = region.span.pop();
+		if (!current) return;
 		for (const edge of this.graph.edgesFrom(current.vertex)) {
 			const cost = current.cost + edge.cost;
 			let existing: VertexRecord<Flatten.Point> | undefined;
 			const closed = this.regions.find(cluster => (existing = cluster.span.findClosed(edge.to)));
-			if (closed) {
-				if (existing!.cost <= cost) continue;
-				else closed.span.removeClosed(existing!);
+			if (closed && existing) {
+				if (existing.cost <= cost) continue;
+				else closed.span.removeClosed(existing);
 			} else {
 				const open = this.regions.find(cluster => (existing = cluster.span.findOpen(edge.to)));
-				if (open) {
-					if (existing!.cost <= cost) continue;
-					else open.span.removeOpen(existing!);
+				if (open && existing) {
+					if (existing.cost <= cost) continue;
+					else open.span.removeOpen(existing);
 				}
 			}
 			region.span.insertOpen(new VertexRecord(edge.to, edge, cost));
@@ -81,7 +82,7 @@ export class KMeans {
 		return this.regions
 			.filter(cluster => cluster.span.peek())
 			.reduce((min, current) => {
-				return min.span.peek()!.cost < current.span.peek()!.cost ? min : current;
+				return (min.span.peek()?.cost ?? 0) < (current.span.peek()?.cost ?? 0) ? min : current;
 			});
 	}
 }

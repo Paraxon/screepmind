@@ -6,7 +6,7 @@ export interface Classifier<instance_t, classification_t = string> {
 }
 
 export class CreepClassifier implements Classifier<Creep> {
-	private classifications = new Map<string, Map<BodyPartConstant, number>>();
+	public classifications = new Map<string, Map<BodyPartConstant, number>>();
 	public classify(creep: Creep): Map<string, number> {
 		const result = new Map<string, number>();
 		const features = new Map<BodyPartConstant, number>();

@@ -73,7 +73,7 @@ module.exports = {
 		],
 		"@typescript-eslint/no-throw-literal": "error",
 		"no-undef-init": "error",
-		"no-underscore-dangle": "warn",
+		"no-underscore-dangle": "off",
 		"no-var": "error",
 		"object-shorthand": "error",
 		"one-var": ["error", "never"],

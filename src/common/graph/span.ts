@@ -1,8 +1,6 @@
 import Flatten from "@flatten-js/core";
-import { Visual } from "game/visual";
-import { Edge } from "./digraph";
-import { RoomPosition } from "game/prototypes";
 import { VertexRecord } from "./vertexrecord";
+import { Visual } from "game/visual";
 
 export interface Equatable {
 	equalTo(other: Equatable): boolean;

@@ -1,9 +1,8 @@
-import { Region } from "./region.js";
 import { DiGraph } from "./digraph.js";
 import Flatten from "@flatten-js/core";
-import { VertexRecord } from "./span.js";
-import { Summary } from "common/statistics/stats.js";
-import { stat } from "fs";
+import { Region } from "./region.js";
+import { Summary } from "common/statistics/summary.js";
+import { VertexRecord } from "./vertexrecord.js";
 
 export class KMeans {
 	public regions = new Array<Region>();
@@ -16,7 +15,7 @@ export class KMeans {
 		this.stable = stable;
 		for (const vertex of graph.sample(size)) this.regions.push(new Region(vertex));
 	}
-	public execute(): Array<Region> {
+	public execute(): Region[] {
 		for (let i = 1; i < this.iterations; i++) {
 			this.step();
 			// if (this.reset() <= this.stable) break;
@@ -27,25 +26,23 @@ export class KMeans {
 	}
 	public step() {
 		let region: Region | null;
-		while (region = this.next())
-			this.assign(region);
-		console.log(new Summary(this.regions.map(region => region.span.size)));
+		while ((region = this.next())) this.assign(region);
+		console.log(new Summary(this.regions.map(current => current.span.size)));
 	}
 	public assign(region: Region) {
-		const current = region.span.pop()!;
+		const current = region.span.pop();
 		for (const edge of this.graph.edgesFrom(current.vertex)) {
 			const cost = current.cost + edge.cost;
-			let exsisting: VertexRecord<Flatten.Point> | undefined;
-			const closed = this.regions.find(cluster => exsisting = cluster.span.findClosed(edge.to));
+			let existing: VertexRecord<Flatten.Point> | undefined;
+			const closed = this.regions.find(cluster => (existing = cluster.span.findClosed(edge.to)));
 			if (closed) {
-				if (exsisting!.cost <= cost) continue;
-				else closed.span.removeClosed(exsisting!);
-			}
-			else {
-				const open = this.regions.find(cluster => exsisting = cluster.span.findOpen(edge.to));
+				if (existing!.cost <= cost) continue;
+				else closed.span.removeClosed(existing!);
+			} else {
+				const open = this.regions.find(cluster => (existing = cluster.span.findOpen(edge.to)));
 				if (open) {
-					if (exsisting!.cost <= cost) continue;
-					else open.span.removeOpen(exsisting!);
+					if (existing!.cost <= cost) continue;
+					else open.span.removeOpen(existing!);
 				}
 			}
 			region.span.insertOpen(new VertexRecord(edge.to, edge, cost));
@@ -63,14 +60,14 @@ export class KMeans {
 			if (child) {
 				root = child.vertex;
 				cost = child.cost;
-			}
-			else if (this.graph.contains(centroid)) {
+			} else if (this.graph.contains(centroid)) {
 				root = centroid;
 				cost = Infinity;
-			}
-			else {
-				const closed: Array<VertexRecord<Flatten.Point>> = Array.from(cluster.span.closed);
-				const closest = closed.reduce((best, current) => centroid.distanceTo(best.vertex) < centroid.distanceTo(current.vertex) ? best : current)
+			} else {
+				const closed: VertexRecord<Flatten.Point>[] = Array.from(cluster.span.closed);
+				const closest = closed.reduce((best, current) =>
+					centroid.distanceTo(best.vertex) < centroid.distanceTo(current.vertex) ? best : current
+				);
 				root = closest.vertex;
 				cost = Infinity;
 			}

@@ -3,8 +3,7 @@
     "source.fixAll.eslint": true
   },
   "editor.formatOnSave": true,
-  "editor.renderWhitespace": "boundary",
-  "files.insertFinalNewline": true,
+"editor.renderWhitespace": "none",
   "files.trimTrailingWhitespace": true,
   "search.exclude": {
     "_book/**": true,
@@ -13,5 +12,9 @@
     "node_modules/**": true,
     "typings/**": true
   },
-  "typescript.tsdk": "./node_modules/typescript/lib"
+"typescript.tsdk": "./node_modules/typescript/lib",
+"cSpell.words": [
+	"creepaction",
+	"Screeps"
+]
 }

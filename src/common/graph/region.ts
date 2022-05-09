@@ -1,12 +1,9 @@
 import Flatten from "@flatten-js/core";
-import { GiftWrap } from "common/geometry/hull";
-import { ArraySpan, MapSpan } from "./span";
-import { Visual } from "game/visual";
-import { StateSpan } from "./stateSpan";
 import { ARENA_SHAPE } from "common/library";
 import concaveman from "concaveman";
 import { RoomPosition } from "game/prototypes";
-
+import { Visual } from "game/visual";
+import { StateSpan } from "./state-span";
 
 export class Region {
 	public root: Flatten.Point;
@@ -43,7 +40,5 @@ export class Region {
 }
 
 function hull(points: Iterable<RoomPosition>): Flatten.Point[] {
-	return concaveman(
-		Array.from(points).map(v => [v.x, v.y])
-	).map(v => Flatten.point(v[0], v[1]));
+	return concaveman(Array.from(points).map(v => [v.x, v.y])).map(v => Flatten.point(v[0], v[1]));
 }

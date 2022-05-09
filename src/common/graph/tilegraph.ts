@@ -1,25 +1,25 @@
-import Flatten from "@flatten-js/core";
 import * as Consts from "game/constants";
-import * as Utils from "game/utils";
 import * as Lib from "../library.js";
-import { ARENA_SHAPE } from "../library.js";
+import * as Utils from "game/utils";
 import { DiGraph, Edge } from "./digraph.js";
+import { ARENA_SHAPE } from "../library.js";
+import Flatten from "@flatten-js/core";
 
-export class TileGraph implements DiGraph<Flatten.Point>  {
-	bounds: Flatten.Box;
-	constructor(bounds = ARENA_SHAPE) {
+export class TileGraph implements DiGraph<Flatten.Point> {
+	private bounds: Flatten.Box;
+	public constructor(bounds = ARENA_SHAPE) {
 		this.bounds = bounds;
 	}
-	*vertices() {
+	public *vertices() {
 		for (let x = 0; x < this.bounds.xmax; x++)
 			for (let y = 0; y < this.bounds.ymax; y++) {
 				const pos = new Flatten.Point(this.bounds.xmin + x, this.bounds.ymin + y);
-				if (Utils.getTerrainAt(pos) == Consts.TERRAIN_WALL) continue;
+				if (Utils.getTerrainAt(pos) === Consts.TERRAIN_WALL) continue;
 				else yield pos;
 			}
 	}
-	*edgesFrom(from: Flatten.Point): Iterable<Edge<Flatten.Point>> {
-		if (Utils.getTerrainAt(from) == Consts.TERRAIN_WALL) return;
+	public *edgesFrom(from: Flatten.Point): Iterable<Edge<Flatten.Point>> {
+		if (Utils.getTerrainAt(from) === Consts.TERRAIN_WALL) return;
 
 		for (let dy = -1; dy <= 1; dy++) {
 			for (let dx = -1; dx <= 1; dx++) {
@@ -30,9 +30,9 @@ export class TileGraph implements DiGraph<Flatten.Point>  {
 			}
 		}
 	}
-	*edgesTo(to: Flatten.Point): Iterable<Edge<Flatten.Point>> {
+	public *edgesTo(to: Flatten.Point): Iterable<Edge<Flatten.Point>> {
 		const terrain = Utils.getTerrainAt(to);
-		if (terrain == Consts.TERRAIN_WALL) return;
+		if (terrain === Consts.TERRAIN_WALL) return;
 
 		for (let dy = -1; dy <= 1; dy++) {
 			for (let dx = -1; dx <= 1; dx++) {
@@ -43,10 +43,16 @@ export class TileGraph implements DiGraph<Flatten.Point>  {
 			}
 		}
 	}
-	contains(vertex: Flatten.Point) {
-		return vertex.x > this.bounds.xmin && vertex.x < this.bounds.xmax && vertex.y > this.bounds.ymin && vertex.y < this.bounds.ymax && Utils.getTerrainAt(vertex) != Consts.TERRAIN_WALL;
+	public contains(vertex: Flatten.Point) {
+		return (
+			vertex.x > this.bounds.xmin &&
+			vertex.x < this.bounds.xmax &&
+			vertex.y > this.bounds.ymin &&
+			vertex.y < this.bounds.ymax &&
+			Utils.getTerrainAt(vertex) !== Consts.TERRAIN_WALL
+		);
 	}
-	sample(count: number) {
+	public sample(count: number) {
 		const sample = new Array<Flatten.Point>();
 		const population = Array.from(this.vertices());
 		if (population.length > count)

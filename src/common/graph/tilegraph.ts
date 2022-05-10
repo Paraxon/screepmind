@@ -37,7 +37,7 @@ export class TileGraph implements DiGraph<Flatten.Point> {
 		for (let dy = -1; dy <= 1; dy++) {
 			for (let dx = -1; dx <= 1; dx++) {
 				const from = Flatten.point(to.x + dx, to.y + dy);
-				if ((dx === 0 && dy === 0) || !from.on(this.bounds) || Utils.getTerrainAt(from) == Consts.TERRAIN_WALL)
+				if ((dx === 0 && dy === 0) || !from.on(this.bounds) || Utils.getTerrainAt(from) === Consts.TERRAIN_WALL)
 					continue;
 				else yield { from, to, cost: Lib.PATH_COST[terrain] };
 			}

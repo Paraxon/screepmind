@@ -2,6 +2,9 @@ import { Action } from "./Action";
 
 export class ActionCombination<actor_t, result_t = void> implements Action<actor_t, result_t> {
 	private actions = new Array<Action<actor_t, result_t>>();
+	public constructor(...actions: Action<actor_t, result_t>[]) {
+		this.actions = actions;
+	}
 	public execute(actor: actor_t): result_t | undefined {
 		let result: result_t | undefined;
 		this.actions.every(action => (result = action.execute(actor)));

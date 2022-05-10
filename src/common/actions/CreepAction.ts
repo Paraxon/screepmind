@@ -1,116 +1,33 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable max-classes-per-file */
+import { ERR_NOT_FOUND, OK, ScreepsReturnCode } from "game/constants";
 import { Action } from "./Action";
-import { Creep } from "game/prototypes";
-import { DecisionMaker } from "common/decisions/DecisionMaker";
-import { ScreepsReturnCode } from "game/constants";
+import { CreepMind } from "arena_alpha_spawn_and_swamp/main";
+import { getObjectsByPrototype } from "game";
+import { Move } from "./Intent";
+import { StructureContainer } from "game/prototypes";
 
-export abstract class CreepAction implements Action<Creep, ScreepsReturnCode>, DecisionMaker<Creep, ScreepsReturnCode> {
-	public canDoBoth(other: Action<Creep, ScreepsReturnCode>): boolean {
-		return CreepAction.canDoBoth(this, other as CreepAction);
+export class TargetContainer implements Action<CreepMind, ScreepsReturnCode> {
+	private complete = false;
+	public execute(actor: CreepMind): ScreepsReturnCode | undefined {
+		const containers = getObjectsByPrototype(StructureContainer).filter(container => container.store.energy > 0);
+		if (containers.length === 0) return ERR_NOT_FOUND;
+		actor.target = actor.findClosestByRange(containers);
+		this.complete = true;
+		return OK;
 	}
-	public abstract isComplete(): boolean;
-	public abstract execute(actor: Creep): ScreepsReturnCode;
-	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> | undefined {
-		return this;
+	public canDoBoth(other: Action<CreepMind, ScreepsReturnCode>): boolean {
+		return true;
 	}
-	public static canDoBoth(a: CreepAction, b: CreepAction) {
-		return this.comparePriority(a, b) === undefined;
-	}
-	public static comparePriority(a: CreepAction, b: CreepAction): number | undefined {
-		const conflict = ACTION_PIPELINES.find(pipeline => pipeline.includes(a.type) && pipeline.includes(b.type));
-		return conflict && conflict.indexOf(a.type) - conflict.indexOf(b.type);
-	}
-	protected abstract get type(): object;
-}
-
-export abstract class Attack extends CreepAction {
-	protected get type(): object {
-		return Attack.prototype;
+	public isComplete(): boolean {
+		return this.complete;
 	}
 }
 
-export abstract class Build extends CreepAction {
-	protected get type(): object {
-		return Build.prototype;
+export class MoveToTarget extends Move {
+	public isComplete(actor: CreepMind): boolean {
+		return actor.target !== undefined && actor.target !== undefined && actor.getRangeTo(actor.target!) === 1;
+	}
+	public execute(actor: CreepMind): ScreepsReturnCode | undefined {
+		return actor.moveTo(actor.target!);
 	}
 }
-
-export abstract class Drop extends CreepAction {
-	protected get type(): object {
-		return Drop.prototype;
-	}
-}
-
-export abstract class Harvest extends CreepAction {
-	protected get type(): object {
-		return Harvest.prototype;
-	}
-}
-
-export abstract class Heal extends CreepAction {
-	protected get type(): object {
-		return Heal.prototype;
-	}
-}
-
-export abstract class Move extends CreepAction {
-	protected get type(): object {
-		return Move.prototype;
-	}
-}
-
-export abstract class MoveTo extends CreepAction {
-	protected get type(): object {
-		return MoveTo.prototype;
-	}
-}
-
-export abstract class Pickup extends CreepAction {
-	protected get type(): object {
-		return Pickup.prototype;
-	}
-}
-
-export abstract class Pull extends CreepAction {
-	protected get type(): object {
-		return Pull.prototype;
-	}
-}
-
-export abstract class RangedAttack extends CreepAction {
-	protected get type(): object {
-		return RangedAttack.prototype;
-	}
-}
-
-export abstract class RangedHeal extends CreepAction {
-	protected get type(): object {
-		return RangedHeal.prototype;
-	}
-}
-
-export abstract class RangedMassAttack extends CreepAction {
-	protected get type(): object {
-		return RangedMassAttack.prototype;
-	}
-}
-
-export abstract class Transfer extends CreepAction {
-	protected get type(): object {
-		return Transfer.prototype;
-	}
-}
-
-export abstract class Withdraw extends CreepAction {
-	protected get type(): object {
-		return Withdraw.prototype;
-	}
-}
-
-const ACTION_PIPELINES: any[][] = [
-	[Harvest.prototype, Attack.prototype, Build.prototype, RangedHeal.prototype, Heal.prototype],
-	[RangedAttack.prototype, RangedMassAttack.prototype, Build.prototype, RangedHeal.prototype],
-	[Build.prototype, Withdraw.prototype, Transfer.prototype, Drop.prototype]
-];

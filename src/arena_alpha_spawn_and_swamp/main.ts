@@ -1,6 +1,6 @@
-import * as Actions from "common/actions/CreepAction";
+import * as Actions from "common/actions/Intent";
 import { ATTACK, BodyPartConstant, CARRY, HEAL, RANGED_ATTACK, WORK } from "game/constants";
-import { Creep, StructureContainer, StructureSpawn } from "game/prototypes";
+import { Creep, GameObject, StructureContainer, StructureSpawn } from "game/prototypes";
 import { FATIGUE_FACTOR, TERRAIN_PLAIN } from "common/Library";
 import { getObjectsByPrototype, getRange, getTicks } from "game";
 import { BodyRatio } from "common/BodyRatio";
@@ -16,7 +16,7 @@ classifier.classifications.set("porter", new Map<BodyPartConstant, number>().set
 classifier.classifications.set("builder", new Map<BodyPartConstant, number>().set(WORK, 1));
 
 export class CreepMind extends Creep {
-	public target?: string;
+	public target?: GameObject | null;
 }
 
 export function loop() {

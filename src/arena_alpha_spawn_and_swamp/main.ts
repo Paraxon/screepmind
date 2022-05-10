@@ -1,11 +1,11 @@
-import * as Actions from "common/actions/creep";
+import * as Actions from "common/actions/CreepAction";
 import { ATTACK, BodyPartConstant, CARRY, HEAL, RANGED_ATTACK, WORK } from "game/constants";
 import { Creep, StructureContainer, StructureSpawn } from "game/prototypes";
-import { FATIGUE_FACTOR, TERRAIN_PLAIN } from "common/library";
+import { FATIGUE_FACTOR, TERRAIN_PLAIN } from "common/Library";
 import { getObjectsByPrototype, getRange, getTicks } from "game";
-import { BodyRatio } from "common/bodyratio";
-import { CreepClassifier } from "common/statistics/classifier";
-import { DecisionTree } from "common/decisions/decision-tree";
+import { BodyRatio } from "common/BodyRatio";
+import { CreepClassifier } from "common/statistics/Classifier";
+import { DecisionTree } from "common/decisions/DecisionTree";
 
 const classifier = new CreepClassifier();
 classifier.classifications.set("archer", new Map<BodyPartConstant, number>().set(RANGED_ATTACK, 1));

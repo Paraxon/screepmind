@@ -1,4 +1,4 @@
-import { DiGraph, Edge } from "./digraph";
+import { DiGraph, Edge } from "./Digraph";
 
 export class AdjList<vertex_t> implements DiGraph<vertex_t> {
 	private verts: vertex_t[];

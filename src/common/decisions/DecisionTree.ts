@@ -1,4 +1,4 @@
-import { DecisionMaker } from "./decision-maker";
+import { DecisionMaker } from "./DecisionMaker";
 
 export class DecisionTree<actor_t, return_t = void> implements DecisionMaker<actor_t, return_t> {
 	public condition!: (actor: actor_t) => boolean;

@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import Flatten from "@flatten-js/core";
-import { Span } from "./span";
-import { VertexRecord } from "./vertexrecord";
+import { Span } from "./Span";
+import { VertexRecord } from "./VertexRecord";
 
 enum RecordState {
 	Open,

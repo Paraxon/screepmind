@@ -1,4 +1,4 @@
-import * as Metric from "./metric";
+import * as Metric from "./Metric";
 import { arenaInfo as Arena, constants as Consts, getCpuTime } from "game";
 import Flatten from "@flatten-js/core";
 

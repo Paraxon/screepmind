@@ -1,8 +1,8 @@
-import { DiGraph } from "./digraph.js";
+import { DiGraph } from "./Digraph.js";
 import Flatten from "@flatten-js/core";
-import { Region } from "./region.js";
-import { Summary } from "common/statistics/summary.js";
-import { VertexRecord } from "./vertexrecord.js";
+import { Region } from "./Region.js";
+import { Summary } from "common/statistics/Summary.js";
+import { VertexRecord } from "./VertexRecord.js";
 
 export class KMeans {
 	public regions = new Array<Region>();

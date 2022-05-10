@@ -1,5 +1,5 @@
 import * as Consts from "game/constants";
-import * as Lib from "./library.js";
+import * as Lib from "./Library.js";
 
 export class BodyRatio {
 	private parts = new Map<Consts.BodyPartConstant, number>();

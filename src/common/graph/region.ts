@@ -1,9 +1,9 @@
 import Flatten from "@flatten-js/core";
-import { ARENA_SHAPE } from "common/library";
+import { ARENA_SHAPE } from "common/Library";
 import concaveman from "concaveman";
 import { RoomPosition } from "game/prototypes";
 import { Visual } from "game/visual";
-import { StateSpan } from "./state-span";
+import { StateSpan } from "./StateSpan";
 
 export class Region {
 	public root: Flatten.Point;

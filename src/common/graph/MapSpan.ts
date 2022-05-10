@@ -1,5 +1,5 @@
-import { Equatable, Span } from "./span";
-import { VertexRecord } from "./vertexrecord";
+import { Equatable, Span } from "./Span";
+import { VertexRecord } from "./VertexRecord";
 
 export class MapSpan<vertex_t extends Equatable> implements Span<vertex_t> {
 	private _open = new Array<VertexRecord<vertex_t>>();

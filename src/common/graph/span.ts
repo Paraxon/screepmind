@@ -1,5 +1,5 @@
 import Flatten from "@flatten-js/core";
-import { VertexRecord } from "./vertexrecord";
+import { VertexRecord } from "./VertexRecord";
 import { Visual } from "game/visual";
 
 export interface Equatable {

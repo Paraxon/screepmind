@@ -7,6 +7,10 @@ import { DecisionMaker } from "common/decisions/decision-maker";
 import { ScreepsReturnCode } from "game/constants";
 
 export abstract class CreepAction implements Action<Creep, ScreepsReturnCode>, DecisionMaker<Creep, ScreepsReturnCode> {
+	public canDoBoth(other: Action<Creep, ScreepsReturnCode>): boolean {
+		return CreepAction.canDoBoth(this, other as CreepAction);
+	}
+	public abstract isComplete(): boolean;
 	public abstract execute(actor: Creep): ScreepsReturnCode;
 	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> | undefined {
 		return this;

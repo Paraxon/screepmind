@@ -1,3 +1,5 @@
 export interface Action<actor_t, result_t = void> {
-	execute(actor: actor_t): result_t;
+	execute(actor: actor_t): result_t | undefined;
+	canDoBoth(other: Action<actor_t, result_t>): boolean;
+	isComplete(): boolean;
 }

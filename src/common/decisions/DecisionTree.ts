@@ -1,11 +1,12 @@
+import { Condition } from "common/conditions/Condition";
 import { DecisionMaker } from "./DecisionMaker";
 
 export class DecisionTree<actor_t, return_t = void> implements DecisionMaker<actor_t, return_t> {
-	public condition!: (actor: actor_t) => boolean;
-	public truthy!: DecisionMaker<actor_t, return_t>;
-	public falsy!: DecisionMaker<actor_t, return_t>;
+	public condition: Condition<actor_t>;
+	public truthy: DecisionMaker<actor_t, return_t>;
+	public falsy: DecisionMaker<actor_t, return_t>;
 	public constructor(
-		condition: (actor: actor_t) => boolean,
+		condition: Condition<actor_t>,
 		truthy: DecisionMaker<actor_t, return_t>,
 		falsy: DecisionMaker<actor_t, return_t>
 	) {
@@ -14,6 +15,6 @@ export class DecisionTree<actor_t, return_t = void> implements DecisionMaker<act
 		this.falsy = falsy;
 	}
 	public decide(actor: actor_t) {
-		return this.condition(actor) ? this.truthy.decide(actor) : this.falsy.decide(actor);
+		return this.condition.evaluate(actor) ? this.truthy.decide(actor) : this.falsy.decide(actor);
 	}
 }

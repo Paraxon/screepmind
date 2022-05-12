@@ -9,16 +9,25 @@ export class ActionSequence<actor_t, result_t = void> implements Action<actor_t,
 	public canDoBoth(other: Action<actor_t, result_t>): boolean {
 		return this.actions.every(action => action.canDoBoth(other));
 	}
-	public isComplete(): boolean {
+	public isComplete(actor: actor_t): boolean {
 		return this.index >= this.actions.length;
 	}
 	public execute(actor: actor_t): result_t | undefined {
 		let result: result_t | undefined;
-		for (let action = this.current; action?.isComplete() && !this.isComplete(); this.index++)
-			result = action.execute(actor);
+		for (let action = this.current; !this.isComplete(actor); action = this.next) {
+			// If the action is already complete before execution, skip it
+			if (action?.isComplete(actor)) continue;
+			result = action?.execute(actor);
+			// If the action is not complete after execution, break out of the loop
+			if (!action?.isComplete(actor)) break;
+		}
 		return result;
 	}
 	private get current(): Action<actor_t, result_t> | undefined {
 		return this.actions[this.index];
+	}
+	private get next(): Action<actor_t, result_t> | undefined {
+		this.index++;
+		return this.current;
 	}
 }

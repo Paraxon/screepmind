@@ -1,11 +1,21 @@
-import * as Actions from "common/actions/Intent";
-import { ATTACK, BodyPartConstant, CARRY, HEAL, RANGED_ATTACK, WORK } from "game/constants";
-import { Creep, GameObject, StructureContainer, StructureSpawn } from "game/prototypes";
-import { FATIGUE_FACTOR, TERRAIN_PLAIN } from "common/Library";
-import { getObjectsByPrototype, getRange, getTicks } from "game";
 import { BodyRatio } from "common/BodyRatio";
-import { CreepClassifier } from "common/statistics/Classifier";
+import { Empty, Full, InRangeOf } from "common/conditions/CreepConditions";
 import { DecisionTree } from "common/decisions/DecisionTree";
+import { FATIGUE_FACTOR, TERRAIN_PLAIN } from "common/Library";
+import { CreepClassifier } from "common/statistics/Classifier";
+import * as files from "fs";
+import { getObjectsByPrototype, getTicks } from "game";
+import {
+	ATTACK,
+	BodyPartConstant,
+	CARRY,
+	HEAL,
+	RANGED_ATTACK,
+	RESOURCE_ENERGY,
+	ScreepsReturnCode,
+	WORK
+} from "game/constants";
+import { Creep, GameObject, StructureContainer, StructureSpawn } from "game/prototypes";
 
 const classifier = new CreepClassifier();
 classifier.classifications.set("archer", new Map<BodyPartConstant, number>().set(RANGED_ATTACK, 1));
@@ -20,22 +30,21 @@ export class CreepMind extends Creep {
 }
 
 export function loop() {
-	const containers = getObjectsByPrototype(StructureContainer).filter(
-		container => container.my || container.my === undefined
-	);
-	const friendlies = getObjectsByPrototype(Creep).filter(creep => creep.my);
-	const spawn = getObjectsByPrototype(StructureSpawn).filter(entity => entity.my)[0];
-
 	if (getTicks() === 1) {
+		const spawn = getObjectsByPrototype(StructureSpawn).filter(entity => entity.my)[0];
 		const ratio = new BodyRatio().with(CARRY, 2).withSpeed(1, FATIGUE_FACTOR[TERRAIN_PLAIN]);
 		const result = spawn.spawnCreep(ratio.spawn);
-		if (typeof result.object !== undefined) {
-			const memory = result.object as CreepMind;
-			memory.target = "hello world!";
-		}
-	} else {
-		const memory = friendlies[0] as CreepMind;
-		console.log(memory.target);
+		console.log(result);
+	}
+
+	if (getTicks() >= 12) {
+		const nextToSpawn = new InRangeOf(StructureSpawn, 1, spawn => spawn.my);
+		const nextToContainer = new InRangeOf(StructureContainer, 1, container => container.store.energy > 0);
+		const full = new Full(RESOURCE_ENERGY);
+
+		const lad = getObjectsByPrototype(Creep).filter(creep => creep.my)[0] as CreepMind;
+		// sequence.execute(lad);
+		console.log(`Target: ${lad.target?.id ?? "none"}`);
 	}
 
 	/* const deposit = new Actions.Transfer();

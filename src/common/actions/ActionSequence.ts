@@ -6,6 +6,9 @@ export class ActionSequence<actor_t, result_t = void> implements Action<actor_t,
 	public constructor(...actions: Action<actor_t, result_t>[]) {
 		this.actions = actions;
 	}
+	public decide(actor: actor_t): Action<actor_t, result_t> {
+		return new ActionSequence(...this.actions.map(action => action.decide(actor)));
+	}
 	public canDoBoth(other: Action<actor_t, result_t>): boolean {
 		return this.actions.every(action => action.canDoBoth(other));
 	}

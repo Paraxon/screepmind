@@ -1,13 +1,20 @@
 /* eslint-disable max-classes-per-file */
 import { CreepMind } from "arena_alpha_spawn_and_swamp/main";
-import { match } from "assert";
 import { getObjectsByPrototype } from "game";
-import { ERR_INVALID_TARGET, ERR_NOT_FOUND, OK, ScreepsReturnCode } from "game/constants";
-import { GameObject, StructureContainer, _Constructor } from "game/prototypes";
+import {
+	ERR_INVALID_TARGET,
+	ERR_NOT_FOUND,
+	OK,
+	RESOURCE_ENERGY,
+	ResourceConstant,
+	ScreepsReturnCode
+} from "game/constants";
+import { Creep, GameObject, Resource, StructureContainer, StructureSpawn, _Constructor } from "game/prototypes";
 import { Action } from "./Action";
-import { Move } from "./Intent";
+import { Move, MoveTo, Pickup, Transfer, Withdraw } from "./Intent";
 
 export abstract class FlagAction<actor_t, return_t = void> implements Action<actor_t, return_t> {
+	public abstract decide(actor: actor_t): Action<actor_t, return_t>;
 	public abstract execute(actor: actor_t): return_t | undefined;
 	public canDoBoth(other: Action<actor_t, return_t>): boolean {
 		return true;
@@ -19,6 +26,9 @@ export abstract class FlagAction<actor_t, return_t = void> implements Action<act
 }
 
 export class TargetNearest<object_t extends GameObject> extends FlagAction<CreepMind, ScreepsReturnCode> {
+	public decide(actor: CreepMind): Action<CreepMind, ScreepsReturnCode> {
+		return new TargetNearest(this.prototype, this.predicate);
+	}
 	public predicate?: (object: object_t) => boolean;
 	public prototype: _Constructor<object_t>;
 	public constructor(prototype: _Constructor<object_t>, predicate?: (object: object_t) => boolean) {
@@ -28,10 +38,8 @@ export class TargetNearest<object_t extends GameObject> extends FlagAction<Creep
 	}
 	public execute(actor: CreepMind): ScreepsReturnCode | undefined {
 		this.complete = true;
-		console.log(`Finding nearest ${this.prototype.name}...`);
 		const objects = getObjectsByPrototype(this.prototype);
 		const matches = this.predicate ? objects.filter(this.predicate) : objects;
-		console.log(`Objects: ${objects.length}, Matches: ${matches.length}`);
 		if (matches.length === 0) return ERR_NOT_FOUND;
 		actor.target = actor.findClosestByRange(objects);
 		return OK;
@@ -44,23 +52,10 @@ export class TargetNearest<object_t extends GameObject> extends FlagAction<Creep
 	}
 }
 
-/* export interface Condition<actor_t> {
-	evaluate(actor: actor_t): boolean;
-}
-
-export class TargetNearest<entity_t extends GameObject> implements Condition<CreepMind> {
-	private prototype!: _Constructor<entity_t>;
-	private predicate?: (value: entity_t) => boolean;
-	public evaluate(actor: CreepMind): boolean {
-		const objects = getObjectsByPrototype(this.prototype);
-		const matches = this.predicate ? objects.filter(this.predicate) : objects;
-		if (matches.length === 0) return false;
-		actor.target = actor.findClosestByRange(objects) ?? undefined;
-		return true;
-	}
-} */
-
 export class MoveToTarget extends Move {
+	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
+		return new MoveToTarget();
+	}
 	public isComplete(actor: CreepMind): boolean {
 		if (actor.target) return actor.getRangeTo(actor.target) === 1;
 		else return true;
@@ -69,4 +64,78 @@ export class MoveToTarget extends Move {
 		if (actor.target) return actor.moveTo(actor.target);
 		else return ERR_INVALID_TARGET;
 	}
+}
+
+export class MoveToNearest<object_t extends GameObject> extends MoveTo {
+	private predicate?: (object: object_t) => boolean;
+	private prototype: _Constructor<object_t>;
+	private range: number;
+	private target?: object_t;
+
+	public constructor(prototype: _Constructor<object_t>, range = 1, predicate?: (object: object_t) => boolean) {
+		super();
+		this.range = range;
+		this.prototype = prototype;
+		this.predicate = predicate;
+	}
+	public isComplete(actor: Creep): boolean {
+		return this.target ? actor.getRangeTo(this.target) <= this.range : false;
+	}
+	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
+		return new MoveToNearest(this.prototype, this.range, this.predicate);
+	}
+	public execute(actor: Creep): ScreepsReturnCode | undefined {
+		if (!this.target) {
+			const targets = getObjectsByPrototype(this.prototype);
+			const matches = this.predicate ? targets.filter(this.predicate) : targets;
+			this.target = actor.findClosestByRange(matches) ?? undefined;
+		}
+		return this.target ? actor.moveTo(this.target) : ERR_INVALID_TARGET;
+	}
+}
+
+export class WithdrawResource extends Withdraw {
+	private resource: ResourceConstant;
+	private flag = false;
+	public constructor(resource: ResourceConstant = RESOURCE_ENERGY) {
+		super();
+		this.resource = resource;
+	}
+	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
+		return new WithdrawResource(this.resource);
+	}
+	public isComplete(actor: Creep): boolean {
+		return this.flag;
+	}
+	public execute(actor: Creep): ScreepsReturnCode | undefined {
+		const containers = getObjectsByPrototype(StructureContainer).filter(
+			container => container.store[this.resource] > 0
+		);
+		const targets = actor.findInRange(containers, 1).sort((a, b) => a.store[this.resource] - b.store[this.resource]);
+		this.flag = true;
+
+		return targets.length ? actor.withdraw(targets[0], this.resource) : ERR_NOT_FOUND;
+	}
+}
+
+export class DepositResource extends Transfer {
+	private resource: ResourceConstant;
+	private flag = false;
+	public constructor(resource: ResourceConstant = RESOURCE_ENERGY) {
+		super();
+		this.resource = resource;
+	}
+	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
+		return new DepositResource(this.resource);
+	}
+	public isComplete(actor: Creep): boolean {
+		return this.flag;
+	}
+	public execute(actor: Creep): ScreepsReturnCode | undefined {
+		this.flag = true;
+		const targets = getObjectsByPrototype(StructureSpawn).filter(spawn => spawn.store.getFreeCapacity(this.resource));
+		const target = actor.findInRange(targets, 1).sort((a, b) => actor.getRangeTo(a) - actor.getRangeTo(b))[0];
+		return target ? actor.transfer(target, this.resource) : ERR_NOT_FOUND;
+	}
+
 }

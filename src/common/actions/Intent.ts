@@ -6,15 +6,14 @@ import { Creep } from "game/prototypes";
 import { DecisionMaker } from "common/decisions/DecisionMaker";
 import { ScreepsReturnCode } from "game/constants";
 
-export abstract class Intent implements Action<Creep, ScreepsReturnCode>, DecisionMaker<Creep, ScreepsReturnCode> {
+export abstract class Intent implements Action<Creep, ScreepsReturnCode> {
+	public abstract decide(actor: Creep): Action<Creep, ScreepsReturnCode>;
 	public canDoBoth(other: Action<Creep, ScreepsReturnCode>): boolean {
-		return Intent.canDoBoth(this, other as Intent);
+		if (other instanceof Intent) return Intent.canDoBoth(this, other);
+		else return true;
 	}
 	public abstract isComplete(actor: Creep): boolean;
 	public abstract execute(actor: Creep): ScreepsReturnCode | undefined;
-	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> | undefined {
-		return this;
-	}
 	public static canDoBoth(a: Intent, b: Intent) {
 		return this.comparePriority(a, b) === undefined;
 	}

@@ -1,3 +1,5 @@
+import { ActionSequence } from "common/actions/ActionSequence";
+import { DepositResource, MoveToNearest, MoveToTarget, WithdrawResource } from "common/actions/CreepAction";
 import { BodyRatio } from "common/BodyRatio";
 import { Empty, Full, InRangeOf } from "common/conditions/CreepConditions";
 import { DecisionTree } from "common/decisions/DecisionTree";
@@ -28,23 +30,36 @@ classifier.classifications.set("builder", new Map<BodyPartConstant, number>().se
 export class CreepMind extends Creep {
 	public target?: GameObject | null;
 }
+const isNextToSpawn = new InRangeOf(StructureSpawn, 1, spawn => spawn.my);
+const isNextToContainer = new InRangeOf(StructureContainer, 1, container => container.store.energy > 0);
+const isFull = new Full(RESOURCE_ENERGY);
+
+const moveToContainer = new MoveToNearest(StructureContainer, 1, (container: StructureContainer) => container.store.energy > 0);
+const withdrawEnergy = new WithdrawResource(RESOURCE_ENERGY);
+const getEnergy = new ActionSequence(moveToContainer, withdrawEnergy);
+
+const moveToSpawn = new MoveToNearest(StructureSpawn, 1, spawn => spawn.my);
+const depositEnergy = new DepositResource(RESOURCE_ENERGY);
+const deliverEnergy = new ActionSequence(moveToSpawn, depositEnergy);
+
+const ai = new DecisionTree(isFull, deliverEnergy, getEnergy);
 
 export function loop() {
-	if (getTicks() === 1) {
-		const spawn = getObjectsByPrototype(StructureSpawn).filter(entity => entity.my)[0];
-		const ratio = new BodyRatio().with(CARRY, 2).withSpeed(1, FATIGUE_FACTOR[TERRAIN_PLAIN]);
-		const result = spawn.spawnCreep(ratio.spawn);
-		console.log(result);
+	switch (getTicks()) {
+		case 1:
+			console.log(JSON.stringify(getEnergy));
+			const spawn = getObjectsByPrototype(StructureSpawn).filter(entity => entity.my)[0];
+			const ratio = new BodyRatio().with(CARRY, 2).withSpeed(1, FATIGUE_FACTOR[TERRAIN_PLAIN]);
+			const result = spawn.spawnCreep(ratio.spawn);
+			break;
+		default:
+			break;
 	}
 
 	if (getTicks() >= 12) {
-		const nextToSpawn = new InRangeOf(StructureSpawn, 1, spawn => spawn.my);
-		const nextToContainer = new InRangeOf(StructureContainer, 1, container => container.store.energy > 0);
-		const full = new Full(RESOURCE_ENERGY);
-
 		const lad = getObjectsByPrototype(Creep).filter(creep => creep.my)[0] as CreepMind;
-		// sequence.execute(lad);
-		console.log(`Target: ${lad.target?.id ?? "none"}`);
+		const action = ai.decide(lad);
+		action?.execute(lad);
 	}
 
 	/* const deposit = new Actions.Transfer();

@@ -40,7 +40,7 @@ module.exports = {
 		] // https://github.com/benmosher/eslint-plugin-import/blob/v2.22.1/README.md#importcore-modules
 	},
 	rules: {
-		indent: ["error", "tab"],
+		indent: ["error", "tab", "SwitchCase"],
 		"@typescript-eslint/array-type": "error",
 		"@typescript-eslint/consistent-type-assertions": "error",
 		"@typescript-eslint/consistent-type-definitions": "error",

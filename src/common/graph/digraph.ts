@@ -21,12 +21,13 @@ export class Edge<vertex_t> {
 	}
 }
 
-export interface DiGraph<vertex_t, edge_t extends DirectedEdge<vertex_t> & Weighted = Edge<vertex_t>> {
+export interface DiGraph<vertex_t, edge_t extends DirectedEdge<vertex_t> = Edge<vertex_t>> {
 	vertices(): Iterable<vertex_t>;
 	edgesFrom(vertex: vertex_t): Iterable<edge_t>;
 	edgesTo(vertex: vertex_t): Iterable<edge_t>;
 	sample(count: number): Iterable<vertex_t>;
 	contains(vertex: vertex_t): boolean;
+	addVertex(vertex: vertex_t): void;
 }
 
 export function drawConnections(

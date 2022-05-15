@@ -9,9 +9,9 @@ import {
 	ResourceConstant,
 	ScreepsReturnCode
 } from "game/constants";
-import { Creep, GameObject, Resource, StructureContainer, StructureSpawn, _Constructor } from "game/prototypes";
-import { Action } from "./Action";
-import { Move, MoveTo, Pickup, Transfer, Withdraw } from "./Intent";
+import { Creep, GameObject, Resource, RoomPosition, Source, Store, StructureContainer, StructureSpawn, _Constructor } from "game/prototypes";
+import { Action } from "../Action";
+import { Harvest, Move, MoveTo, Pickup, Transfer, Withdraw } from "./Intent";
 
 export abstract class FlagAction<actor_t, return_t = void> implements Action<actor_t, return_t> {
 	public abstract decide(actor: actor_t): Action<actor_t, return_t>;
@@ -94,15 +94,17 @@ export class MoveToNearest<object_t extends GameObject> extends MoveTo {
 	}
 }
 
-export class WithdrawResource extends Withdraw {
+export class WithdrawResource<container_t extends StructureContainer> extends Withdraw {
 	private resource: ResourceConstant;
+	private prototype: _Constructor<container_t>;
 	private flag = false;
-	public constructor(resource: ResourceConstant = RESOURCE_ENERGY) {
+	public constructor(prototype: _Constructor<container_t>, resource: ResourceConstant = RESOURCE_ENERGY) {
 		super();
+		this.prototype = prototype;
 		this.resource = resource;
 	}
 	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
-		return new WithdrawResource(this.resource);
+		return new WithdrawResource(this.prototype, this.resource);
 	}
 	public isComplete(actor: Creep): boolean {
 		return this.flag;
@@ -118,24 +120,42 @@ export class WithdrawResource extends Withdraw {
 	}
 }
 
-export class DepositResource extends Transfer {
+export class DepositResource<container_t extends StructureContainer> extends Transfer {
 	private resource: ResourceConstant;
+	private prototype: _Constructor<container_t>;
 	private flag = false;
-	public constructor(resource: ResourceConstant = RESOURCE_ENERGY) {
+	public constructor(prototype: _Constructor<container_t>, resource: ResourceConstant = RESOURCE_ENERGY) {
 		super();
+		this.prototype = prototype;
 		this.resource = resource;
 	}
 	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
-		return new DepositResource(this.resource);
+		return new DepositResource(this.prototype, this.resource);
 	}
 	public isComplete(actor: Creep): boolean {
 		return this.flag;
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
 		this.flag = true;
-		const targets = getObjectsByPrototype(StructureSpawn).filter(spawn => spawn.store.getFreeCapacity(this.resource));
-		const target = actor.findInRange(targets, 1).sort((a, b) => actor.getRangeTo(a) - actor.getRangeTo(b))[0];
+		const targets = getObjectsByPrototype(this.prototype).filter(container => container.store.getFreeCapacity(this.resource));
+		const target = actor.findInRange(targets, 1)[0];
 		return target ? actor.transfer(target, this.resource) : ERR_NOT_FOUND;
 	}
+}
 
+export class HarvestResource extends Harvest {
+	private target?: Source;
+	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
+		return new HarvestResource();
+	}
+	public isComplete(actor: Creep): boolean {
+		return actor.store.getFreeCapacity() === 0;
+	}
+	public execute(actor: Creep): ScreepsReturnCode | undefined {
+		if (!this.target) {
+			const targets = getObjectsByPrototype(Source);
+			this.target = actor.findInRange(targets, 1)[0];
+		}
+		return this.target ? actor.harvest(this.target) : ERR_NOT_FOUND;
+	}
 }

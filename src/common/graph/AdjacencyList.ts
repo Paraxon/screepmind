@@ -1,10 +1,10 @@
-import { DiGraph, Edge } from "./Digraph";
+import { DiGraph, DirectedEdge, Edge, Weighted } from "./Digraph";
 
-export class AdjList<vertex_t> implements DiGraph<vertex_t> {
+export class AdjList<vertex_t, edge_t extends DirectedEdge<vertex_t> & Weighted> implements DiGraph<vertex_t> {
 	private verts: vertex_t[];
-	private edges: Edge<vertex_t>[];
+	private edges: edge_t[];
 
-	public constructor(vertices: vertex_t[], edges: Edge<vertex_t>[]) {
+	public constructor(vertices: vertex_t[], edges: edge_t[] = new Array<edge_t>()) {
 		this.verts = vertices;
 		this.edges = edges;
 	}

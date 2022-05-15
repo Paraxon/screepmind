@@ -1,4 +1,4 @@
-import { Edge } from "./Digraph";
+import { Edge } from "../Digraph";
 
 export class VertexRecord<vertex_t> {
 	public vertex: vertex_t;

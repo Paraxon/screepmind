@@ -3,22 +3,26 @@ import { ARENA_SHAPE } from "common/Library";
 import concaveman from "concaveman";
 import { RoomPosition } from "game/prototypes";
 import { Visual } from "game/visual";
-import { StateSpan } from "./StateSpan";
+import { StateSpan } from "./Span/StateSpan";
 
-export class Region {
+export class Region implements RoomPosition {
+	public get x(): number { return this.root.x; }
+	public get y(): number { return this.root.y; }
 	public root: Flatten.Point;
 	public span: StateSpan;
-	public hull?: Flatten.Point[];
+	private _hull?: Flatten.Polygon;
+	public get hull(): Flatten.Polygon {
+		return this._hull ??= new Flatten.Polygon(
+			concaveman(Array.from(this.span.vertices).map(vertex => [vertex.x, vertex.y]))
+				.map(v => Flatten.point(v[0], v[1])));
+	}
+	private _centroid?: Flatten.Point;
 	public constructor(root: Flatten.Point) {
 		this.root = root;
 		this.span = new StateSpan(Flatten.vector(ARENA_SHAPE.width, ARENA_SHAPE.height), root);
 	}
 	public get centroid(): Flatten.Point {
-		if (this.span.size === 0) return this.root;
-		const centroid = Array.from(this.span.vertices).reduce((sum, child) => sum.translate(child.x, child.y));
-		centroid.x = Math.floor(centroid.x / this.span.size);
-		centroid.y = Math.floor(centroid.y / this.span.size);
-		return centroid;
+		return this._centroid ??= this.calcCentroid();
 	}
 	public get rect() {
 		const min = Flatten.point(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY);
@@ -31,14 +35,17 @@ export class Region {
 		}
 		return new Flatten.Box(min.x, min.y, max.x - min.x, max.y - min.y);
 	}
-	public draw(visual: Visual, style: CircleStyle = {}) {
-		visual.circle(this.centroid, { fill: "#0000ff" });
-		visual.circle(this.root, style);
-		this.hull ??= hull(this.span.vertices);
-		visual.poly(this.hull, style);
+	public draw(visual: Visual, rootStyle: CircleStyle = {}, centroidStyle: CircleStyle = { fill: "#ff0000" }, borderStyle: LineStyle = {}) {
+		visual.circle(this.root, rootStyle);
+		visual.circle(this.centroid, centroidStyle);
+		visual.poly(this.hull.vertices, borderStyle);
+		visual.line(this.hull.vertices[0], this.hull.vertices[this.hull.vertices.length - 1], borderStyle);
 	}
-}
-
-function hull(points: Iterable<RoomPosition>): Flatten.Point[] {
-	return concaveman(Array.from(points).map(v => [v.x, v.y])).map(v => Flatten.point(v[0], v[1]));
+	private calcCentroid(): Flatten.Point {
+		if (this.span.interior == 0) return this.root;
+		const centroid = Array.from(this.span.vertices).reduce((sum, child) => sum.translate(child.x, child.y));
+		centroid.x = Math.floor(centroid.x / this.span.size);
+		centroid.y = Math.floor(centroid.y / this.span.size);
+		return centroid;
+	}
 }

@@ -1,8 +1,8 @@
 import * as Consts from "game/constants";
-import * as Lib from "../Library.js";
+import * as Lib from "../Library";
 import * as Utils from "game/utils";
-import { DiGraph, Edge } from "./Digraph.js";
-import { ARENA_SHAPE } from "../Library.js";
+import { DiGraph, Edge } from "./Digraph";
+import { ARENA_SHAPE } from "../Library";
 import Flatten from "@flatten-js/core";
 
 export class TileGraph implements DiGraph<Flatten.Point> {
@@ -26,7 +26,7 @@ export class TileGraph implements DiGraph<Flatten.Point> {
 				const to = new Flatten.Point(from.x + dx, from.y + dy);
 				const terrain = Utils.getTerrainAt(to);
 				if ((dx === 0 && dy === 0) || !this.contains(to)) continue;
-				else yield { from, to, cost: Lib.PATH_COST[terrain] };
+				else yield new Edge(from, to, Lib.PATH_COST[terrain]);
 			}
 		}
 	}
@@ -39,7 +39,7 @@ export class TileGraph implements DiGraph<Flatten.Point> {
 				const from = Flatten.point(to.x + dx, to.y + dy);
 				if ((dx === 0 && dy === 0) || !from.on(this.bounds) || Utils.getTerrainAt(from) === Consts.TERRAIN_WALL)
 					continue;
-				else yield { from, to, cost: Lib.PATH_COST[terrain] };
+				else yield new Edge(from, to, Lib.PATH_COST[terrain]);
 			}
 		}
 	}

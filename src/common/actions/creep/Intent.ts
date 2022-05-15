@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable max-classes-per-file */
-import { Action } from "./Action";
+import { Action } from "../Action";
 import { Creep } from "game/prototypes";
-import { DecisionMaker } from "common/decisions/DecisionMaker";
 import { ScreepsReturnCode } from "game/constants";
 
 export abstract class Intent implements Action<Creep, ScreepsReturnCode> {

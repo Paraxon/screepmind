@@ -1,21 +1,30 @@
 import Flatten from "@flatten-js/core";
 import { Visual } from "game/visual";
 
-export class Edge<T> {
-	public from: T;
-	public to: T;
+export interface Weighted {
+	cost: number;
+}
+
+export interface DirectedEdge<vertex_t> {
+	from: vertex_t;
+	to: vertex_t;
+}
+
+export class Edge<vertex_t> {
+	public from: vertex_t;
+	public to: vertex_t;
 	public cost: number;
-	public constructor(from: T, to: T, cost: number) {
+	public constructor(from: vertex_t, to: vertex_t, cost: number) {
 		this.from = from;
 		this.to = to;
 		this.cost = cost;
 	}
 }
 
-export interface DiGraph<vertex_t> {
+export interface DiGraph<vertex_t, edge_t extends DirectedEdge<vertex_t> & Weighted = Edge<vertex_t>> {
 	vertices(): Iterable<vertex_t>;
-	edgesFrom(vertex: vertex_t): Iterable<Edge<vertex_t>>;
-	edgesTo(vertex: vertex_t): Iterable<Edge<vertex_t>>;
+	edgesFrom(vertex: vertex_t): Iterable<edge_t>;
+	edgesTo(vertex: vertex_t): Iterable<edge_t>;
 	sample(count: number): Iterable<vertex_t>;
 	contains(vertex: vertex_t): boolean;
 }

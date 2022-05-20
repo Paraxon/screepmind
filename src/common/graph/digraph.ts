@@ -27,7 +27,6 @@ export interface DiGraph<vertex_t, edge_t extends DirectedEdge<vertex_t> = Edge<
 	edgesTo(vertex: vertex_t): Iterable<edge_t>;
 	sample(count: number): Iterable<vertex_t>;
 	contains(vertex: vertex_t): boolean;
-	addVertex(vertex: vertex_t): void;
 }
 
 export function drawConnections(

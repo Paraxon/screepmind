@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { CreepMind } from "arena_alpha_spawn_and_swamp/main";
+import { CreepMind } from "common/decisions/CreepMind";
 import { getObjectsByPrototype } from "game";
 import {
 	ERR_INVALID_TARGET,
@@ -41,7 +41,7 @@ export class TargetNearest<object_t extends GameObject> extends FlagAction<Creep
 		const objects = getObjectsByPrototype(this.prototype);
 		const matches = this.predicate ? objects.filter(this.predicate) : objects;
 		if (matches.length === 0) return ERR_NOT_FOUND;
-		actor.target = actor.findClosestByRange(objects);
+		actor.target = actor.findClosestByRange(objects) || undefined;
 		return OK;
 	}
 	public canDoBoth(other: Action<CreepMind, ScreepsReturnCode>): boolean {

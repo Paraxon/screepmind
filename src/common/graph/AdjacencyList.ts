@@ -26,7 +26,8 @@ export class AdjList<vertex_t, edge_t extends DirectedEdge<vertex_t>> implements
 	public contains(vertex: vertex_t): boolean {
 		return this._vertices.includes(vertex);
 	}
-	addVertex(vertex: vertex_t) {
+	addVertex(vertex: vertex_t): AdjList<vertex_t, edge_t> {
 		this._vertices.push(vertex);
+		return this;
 	}
 }

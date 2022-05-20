@@ -30,12 +30,22 @@ export class Empty<object_t extends { store: Store<ResourceConstant> }> implemen
 	}
 }
 
-export class Full<object_t extends { store: Store<ResourceConstant> }> implements Condition<object_t> {
+export class IsFull<object_t extends { store: Store<ResourceConstant> }> implements Condition<object_t> {
 	private resource?: ResourceConstant;
 	public constructor(resource?: ResourceConstant) {
 		this.resource = resource;
 	}
 	public evaluate(actor: object_t): boolean {
 		return actor.store.getFreeCapacity(this.resource) === 0;
+	}
+}
+
+export class IsEmpty<object_t extends { store: Store<ResourceConstant> }> implements Condition<object_t> {
+	private resource?: ResourceConstant;
+	public constructor(resource?: ResourceConstant) {
+		this.resource = resource;
+	}
+	public evaluate(actor: object_t): boolean {
+		return actor.store.getUsedCapacity(this.resource) === 0;
 	}
 }

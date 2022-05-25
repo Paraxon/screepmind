@@ -3,9 +3,10 @@ import { ARENA_SHAPE } from "common/Library";
 import concaveman from "concaveman";
 import { RoomPosition } from "game/prototypes";
 import { Visual } from "game/visual";
+import { Equatable } from "./Span/Span";
 import { StateSpan } from "./Span/StateSpan";
 
-export class Region implements RoomPosition {
+export class Region implements RoomPosition, Equatable<Region> {
 	public get x(): number { return this.root.x; }
 	public get y(): number { return this.root.y; }
 	public root: Flatten.Point;
@@ -20,6 +21,9 @@ export class Region implements RoomPosition {
 	public constructor(root: Flatten.Point) {
 		this.root = root;
 		this.span = new StateSpan(Flatten.vector(ARENA_SHAPE.width, ARENA_SHAPE.height), root);
+	}
+	equalTo(other: Region): boolean {
+		return this.root.equalTo(other.root);
 	}
 	public get centroid(): Flatten.Point {
 		return this._centroid ??= this.calcCentroid();

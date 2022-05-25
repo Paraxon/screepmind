@@ -1,8 +1,8 @@
 import { Action } from "common/actions/Action";
 import { ActionSequence } from "common/actions/ActionSequence";
 import { Condition } from "common/conditions/Condition";
-import { Logger } from "common/debug/Logger";
-import { Verbosity } from "common/debug/Verbosity";
+import { Logger } from "common/patterns/Logger";
+import { Verbosity } from "common/patterns/Verbosity";
 import { AdjList } from "common/graph/AdjacencyList";
 import { DiGraph, DirectedEdge } from "common/graph/Digraph";
 import { DecisionMaker } from "./DecisionMaker";

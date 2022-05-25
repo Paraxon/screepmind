@@ -11,7 +11,7 @@ export class Logger {
 		if (!this.channels.has(channel))
 			this.channels.set(channel, this.default);
 		if (this.channels.get(channel))
-			console.log(`[${channel}] ${message}`);
+			console.log(`[${channel}:${verbosity}] ${message}`);
 	}
 	public static toggle(channel: string, value: boolean) {
 		this.channels.set(channel, value);

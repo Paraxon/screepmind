@@ -2,8 +2,8 @@ import Flatten from "@flatten-js/core";
 import { VertexRecord } from "./VertexRecord";
 import { Visual } from "game/visual";
 
-export interface Equatable {
-	equalTo(other: Equatable): boolean;
+export interface Equatable<other_t> {
+	equalTo(other: other_t): boolean;
 }
 
 export interface Span<vertex_t> {

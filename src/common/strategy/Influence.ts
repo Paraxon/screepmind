@@ -11,7 +11,7 @@ export class Influence {
 	}
 }
 
-export const Power = new Influence();
-Power.bodyparts.set(ATTACK, 1);
-Power.bodyparts.set(RANGED_ATTACK, 1);
-Power.bodyparts.set(HEAL, 1);
+export const influence = new Influence();
+influence.bodyparts.set(ATTACK, 1);
+influence.bodyparts.set(RANGED_ATTACK, 1);
+influence.bodyparts.set(HEAL, 1);

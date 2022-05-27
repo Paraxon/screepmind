@@ -1,6 +1,7 @@
 import { BodyRatio } from "common/BodyRatio";
 import { CreepClassifier } from "common/classification/CreepClassifier";
 import { Role } from "common/classification/Role";
+import { Arbiter } from "common/decisions/Blackboard";
 import { AdjList } from "common/graph/AdjacencyList";
 import { Border, ConnectRegions } from "common/graph/Hierarchy";
 import { KMeans } from "common/graph/KMeans";
@@ -8,9 +9,11 @@ import { Region } from "common/graph/Region";
 import { TileGraph } from "common/graph/Tilegraph";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
+import { Economy } from "common/strategy/Economy";
+import { Team } from "common/strategy/Team";
 import { getObjectsByPrototype, getTicks } from "game";
 import {
-	ATTACK, CARRY, WORK
+	ATTACK, CARRY, ScreepsReturnCode, WORK
 } from "game/constants";
 import { StructureSpawn } from "game/prototypes";
 import { Visual } from "game/visual";
@@ -28,16 +31,19 @@ export interface System {
 	update(): void;
 }
 
-export function loop() {
+const team = new Team();
+const enemy = new Team(false);
+const strategy = new Arbiter<Team, ScreepsReturnCode>();
+strategy.experts.push(new Economy());
 
+export function loop() {
 	switch (getTicks()) {
 		case 1:
 			Logger.verbosity = Verbosity.Trace;
 			regions = ConnectRegions(new TileGraph(), kmeans.execute());
-			const spawn = getObjectsByPrototype(StructureSpawn).filter(entity => entity.my)[0];
-			const body = new BodyRatio().with(CARRY, 1).withSpeed(2);
-			const result = spawn.spawnCreep(body.spawn);
 		default:
+			const action = strategy.decide(team);
+			action?.execute(team);
 			break;
 	}
 

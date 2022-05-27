@@ -28,7 +28,7 @@ export class BodyRatio {
 	public get burden() {
 		return this.size - (this.parts.get(Consts.MOVE) ?? 0);
 	}
-	public withSpeed(movementPeriod = 1, fatigueFactor = Lib.FATIGUE_FACTOR[Lib.TERRAIN_PLAIN]) {
+	public moveEvery(movementPeriod = 1, fatigueFactor = Lib.FATIGUE_FACTOR[Lib.TERRAIN_PLAIN]) {
 		const ratio = new BodyRatio();
 		for (const [type, qty] of this.parts) ratio.with(type, qty);
 		const moves = Math.ceil((this.size * fatigueFactor) / movementPeriod);

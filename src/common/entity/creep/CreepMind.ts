@@ -1,6 +1,6 @@
 import { ScreepsReturnCode } from "game/constants";
 import { Creep, GameObject } from "game/prototypes";
-import { State, Stateful, StateMachine } from "./StateMachine";
+import { State, Stateful, StateMachine } from "../../decisions/StateMachine";
 
 export class CreepMind extends Creep implements Stateful<CreepMind, ScreepsReturnCode> {
 	getState(context?: any): State<CreepMind, ScreepsReturnCode> | undefined {

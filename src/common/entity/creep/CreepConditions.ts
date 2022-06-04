@@ -2,7 +2,7 @@
 import { getObjectsByPrototype } from "game";
 import { ResourceConstant } from "game/constants";
 import { Creep, GameObject, Store, _Constructor } from "game/prototypes";
-import { Condition } from "./Condition";
+import { Condition } from "../../decisions/Condition";
 
 export class InRangeOf<object_t extends GameObject> implements Condition<GameObject> {
 	private range: number;

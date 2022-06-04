@@ -1,6 +1,6 @@
-import { Action } from "common/actions/Action";
-import { ActionSequence } from "common/actions/ActionSequence";
-import { Condition } from "common/conditions/Condition";
+import { Action } from "common/decisions/actions/Action";
+import { ActionSequence } from "common/decisions/actions/ActionSequence";
+import { Condition } from "common/decisions/Condition";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
 import { AdjList } from "common/graph/AdjacencyList";

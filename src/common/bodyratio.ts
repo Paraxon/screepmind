@@ -4,7 +4,7 @@ import * as Lib from "./Library.js";
 export class BodyRatio {
 	private parts = new Map<Consts.BodyPartConstant, number>();
 
-	public with(type: Consts.BodyPartConstant, qty: number) {
+	public with(type: Consts.BodyPartConstant, qty: number = 1) {
 		this.parts.set(type, qty);
 		return this;
 	}

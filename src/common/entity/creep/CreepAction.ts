@@ -1,5 +1,6 @@
 /* eslint-disable max-classes-per-file */
-import { CreepMind } from "common/decisions/CreepMind";
+import { CreepMind } from "common/entity/creep/CreepMind";
+import { BUILD_RANGE } from "common/Library";
 import { getObjectsByPrototype } from "game";
 import {
 	ERR_INVALID_TARGET,
@@ -9,21 +10,9 @@ import {
 	ResourceConstant,
 	ScreepsReturnCode
 } from "game/constants";
-import { Creep, GameObject, Resource, RoomPosition, Source, Store, StructureContainer, StructureSpawn, _Constructor } from "game/prototypes";
-import { Action } from "../Action";
-import { Harvest, Move, MoveTo, Pickup, Transfer, Withdraw } from "./Intent";
-
-export abstract class FlagAction<actor_t, return_t = void> implements Action<actor_t, return_t> {
-	public abstract decide(actor: actor_t): Action<actor_t, return_t>;
-	public abstract execute(actor: actor_t): return_t | undefined;
-	public canDoBoth(other: Action<actor_t, return_t>): boolean {
-		return true;
-	}
-	public isComplete(actor: actor_t): boolean {
-		return this.complete;
-	}
-	protected complete = false;
-}
+import { ConstructionSite, Creep, GameObject, Resource, RoomPosition, Source, Store, StructureContainer, StructureSpawn, _Constructor } from "game/prototypes";
+import { Action, FlagAction } from "../decisions/actions/Action";
+import { Build, Harvest, Move, MoveTo, Pickup, Transfer, Withdraw } from "./Intent";
 
 export class TargetNearest<object_t extends GameObject> extends FlagAction<CreepMind, ScreepsReturnCode> {
 	public decide(actor: CreepMind): Action<CreepMind, ScreepsReturnCode> {
@@ -157,5 +146,22 @@ export class HarvestResource extends Harvest {
 			this.target = actor.findInRange(targets, 1)[0];
 		}
 		return this.target ? actor.harvest(this.target) : ERR_NOT_FOUND;
+	}
+}
+
+export class BuildAtSite extends Build {
+	private target?: ConstructionSite;
+	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
+		return new BuildAtSite();
+	}
+	public isComplete(actor: Creep): boolean {
+		return this.target !== undefined && this.target!.progress === this.target!.progressTotal;
+	}
+	public execute(actor: Creep): ScreepsReturnCode | undefined {
+		if (!this.target) {
+			const targets = getObjectsByPrototype(ConstructionSite);
+			this.target = actor.findInRange(targets, BUILD_RANGE)[0];
+		}
+		return this.target ? actor.build(this.target) : ERR_NOT_FOUND;
 	}
 }

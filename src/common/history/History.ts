@@ -1,5 +1,5 @@
 import { System } from "arena_alpha_spawn_and_swamp/main";
-import { CreepMind } from "common/decisions/CreepMind";
+import { CreepMind } from "common/entity/creep/CreepMind";
 import { getObjectById, getTicks } from "game";
 import { CREEP_SPAWN_TIME } from "game/constants";
 import { Creep, GameObject, Id, StructureSpawn } from "game/prototypes";

@@ -22,4 +22,11 @@ export class ActionCombination<actor_t, result_t = void>
 	public isComplete(actor: actor_t): boolean {
 		return this.actions.every(action => action.isComplete(actor));
 	}
+	public reduce(): Action<actor_t, result_t> | undefined {
+		switch (this.actions.length) {
+			case 0: return undefined;
+			case 1: return this.actions[0];
+			default: return this;
+		}
+	}
 }

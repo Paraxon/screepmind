@@ -20,7 +20,7 @@ export class And<actor_t> implements Condition<actor_t> {
 		this.conditions = conditions;
 	}
 	public evaluate(actor: actor_t): boolean {
-		return this.conditions.every(c => c.evaluate(actor));
+		return this.conditions.every(condition => condition.evaluate(actor));
 	}
 }
 
@@ -30,6 +30,6 @@ export class Or<actor_t> implements Condition<actor_t> {
 		this.conditions = conditions;
 	}
 	public evaluate(actor: actor_t): boolean {
-		return this.conditions.some(c => c.evaluate(actor));
+		return this.conditions.some(condition => condition.evaluate(actor));
 	}
 }

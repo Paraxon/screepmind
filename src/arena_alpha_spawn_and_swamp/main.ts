@@ -1,6 +1,7 @@
 import { BodyRatio } from "common/BodyRatio";
-import { CreepClassifier } from "common/classification/CreepClassifier";
+import { CreepClassifier } from "common/creep/CreepClassifier";
 import { Role } from "common/classification/Role";
+import { builderDecisionTree, haulerDecisionTree, haulerFSM } from "common/creep/roles";
 import { Arbiter } from "common/decisions/Blackboard";
 import { AdjList } from "common/graph/AdjacencyList";
 import { Border, ConnectRegions } from "common/graph/Hierarchy";
@@ -10,7 +11,7 @@ import { TileGraph } from "common/graph/Tilegraph";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
 import { Economy } from "common/strategy/Economy";
-import { Team } from "common/strategy/Team";
+import { Team } from "common/entity/team/Team";
 import { getObjectsByPrototype, getTicks } from "game";
 import {
 	ATTACK, CARRY, ScreepsReturnCode, WORK
@@ -18,10 +19,11 @@ import {
 import { StructureSpawn } from "game/prototypes";
 import { Visual } from "game/visual";
 
-const classifier = new CreepClassifier();
-classifier.add(new Role("harvester")).set(WORK, 5);
+export const classifier = new CreepClassifier();
+// classifier.add(new Role("harvester")).set(WORK, 5);
 classifier.add(new Role("melee")).set(ATTACK, 1);
-classifier.add(new Role("porter")).set(CARRY, 1);
+classifier.add(new Role("hauler", haulerDecisionTree)).set(CARRY, 1);
+classifier.add(new Role("builder", builderDecisionTree)).set(CARRY, 1).set(WORK, 1);
 
 const kmeans = new KMeans(new TileGraph(), 33, 3);
 let regions: AdjList<Region, Border>;
@@ -44,6 +46,7 @@ export function loop() {
 		default:
 			const action = strategy.decide(team);
 			action?.execute(team);
+			team.Creeps.forEach(creep => classifier.classify(creep).best?.ai?.decide(creep)?.execute(creep));
 			break;
 	}
 
@@ -58,12 +61,4 @@ export function loop() {
 	for (const region of regions.vertices())
 		for (const edge of regions.edgesFrom(region))
 			visual.line(edge.from, edge.to, borderStyle);
-
-	/* if (getTicks() >= 12) {
-		const lad = getObjectsByPrototype(Creep).filter(creep => creep.my)[0] as CreepMind;
-		const membership = classifier.classify(lad);
-		Logger.log("classification", `Creep #${lad.id} is a ${membership.best?.name}`, Verbosity.Critical);
-		lad.getState();
-		membership.best?.ai?.decide(lad)?.execute(lad);
-	} */
 }

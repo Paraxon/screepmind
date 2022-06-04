@@ -1,6 +1,6 @@
-import { Action } from "common/actions/Action";
-import { ActionSequence } from "common/actions/ActionSequence";
-import { Team } from "common/strategy/Team";
+import { Action } from "common/decisions/actions/Action";
+import { ActionSequence } from "common/decisions/actions/ActionSequence";
+import { Team } from "common/entity/team/Team";
 import { ScreepsReturnCode } from "game/constants";
 import { DecisionMaker } from "./DecisionMaker";
 

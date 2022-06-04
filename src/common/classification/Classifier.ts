@@ -28,4 +28,7 @@ export class Classification<class_t> {
 	public set(classification: class_t, membership: number) {
 		this.membership.set(classification, membership);
 	}
+	public test(classification: class_t): number {
+		return this.membership.get(classification) ?? 0;
+	}
 }

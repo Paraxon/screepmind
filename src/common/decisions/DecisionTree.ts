@@ -1,4 +1,4 @@
-import { Condition } from "common/conditions/Condition";
+import { Condition } from "common/decisions/Condition";
 import { DecisionMaker } from "./DecisionMaker";
 
 export class DecisionTree<actor_t, return_t = void> implements DecisionMaker<actor_t, return_t> {

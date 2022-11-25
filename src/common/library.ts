@@ -1,5 +1,6 @@
 import * as Metric from "./math/Metric";
-import { arenaInfo as Arena, constants as Consts, getCpuTime } from "game";
+import { arenaInfo as Arena, constants as Consts } from "game";
+import { getCpuTime } from "game/utils";
 import Flatten from "@flatten-js/core";
 
 export const ARENA_SHAPE = new Flatten.Box(0, 0, 99, 99);

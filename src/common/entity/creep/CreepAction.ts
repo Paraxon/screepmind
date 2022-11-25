@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
+import { FlagAction, Action } from "common/decisions/actions/Action";
 import { CreepMind } from "common/entity/creep/CreepMind";
 import { BUILD_RANGE } from "common/Library";
-import { getObjectsByPrototype } from "game";
 import {
 	ERR_INVALID_TARGET,
 	ERR_NOT_FOUND,
@@ -11,10 +11,10 @@ import {
 	ScreepsReturnCode
 } from "game/constants";
 import { ConstructionSite, Creep, GameObject, Resource, RoomPosition, Source, Store, StructureContainer, StructureSpawn, _Constructor } from "game/prototypes";
-import { Action, FlagAction } from "../decisions/actions/Action";
+import { getObjectsByPrototype } from "game/utils";
 import { Build, Harvest, Move, MoveTo, Pickup, Transfer, Withdraw } from "./Intent";
 
-export class TargetNearest<object_t extends GameObject> extends FlagAction<CreepMind, ScreepsReturnCode> {
+/* export class TargetNearest<object_t extends GameObject> extends FlagAction<CreepMind, ScreepsReturnCode> {
 	public decide(actor: CreepMind): Action<CreepMind, ScreepsReturnCode> {
 		return new TargetNearest(this.prototype, this.predicate);
 	}
@@ -39,7 +39,7 @@ export class TargetNearest<object_t extends GameObject> extends FlagAction<Creep
 	public isComplete(): boolean {
 		return this.complete;
 	}
-}
+} */
 
 export class MoveToTarget extends Move {
 	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {

@@ -1,13 +1,7 @@
-import Flatten from "@flatten-js/core";
-import { builder, classifier } from "arena_alpha_spawn_and_swamp/main";
-import { Action } from "common/decisions/actions/Action";
-import { BodyRatio } from "common/BodyRatio";
 import { Classifier } from "common/classification/Classifier";
 import { Role } from "common/classification/Role";
-import { getObjectsByPrototype } from "game";
-import { BuildableStructure, ERR_NOT_FOUND, OK, ScreepsReturnCode } from "game/constants";
-import { ConstructionSite, Creep, OwnedStructure, Structure, StructureConstant, StructureSpawn, _Constructor } from "game/prototypes";
-import { createConstructionSite } from "game/utils";
+import { getObjectsByPrototype } from "game/utils";
+import { Creep, StructureSpawn, _Constructor } from "game/prototypes";
 
 export interface OwnedGameObject {
 	my: boolean | undefined;

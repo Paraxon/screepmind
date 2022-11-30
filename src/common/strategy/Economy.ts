@@ -1,6 +1,7 @@
 import Flatten from "@flatten-js/core";
 import { Flag } from "arena";
-import { SpawnCreep, CreateSite } from "common/entity/team/TeamAction";
+import { SpawnCreep } from "common/entity/team/actions/SpawnCreep";
+import { CreateSite } from "common/entity/team/actions/CreateSite";
 import { BodyRatio } from "common/BodyRatio";
 import { Blackboard, Expert } from "common/decisions/Blackboard";
 import { CARRY, ScreepsReturnCode, STRUCTURE_PROTOTYPES, WORK } from "game/constants";

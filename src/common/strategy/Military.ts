@@ -1,7 +1,8 @@
 import { BodyRatio } from "common/BodyRatio";
 import { Blackboard, Expert } from "common/decisions/Blackboard";
-import { MoveToNearest } from "common/entity/creep/CreepAction";
-import { CreepDo, SpawnCreep } from "common/entity/team/TeamAction";
+import { MoveToNearest } from "common/entity/creep/action/MoveToNearest";
+import { SpawnCreep } from "common/entity/team/actions/SpawnCreep";
+import { CreepDo } from "common/entity/team/actions/CreepDo";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
 import { ATTACK, ScreepsReturnCode, STRUCTURE_PROTOTYPES } from "game/constants";

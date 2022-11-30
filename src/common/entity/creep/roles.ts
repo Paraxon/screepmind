@@ -1,12 +1,16 @@
 import { RESOURCE_ENERGY, ScreepsReturnCode } from "game/constants";
-import { StructureContainer, StructureSpawn, Source, ConstructionSite } from "game/prototypes";
+import { ConstructionSite, Source, StructureContainer, StructureSpawn } from "game/prototypes";
 import { ActionSequence } from "../decisions/actions/ActionSequence";
-import { MoveToNearest, WithdrawResource, DepositResource, HarvestResource, BuildAtSite } from "./CreepAction";
-import { IsFull, IsEmpty } from "../decisions/conditions/CreepConditions";
+import { IsEmpty, IsFull } from "../decisions/conditions/CreepConditions";
 import { CreepMind } from "../decisions/CreepMind";
 import { DecisionTree } from "../decisions/DecisionTree";
-import { State, Transition, StateMachine } from "../decisions/StateMachine";
+import { State, StateMachine, Transition } from "../decisions/StateMachine";
 import { AdjList } from "../graph/AdjacencyList";
+import { BuildAtSite } from "./action/BuildAtSite";
+import { DepositResource } from "./action/DepositResource";
+import { HarvestResource } from "./action/HarvestResource";
+import { MoveToNearest } from "./action/MoveToNearest";
+import { WithdrawResource } from "./action/WithdrawResource";
 
 const isFull = new IsFull(RESOURCE_ENERGY);
 const isEmpty = new IsEmpty(RESOURCE_ENERGY);

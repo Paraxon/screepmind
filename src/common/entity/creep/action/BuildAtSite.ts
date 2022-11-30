@@ -3,7 +3,7 @@ import { BUILD_RANGE } from "common/Library";
 import { ERR_NOT_FOUND, ScreepsReturnCode } from "game/constants";
 import { ConstructionSite, Creep } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
-import { Build } from "../intent/Intent";
+import { Build } from "../Intent";
 
 
 export class BuildAtSite extends Build {

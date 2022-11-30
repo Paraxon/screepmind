@@ -2,7 +2,7 @@ import { Action } from "common/decisions/actions/Action";
 import { CreepMind } from "common/entity/creep/CreepMind";
 import { ERR_INVALID_TARGET, ScreepsReturnCode } from "game/constants";
 import { Creep } from "game/prototypes";
-import { Move } from "../intent/Intent";
+import { Move } from "../Intent";
 
 /* export class TargetNearest<object_t extends GameObject> extends FlagAction<CreepMind, ScreepsReturnCode> {
 	public decide(actor: CreepMind): Action<CreepMind, ScreepsReturnCode> {

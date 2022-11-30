@@ -6,7 +6,7 @@ import {
 } from "game/constants";
 import { Creep, StructureContainer, _Constructor } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
-import { Withdraw } from "../intent/Intent";
+import { Withdraw } from "../Intent";
 
 
 export class WithdrawResource<container_t extends StructureContainer> extends Withdraw {

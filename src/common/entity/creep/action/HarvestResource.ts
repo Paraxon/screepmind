@@ -2,7 +2,7 @@ import { Action } from "common/decisions/actions/Action";
 import { ERR_NOT_FOUND, ScreepsReturnCode } from "game/constants";
 import { Creep, Source } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
-import { Harvest } from "../intent/Intent";
+import { Harvest } from "../Intent";
 
 
 export class HarvestResource extends Harvest {

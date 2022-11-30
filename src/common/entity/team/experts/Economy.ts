@@ -2,11 +2,11 @@ import Flatten from "@flatten-js/core";
 import { Flag } from "arena";
 import { SpawnCreep } from "common/entity/team/actions/SpawnCreep";
 import { CreateSite } from "common/entity/team/actions/CreateSite";
-import { BodyRatio } from "common/BodyRatio";
+import { BodyRatio } from "common/entity/team/actions/bodyratio";
 import { Blackboard, Expert } from "common/decisions/Blackboard";
 import { CARRY, ScreepsReturnCode, STRUCTURE_PROTOTYPES, WORK } from "game/constants";
 import { StructureSpawn } from "game/prototypes";
-import { Team } from "../entity/team/Team";
+import { Team } from "../Team";
 
 export class Economy implements Expert<Team, ScreepsReturnCode> {
 	private hauler = new BodyRatio().with(CARRY).moveEvery(1);
@@ -17,9 +17,8 @@ export class Economy implements Expert<Team, ScreepsReturnCode> {
 		return team.Energy >= this.hauler.cost ? 1 : 0;
 	}
 	write(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
-		const energy = team.Energy;
 		const creepCount = team.Creeps.length;
-		if (creepCount < this.haulerCount && energy > this.hauler.cost) {
+		if (creepCount < this.haulerCount && team.CanAfford(this.hauler.cost)) {
 			board.actions.push(new SpawnCreep(this.hauler.scaledTo(energy)));
 		} else if (creepCount > this.builderCount && creepCount && energy > this.builder.cost) {
 			const spawn = team.GetFirst(StructureSpawn)!;

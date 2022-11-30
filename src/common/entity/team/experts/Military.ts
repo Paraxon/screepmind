@@ -1,4 +1,4 @@
-import { BodyRatio } from "common/BodyRatio";
+import { BodyRatio } from "common/entity/team/actions/bodyratio";
 import { Blackboard, Expert } from "common/decisions/Blackboard";
 import { MoveToNearest } from "common/entity/creep/action/MoveToNearest";
 import { SpawnCreep } from "common/entity/team/actions/SpawnCreep";
@@ -7,7 +7,7 @@ import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
 import { ATTACK, ScreepsReturnCode, STRUCTURE_PROTOTYPES } from "game/constants";
 import { StructureSpawn } from "game/prototypes";
-import { Team } from "../entity/team/Team";
+import { Team } from "../Team";
 
 export class Military implements Expert<Team, ScreepsReturnCode> {
 	private melee = new BodyRatio().with(ATTACK).moveEvery();

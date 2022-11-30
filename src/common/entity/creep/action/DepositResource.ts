@@ -6,7 +6,7 @@ import {
 } from "game/constants";
 import { Creep, StructureContainer, _Constructor } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
-import { Transfer } from "../intent/Intent";
+import { Transfer } from "../Intent";
 
 
 export class DepositResource<container_t extends StructureContainer> extends Transfer {

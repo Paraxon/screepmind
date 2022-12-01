@@ -1,10 +1,10 @@
 import { Classifier } from "common/classification/Classifier";
 import { Role } from "common/classification/Role";
 import { getObjectsByPrototype } from "game/utils";
-import { Creep, StructureSpawn, _Constructor } from "game/prototypes";
+import { Creep, GameObject, StructureSpawn, _Constructor } from "game/prototypes";
 import { ResourceConstant, RESOURCE_ENERGY } from "game/constants";
 
-export interface OwnedGameObject {
+export interface OwnedGameObject extends GameObject {
 	my: boolean | undefined;
 }
 
@@ -19,19 +19,23 @@ export class Team {
 	public GetFirst<object_t extends OwnedGameObject>(prototype: _Constructor<object_t>): object_t | undefined {
 		return getObjectsByPrototype(prototype).find(object => object.my === this.my);
 	}
-	public get Creeps(): Creep[] {
-		return this.GetAll(Creep);
-	}
-	public Inventory(resource: ResourceConstant = RESOURCE_ENERGY): number {
-		return getObjectsByPrototype(StructureSpawn)
-			.filter(object => object.my === this.my)
+	public LocalInventory(resource: ResourceConstant = RESOURCE_ENERGY): number {
+		return this.GetAll(StructureSpawn)
 			.map(spawn => spawn.store.getUsedCapacity(resource) ?? 0)
-			.sort()[1];
+			.reduce((max, current) => Math.max(max, current));
 	}
-	public FindCreeps(classifier: Classifier<Creep, Role>, role: Role, membership: number): Creep[] {
-		return this.Creeps.filter(creep => classifier.classify(creep).test(role) >= membership);
+	public GlobalInventory(resource: ResourceConstant = RESOURCE_ENERGY): number {
+		return this.GetAll(StructureSpawn)
+			.map(spawn => spawn.store.getUsedCapacity(resource) ?? 0)
+			.reduce((sum, current) => sum + current);
+	}
+	public FindRole(classifier: Classifier<Creep>, role: string, membership: number): Creep[] {
+		return this.GetAll(Creep).filter(creep => classifier.classify(creep).test(role) >= membership);
 	}
 	public CanAfford(cost: number, resource: ResourceConstant = RESOURCE_ENERGY): boolean {
-		return this.Inventory(resource) >= cost;
+		return this.GlobalInventory(resource) >= cost;
+	}
+	public get Population(): number {
+		return this.GetAll(Creep).length;
 	}
 }

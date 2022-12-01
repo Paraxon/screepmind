@@ -1,7 +1,6 @@
 import { Classifier } from "./Classifier";
 import { Classification } from "./Classification";
 
-
 export abstract class LinearClassifier<instance_t, feature_t, class_t = string> implements Classifier<instance_t, class_t> {
 	private classifications = new Map<class_t, Map<feature_t, number>>();
 	abstract getFeatures(instance: instance_t): Map<feature_t, number>;
@@ -13,7 +12,7 @@ export abstract class LinearClassifier<instance_t, feature_t, class_t = string> 
 				result.set(classification, (features.get(feature) ?? 0) * weight);
 		return result;
 	}
-	public add(classification: class_t): Map<feature_t, number> {
+	public add(classification: class_t, features?: Map<feature_t, number>): Map<feature_t, number> {
 		const result = new Map<feature_t, number>();
 		this.classifications.set(classification, result);
 		return result;

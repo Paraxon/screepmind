@@ -5,7 +5,7 @@ import { CreateSite } from "common/entity/team/actions/CreateSite";
 import { BodyRatio } from "common/entity/team/actions/bodyratio";
 import { Blackboard, Expert } from "common/decisions/Blackboard";
 import { CARRY, ScreepsReturnCode, STRUCTURE_PROTOTYPES, WORK } from "game/constants";
-import { StructureSpawn } from "game/prototypes";
+import { Creep, StructureSpawn } from "game/prototypes";
 import { Team } from "../Team";
 
 export class Economy implements Expert<Team, ScreepsReturnCode> {
@@ -14,13 +14,13 @@ export class Economy implements Expert<Team, ScreepsReturnCode> {
 	private haulerCount = 1;
 	private builderCount = 1;
 	insistence(team: Team, board: Blackboard<Team, ScreepsReturnCode>): number {
-		return team.Energy >= this.hauler.cost ? 1 : 0;
+		return team.CanAfford(this.hauler.cost) ? 1 : 0;
 	}
 	write(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
-		const creepCount = team.Creeps.length;
-		if (creepCount < this.haulerCount && team.CanAfford(this.hauler.cost)) {
-			board.actions.push(new SpawnCreep(this.hauler.scaledTo(energy)));
-		} else if (creepCount > this.builderCount && creepCount && energy > this.builder.cost) {
+		const budget = team.LocalInventory();
+		if (team.Population < this.haulerCount && team.CanAfford(this.hauler.cost)) {
+			board.actions.push(new SpawnCreep(this.hauler.scaledTo(budget)));
+		} else if (team.Population > this.builderCount && team.Population && team.CanAfford(this.builder.cost)) {
 			const spawn = team.GetFirst(StructureSpawn)!;
 			board.actions.push(new CreateSite(STRUCTURE_PROTOTYPES.StructureSpawn, Flatten.point(spawn.x, spawn.y)));
 		}

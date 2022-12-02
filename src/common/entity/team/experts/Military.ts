@@ -15,7 +15,7 @@ import { Creep, StructureSpawn } from "game/prototypes";
 import { Team } from "../Team";
 
 export class Military implements Expert<Team, ScreepsReturnCode> {
-	private melee = new BodyRatio().with(ATTACK).moveEvery(1, FATIGUE_FACTOR[TERRAIN_SWAMP]);
+	private melee = new BodyRatio().with(ATTACK).moveEvery(TERRAIN_SWAMP);
 	insistence(team: Team, board: Blackboard<Team, ScreepsReturnCode>): number {
 		return team.CanAfford(this.melee.cost) || team.FindRole(classifier, "melee").length > 0 ? 1 : 0;
 	}
@@ -31,13 +31,11 @@ export class Military implements Expert<Team, ScreepsReturnCode> {
 	}
 	attack(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
 		const enemySpawn = TEAM_ENEMY.GetFirst(StructureSpawn)!;
-
 		const attackSpawn = new AttackMelee(enemySpawn.id);
 		const moveToSpawn = new MoveToObject(enemySpawn.id);
 		const nextToSpawn = new AdjacentTo(enemySpawn.id);
 		const ai = new DecisionTree<Creep, ScreepsReturnCode>(nextToSpawn, attackSpawn, moveToSpawn);
-
-		const attackers = team.FindRole(classifier, "melee", 1);
-		attackers.forEach(attacker => board.actions.push(new CreepDo(attacker.id, ai.decide(attacker)!)));
+		team.FindRole(classifier, "melee", 1).forEach(
+			attacker => board.actions.push(new CreepDo(attacker.id, ai.decide(attacker)!)));
 	}
 }

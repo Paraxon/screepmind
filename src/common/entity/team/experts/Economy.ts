@@ -12,7 +12,7 @@ import { CreepDo } from "../actions/CreepDo";
 import { Team } from "../Team";
 
 export class Economy implements Expert<Team, ScreepsReturnCode> {
-	private hauler = new BodyRatio().with(CARRY).moveEvery(1);
+	private hauler = new BodyRatio().with(CARRY).moveEvery();
 	private builder = new BodyRatio().with(CARRY).with(WORK).moveEvery(1);
 	private haulerCount = 1;
 	private builderCount = 1;

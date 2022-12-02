@@ -1,5 +1,4 @@
 import * as Consts from "game/constants";
-import { Terrain } from "game/utils";
 import * as Lib from "../Library.js";
 
 export class BodyRatio {
@@ -11,6 +10,7 @@ export class BodyRatio {
 	}
 	public add(type: Consts.BodyPartConstant, qty: number) {
 		this.parts.set(type, this.parts.get(type) ?? 0 + qty);
+		return this;
 	}
 	public get cost() {
 		let cost = 0;
@@ -26,21 +26,25 @@ export class BodyRatio {
 	public get size() {
 		return Array.from(this.parts.values()).reduce((sum, qty) => sum + qty);
 	}
-	public get burden() {
-		return this.size - (this.parts.get(Consts.MOVE) ?? 0);
+	public count(type: Consts.BodyPartConstant): number {
+		return this.parts.get(type) ?? 0;
 	}
-	public fatigue(onTerrain: Terrain = Consts.TERRAIN_PLAIN) {
-		const moveParts = this.parts.get(Consts.MOVE) ?? 0;
-		// MOVE parts do not contribute to fatigue generation
-		const fatigue = (this.size - moveParts) * Lib.FATIGUE_FACTOR[onTerrain];
+	public fatigueParts(carryCapacity: number) {
+		// MOVE and empty CARRY parts do not generate fatigue
+		const carryParts = this.count(Consts.CARRY);
+		const usedCarries = Math.ceil(carryParts * carryCapacity);
+		return this.size - this.count(Consts.MOVE) - (carryParts - usedCarries);
+	}
+	public fatigue(onTerrain: Lib.Terrain = Lib.TERRAIN_PLAIN, carryCapacity = 1) {
+		const fatigue = this.fatigueParts(carryCapacity) * Lib.FATIGUE_FACTOR[onTerrain];
 		// MOVE parts reduce fatigue
-		return fatigue - moveParts * Lib.MOVE_FATIGUE_MODIFIER;
+		return fatigue - this.count(Consts.MOVE) * Lib.MOVE_FATIGUE_MODIFIER;
 	}
-	public moveEvery(tickPeriod = 1, onTerrain: Terrain = Consts.TERRAIN_PLAIN) {
+	public moveEvery(onTerrain: Lib.Terrain = Lib.TERRAIN_PLAIN, tickPeriod = 1) {
 		const result = new BodyRatio();
-		this.parts.forEach((type, qty) => result.with(type, qty));
-		const moveParts = result.fatigue(onTerrain) / Lib.MOVE_FATIGUE_MODIFIER /* / tickPeriod */;
-		return result.with(Consts.MOVE, moveParts);
+		this.parts.forEach((qty, type) => result.with(type, qty));
+		const movesNeeded = result.fatigue(onTerrain) / Lib.MOVE_FATIGUE_MODIFIER /* / tickPeriod */;
+		return result.add(Consts.MOVE, movesNeeded);
 	}
 	public scaledTo(budget: number, fractional = false) {
 		const ratio = new BodyRatio();

@@ -1,6 +1,6 @@
 import Flatten from "@flatten-js/core";
 import { arenaInfo as Arena, constants as Consts } from "game";
-import { ATTACK, CARRY, WORK } from "game/constants";
+import { ATTACK, CARRY, TERRAIN_SWAMP, TERRAIN_WALL, WORK } from "game/constants";
 import { getCpuTime } from "game/utils";
 import { CreepClassifier } from "./entity/creep/CreepClassifier";
 import { Team } from "./entity/team/Team";
@@ -10,15 +10,17 @@ export const ARENA_SHAPE = new Flatten.Box(0, 0, 99, 99);
 export const ARENA_POLY = new Flatten.Polygon(ARENA_SHAPE);
 export const BUILD_RANGE = 3;
 export const TERRAIN_PLAIN = 0;
+export type Terrain = typeof TERRAIN_PLAIN | typeof TERRAIN_SWAMP | typeof TERRAIN_WALL;
 export const PATH_COST = {
 	[TERRAIN_PLAIN]: 2,
 	[Consts.TERRAIN_WALL]: Infinity,
 	[Consts.TERRAIN_SWAMP]: 5
 };
+// https://docs.screeps.com/creeps.html#Movement
 export const FATIGUE_FACTOR = {
-	[TERRAIN_PLAIN]: 1,
+	[TERRAIN_PLAIN]: 2,
 	[Consts.TERRAIN_WALL]: Infinity,
-	[Consts.TERRAIN_SWAMP]: 2
+	[Consts.TERRAIN_SWAMP]: 10
 };
 export const MOVE_FATIGUE_MODIFIER = 2;
 

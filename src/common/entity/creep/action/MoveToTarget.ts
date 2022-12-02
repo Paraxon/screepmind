@@ -47,6 +47,7 @@ export class MoveToObject extends Move {
 	}
 	public execute(actor: CreepMind): ScreepsReturnCode | undefined {
 		const target = getObjectById(this.targetID);
-		return target ? actor.moveTo(target) : ERR_INVALID_TARGET;
+		const options = { swampCost: 2 }; // Ignore swamp
+		return target ? actor.moveTo(target, options) : ERR_INVALID_TARGET;
 	}
 }

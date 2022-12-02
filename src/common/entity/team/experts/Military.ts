@@ -1,14 +1,12 @@
 import { Blackboard, Expert } from "common/decisions/Blackboard";
 import { DecisionTree } from "common/decisions/DecisionTree";
+import { BodyRatio } from "common/entity/bodyratio";
 import { AttackMelee } from "common/entity/creep/action/AttackMelee";
 import { MoveToObject } from "common/entity/creep/action/MoveToTarget";
-import { InRangeOf } from "common/entity/creep/condition/CreepConditions";
 import { AdjacentTo } from "common/entity/creep/condition/AdjacentTo";
-import { Attack } from "common/entity/creep/intent/Intent";
-import { BodyRatio } from "common/entity/bodyratio";
 import { CreepDo } from "common/entity/team/actions/CreepDo";
 import { SpawnCreep } from "common/entity/team/actions/SpawnCreep";
-import { classifier, FATIGUE_FACTOR, TEAM_ENEMY } from "common/Library";
+import { classifier, TEAM_ENEMY } from "common/Library";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
 import { ATTACK, ScreepsReturnCode, TERRAIN_SWAMP } from "game/constants";

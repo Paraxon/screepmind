@@ -2,7 +2,7 @@ import { Action } from "common/decisions/actions/Action";
 import { ERR_INVALID_TARGET, ScreepsReturnCode } from "game/constants";
 import { Creep, GameObject, _Constructor } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
-import { MoveTo } from "../Intent";
+import { MoveTo } from "../intent/Intent";
 
 
 export class MoveToNearest<object_t extends GameObject> extends MoveTo {

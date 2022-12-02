@@ -107,7 +107,7 @@ export abstract class Withdraw extends Intent {
 	}
 }
 
-const ACTION_PIPELINES: object[][] = [
+const ACTION_PIPELINES = [
 	[Harvest.prototype, Attack.prototype, Build.prototype, RangedHeal.prototype, Heal.prototype],
 	[RangedAttack.prototype, RangedMassAttack.prototype, Build.prototype, RangedHeal.prototype],
 	[Build.prototype, Withdraw.prototype, Transfer.prototype, Drop.prototype]

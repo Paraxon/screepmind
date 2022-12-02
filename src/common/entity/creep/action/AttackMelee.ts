@@ -3,7 +3,7 @@ import { Action } from "common/decisions/actions/Action";
 import { ScreepsReturnCode } from "game/constants";
 import { Creep, Id, Structure } from "game/prototypes";
 import { getObjectById } from "game/utils";
-import { Attack } from "../Intent";
+import { Attack } from "../intent/Intent";
 
 export class AttackMelee extends Attack {
 	private targetID: Id<Creep | Structure>;

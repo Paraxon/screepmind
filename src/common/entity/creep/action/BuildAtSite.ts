@@ -1,24 +1,30 @@
 import { Action } from "common/decisions/actions/Action";
 import { BUILD_RANGE } from "common/Library";
-import { ERR_NOT_FOUND, ScreepsReturnCode } from "game/constants";
-import { ConstructionSite, Creep } from "game/prototypes";
-import { getObjectsByPrototype } from "game/utils";
+import { ERR_NOT_FOUND, ERR_NOT_IN_RANGE, ScreepsReturnCode } from "game/constants";
+import { ConstructionSite, Creep, Id } from "game/prototypes";
+import { getObjectById, getObjectsByPrototype } from "game/utils";
 import { Build } from "../Intent";
 
 
 export class BuildAtSite extends Build {
-	private target?: ConstructionSite;
+	private id: Id<ConstructionSite>;
+	public constructor(target: ConstructionSite) {
+		super();
+		this.id = target.id;
+	}
 	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
-		return new BuildAtSite();
+		const site = getObjectById(this.id) as ConstructionSite;
+		return new BuildAtSite(site);
 	}
 	public isComplete(actor: Creep): boolean {
-		return this.target !== undefined && this.target!.progress === this.target!.progressTotal;
+		const site = getObjectById(this.id) as ConstructionSite;
+		return site.progress === site.progressTotal;
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
-		if (!this.target) {
-			const targets = getObjectsByPrototype(ConstructionSite);
-			this.target = actor.findInRange(targets, BUILD_RANGE)[0];
-		}
-		return this.target ? actor.build(this.target) : ERR_NOT_FOUND;
+		const site = getObjectById(this.id) as ConstructionSite;
+		const result = actor.build(site);
+		if (result === ERR_NOT_IN_RANGE)
+			return actor.moveTo(site);
+		return result;
 	}
 }

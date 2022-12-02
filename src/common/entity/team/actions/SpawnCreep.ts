@@ -1,4 +1,4 @@
-import { BodyRatio } from "common/entity/team/actions/bodyratio";
+import { BodyRatio } from "common/entity/bodyratio";
 import { Team } from "common/entity/team/Team";
 import { ScreepsReturnCode, ERR_NOT_FOUND } from "game/constants";
 import { StructureSpawn } from "game/prototypes";

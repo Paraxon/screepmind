@@ -1,7 +1,8 @@
 import { Action } from "common/decisions/actions/Action";
 import { CreepMind } from "common/entity/creep/CreepMind";
 import { ERR_INVALID_TARGET, ScreepsReturnCode } from "game/constants";
-import { Creep } from "game/prototypes";
+import { Creep, GameObject, Id } from "game/prototypes";
+import { getObjectById } from "game/utils";
 import { Move } from "../Intent";
 
 /* export class TargetNearest<object_t extends GameObject> extends FlagAction<CreepMind, ScreepsReturnCode> {
@@ -31,20 +32,21 @@ import { Move } from "../Intent";
 	}
 } */
 
-export class MoveToTarget extends Move {
-	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
-		return new MoveToTarget();
+export class MoveToObject extends Move {
+	private targetID: Id<GameObject>;
+	public constructor(id: Id<GameObject>) {
+		super();
+		this.targetID = id;
 	}
-	public isComplete(actor: CreepMind): boolean {
-		if (actor.target)
-			return actor.getRangeTo(actor.target) === 1;
-		else
-			return true;
+	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
+		return new MoveToObject(this.targetID);
+	}
+	public isComplete(actor: Creep): boolean {
+		const target = getObjectById(this.targetID);
+		return target ? actor.getRangeTo(target) === 1 : true;
 	}
 	public execute(actor: CreepMind): ScreepsReturnCode | undefined {
-		if (actor.target)
-			return actor.moveTo(actor.target);
-		else
-			return ERR_INVALID_TARGET;
+		const target = getObjectById(this.targetID);
+		return target ? actor.moveTo(target) : ERR_INVALID_TARGET;
 	}
 }

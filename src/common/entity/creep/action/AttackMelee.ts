@@ -1,31 +1,25 @@
+import Flatten from "@flatten-js/core";
 import { Action } from "common/decisions/actions/Action";
-import { Logger } from "common/patterns/Logger";
-import { Verbosity } from "common/patterns/Verbosity";
-import { CreepActionReturnCode, ERR_NOT_IN_RANGE, ScreepsReturnCode } from "game/constants";
-import { Creep, GameObject, Id, Structure, StructureConstant } from "game/prototypes";
+import { ScreepsReturnCode } from "game/constants";
+import { Creep, Id, Structure } from "game/prototypes";
 import { getObjectById } from "game/utils";
 import { Attack } from "../Intent";
 
-
 export class AttackMelee extends Attack {
-	private targetID: Id<GameObject>;
-	public constructor(target: Creep | Structure) {
+	private targetID: Id<Creep | Structure>;
+	public constructor(id: Id<Creep | Structure>) {
 		super();
-		this.targetID = target.id;
+		this.targetID = id;
 	}
 	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
-		return this;
+		return new AttackMelee(this.targetID);
 	}
 	public isComplete(actor: Creep): boolean {
-		const target = getObjectById(this.targetID)! as Creep | Structure;
-		return target.hits! > 0;
+		const target = getObjectById(this.targetID) as Creep | Structure;
+		return (target.hits ?? 0) <= 0 || actor.getRangeTo(target) > 1;
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
-		Logger.log('action', `creep ${actor.id} is attacking object ${this.targetID}`, Verbosity.Trace);
-		const target = getObjectById(this.targetID)!;
-		let result: ScreepsReturnCode | undefined = actor.attack(target as Creep | Structure);
-		if (result === ERR_NOT_IN_RANGE)
-			result = actor.moveTo(target);
-		return result;
+		const target = getObjectById(this.targetID) as Creep | Structure;
+		return actor.attack(target);
 	}
 }

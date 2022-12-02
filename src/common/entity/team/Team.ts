@@ -29,7 +29,7 @@ export class Team {
 			.map(spawn => spawn.store.getUsedCapacity(resource) ?? 0)
 			.reduce((sum, current) => sum + current);
 	}
-	public FindRole(classifier: Classifier<Creep>, role: string, membership: number): Creep[] {
+	public FindRole(classifier: Classifier<Creep>, role: string, membership: number = 1): Creep[] {
 		return this.GetAll(Creep).filter(creep => classifier.classify(creep).test(role) >= membership);
 	}
 	public CanAfford(cost: number, resource: ResourceConstant = RESOURCE_ENERGY): boolean {

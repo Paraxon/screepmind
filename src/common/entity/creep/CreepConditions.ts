@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
-import { getObjectsByPrototype } from "game";
 import { ResourceConstant } from "game/constants";
-import { Creep, GameObject, Store, _Constructor } from "game/prototypes";
+import { Creep, GameObject, Id, Store, _Constructor } from "game/prototypes";
+import { getObjectById, getObjectsByPrototype } from "game/utils";
 import { Condition } from "../../decisions/Condition";
 
 export class InRangeOf<object_t extends GameObject> implements Condition<GameObject> {
@@ -18,6 +18,18 @@ export class InRangeOf<object_t extends GameObject> implements Condition<GameObj
 		const matches = this.predicate ? objects.filter(this.predicate) : objects;
 		return actor.findInRange(matches, this.range).length !== 0;
 	}
+}
+
+export class AdjacentTo implements Condition<GameObject> {
+	private id: Id<GameObject>;
+	public constructor(id: Id<GameObject>) {
+		this.id = id;
+	}
+	evaluate(actor: GameObject): boolean {
+		const target = getObjectById(this.id);
+		return target ? actor.getRangeTo(target) === 1 : true;
+	}
+
 }
 
 export class Empty<object_t extends { store: Store<ResourceConstant> }> implements Condition<object_t> {

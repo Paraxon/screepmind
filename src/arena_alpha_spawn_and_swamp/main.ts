@@ -7,7 +7,7 @@ import { Border, ConnectRegions } from "common/graph/Hierarchy";
 import { KMeans } from "common/graph/KMeans";
 import { Region } from "common/graph/Region";
 import { TileGraph } from "common/graph/Tilegraph";
-import { friendly } from "common/Library";
+import { TEAM_FRIENDLY } from "common/Library";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
 import { ScreepsReturnCode } from "game/constants";
@@ -32,9 +32,8 @@ export function loop() {
 			Logger.verbosity = Verbosity.Trace;
 			regions = ConnectRegions(new TileGraph(), kmeans.execute());
 		default:
-			const action = strategy.decide(friendly);
-			action?.execute(friendly);
-			// team.Creeps.forEach(creep => classifier.classify(creep).best?.ai?.decide(creep)?.execute(creep));
+			const action = strategy.decide(TEAM_FRIENDLY);
+			action?.execute(TEAM_FRIENDLY);
 			break;
 	}
 	drawRegions();

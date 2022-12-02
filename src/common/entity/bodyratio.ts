@@ -1,5 +1,6 @@
 import * as Consts from "game/constants";
-import * as Lib from "../../../Library.js";
+import { Terrain } from "game/utils";
+import * as Lib from "../Library.js";
 
 export class BodyRatio {
 	private parts = new Map<Consts.BodyPartConstant, number>();
@@ -28,11 +29,18 @@ export class BodyRatio {
 	public get burden() {
 		return this.size - (this.parts.get(Consts.MOVE) ?? 0);
 	}
-	public moveEvery(movementPeriod = 1, fatigueFactor = Lib.FATIGUE_FACTOR[Lib.TERRAIN_PLAIN]) {
-		const ratio = new BodyRatio();
-		for (const [type, qty] of this.parts) ratio.with(type, qty);
-		const moves = Math.ceil((this.size * fatigueFactor) / movementPeriod);
-		return ratio.with(Consts.MOVE, moves);
+	public fatigue(onTerrain: Terrain = Consts.TERRAIN_PLAIN) {
+		const moveParts = this.parts.get(Consts.MOVE) ?? 0;
+		// MOVE parts do not contribute to fatigue generation
+		const fatigue = (this.size - moveParts) * Lib.FATIGUE_FACTOR[onTerrain];
+		// MOVE parts reduce fatigue
+		return fatigue - moveParts * Lib.MOVE_FATIGUE_MODIFIER;
+	}
+	public moveEvery(tickPeriod = 1, onTerrain: Terrain = Consts.TERRAIN_PLAIN) {
+		const result = new BodyRatio();
+		this.parts.forEach((type, qty) => result.with(type, qty));
+		const moveParts = result.fatigue(onTerrain) / Lib.MOVE_FATIGUE_MODIFIER /* / tickPeriod */;
+		return result.with(Consts.MOVE, moveParts);
 	}
 	public scaledTo(budget: number, fractional = false) {
 		const ratio = new BodyRatio();

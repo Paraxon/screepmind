@@ -1,11 +1,9 @@
-import { ResourceConstant } from "game/constants";
-import { Store } from "game/prototypes";
+import { ResourceType, Store } from "game/prototypes";
 import { Condition } from "../../../decisions/Condition";
 
-
 export class IsEmpty<object_t extends { store: Store; }> implements Condition<object_t> {
-	private resource?: ResourceConstant;
-	public constructor(resource?: ResourceConstant) {
+	private resource?: ResourceType;
+	public constructor(resource?: ResourceType) {
 		this.resource = resource;
 	}
 	public evaluate(actor: object_t): boolean {

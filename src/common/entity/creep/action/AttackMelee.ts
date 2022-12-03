@@ -1,14 +1,15 @@
 import Flatten from "@flatten-js/core";
 import { Action } from "common/decisions/actions/Action";
 import { ID, ScreepsReturnCode } from "common/Library";
+import { ATTACK } from "game/constants";
 import { Creep, Structure } from "game/prototypes";
 import { getObjectById } from "game/utils";
-import { Attack } from "../intent/Intent";
+import { CreepAction } from "./CreepAction";
 
-export class AttackMelee extends Attack {
+export class AttackMelee extends CreepAction {
 	private targetID: ID;
 	public constructor(id: ID) {
-		super();
+		super(ATTACK);
 		this.targetID = id;
 	}
 	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {

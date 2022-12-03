@@ -1,16 +1,16 @@
 import { Action } from "common/decisions/actions/Action";
-import { Constructor, ScreepsReturnCode } from "common/Library";
+import { Prototype, ScreepsReturnCode } from "common/Library";
 import { RESOURCE_ENERGY, ERR_NOT_FOUND } from "game/constants";
 import { Creep, ResourceType, StructureContainer } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
-import { Withdraw } from "../intent/Intent";
+import { CreepAction, WITHDRAW } from "./CreepAction";
 
-export class WithdrawResource<container_t extends StructureContainer> extends Withdraw {
+export class WithdrawResource<container_t extends StructureContainer> extends CreepAction {
 	private resource: ResourceType;
-	private prototype: Constructor<container_t>;
+	private prototype: Prototype<container_t>;
 	private flag = false;
-	public constructor(prototype: Constructor<container_t>, resource: ResourceType = RESOURCE_ENERGY) {
-		super();
+	public constructor(prototype: Prototype<container_t>, resource: ResourceType = RESOURCE_ENERGY) {
+		super(WITHDRAW);
 		this.prototype = prototype;
 		this.resource = resource;
 	}

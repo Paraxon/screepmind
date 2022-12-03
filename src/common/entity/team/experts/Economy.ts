@@ -18,8 +18,8 @@ export class Economy implements Expert<Team, ScreepsReturnCode> {
 	}
 	write(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
 		const budget = team.LocalInventory();
-		const attackers = team.FindRole(classifier, "melee");
-		const haulers = team.FindRole(classifier, "hauler");
+		const attackers = team.FindRole("melee");
+		const haulers = team.FindRole("hauler");
 		if (haulers.length === 0 || haulers.length < attackers.length)
 			this.spawn(team, board);
 		this.harvest(team, board);
@@ -30,7 +30,7 @@ export class Economy implements Expert<Team, ScreepsReturnCode> {
 	// 	if (site) {
 	// 		const build = new BuildAtSite(site);
 	// 		const harvest = new HarvestResource();
-	// 		const builders = team.FindRole(classifier, "builder");
+	// 		const builders = team.FindRole("builder");
 	// 		builders.forEach(builder => board.actions.push(
 	// 			new CreepDo(
 	// 				builder.id,
@@ -48,7 +48,7 @@ export class Economy implements Expert<Team, ScreepsReturnCode> {
 		}
 	}
 	harvest(team: Team, board: Blackboard<Team, ScreepsReturnCode>) {
-		team.FindRole(classifier, "hauler").forEach(creep => {
+		team.FindRole("hauler").forEach(creep => {
 			Logger.log('debug', `deciding for hauler ${creep.id}`);
 			board.actions.push(new CreepDo(creep.id, haulerDecisionTree.decide(creep)!));
 		});

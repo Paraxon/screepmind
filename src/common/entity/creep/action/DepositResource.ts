@@ -1,16 +1,16 @@
 import { Action } from "common/decisions/actions/Action";
-import { Constructor, ScreepsReturnCode } from "common/Library";
+import { Prototype, ScreepsReturnCode } from "common/Library";
 import { ERR_NOT_FOUND, RESOURCE_ENERGY } from "game/constants";
 import { Creep, ResourceType, StructureContainer } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
-import { Transfer } from "../intent/Intent";
+import { CreepAction, TRANSFER } from "./CreepAction";
 
-export class DepositResource<container_t extends StructureContainer> extends Transfer {
+export class DepositResource<container_t extends StructureContainer> extends CreepAction {
 	private resource: ResourceType;
-	private prototype: Constructor<container_t>;
+	private prototype: Prototype<container_t>;
 	private flag = false;
-	public constructor(prototype: Constructor<container_t>, resource: ResourceType = RESOURCE_ENERGY) {
-		super();
+	public constructor(prototype: Prototype<container_t>, resource: ResourceType = RESOURCE_ENERGY) {
+		super(TRANSFER);
 		this.prototype = prototype;
 		this.resource = resource;
 	}

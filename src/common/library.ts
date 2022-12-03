@@ -26,7 +26,7 @@ export const MOVE_FATIGUE_MODIFIER = 2;
 
 export type ScreepsReturnCode = number;
 export type ID = number | string;
-export type Constructor<object_t extends Proto.GameObject> = new () => object_t;
+export type Prototype<object_t extends Proto.GameObject> = new () => object_t;
 
 export function remainingTimeNs() {
 	return /* arenaInfo.cpuTimeLimit */50000 - Utils.getCpuTime();
@@ -35,16 +35,3 @@ export function remainingTimeNs() {
 export function remainingTimeMs() {
 	return Metric.convert(remainingTimeNs(), Metric.NANO, Metric.MILLI);
 }
-
-export const TEAM_FRIENDLY = new Team(true);
-export const TEAM_ENEMY = new Team(false);
-export const TEAM_NEUTRAL = new Team(undefined);
-
-export const classifier = new CreepClassifier();
-// export const roles = [harvester];
-classifier.add("harvester").set(Consts.WORK, 5);
-classifier.add("melee").set(Consts.ATTACK, 5);
-// classifier.add(new Role("harvester")).set(WORK, 5);
-// classifier.add(new Role("melee")).set(ATTACK, 1);
-classifier.add("hauler").set(Consts.CARRY, 1);
-classifier.add("builder").set(Consts.CARRY, 1).set(Consts.WORK, 1);

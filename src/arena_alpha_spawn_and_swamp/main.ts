@@ -1,18 +1,18 @@
 import { Arbiter } from "common/decisions/Blackboard";
 import { Economy } from "common/entity/team/experts/Economy";
 import { Military } from "common/entity/team/experts/Military";
-import { Team } from "common/entity/team/Team";
+import { Team, TEAM_FRIENDLY } from "common/entity/team/Team";
 import { AdjList } from "common/graph/AdjacencyList";
 import { Border, ConnectRegions } from "common/graph/Hierarchy";
 import { KMeans } from "common/graph/KMeans";
 import { Region } from "common/graph/Region";
 import { TileGraph } from "common/graph/Tilegraph";
-import { ScreepsReturnCode, TEAM_FRIENDLY } from "common/Library";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
 import { getTicks } from "game/utils";
 import { LineVisualStyle, Visual } from "game/visual";
 import * as Consts from "game/constants";
+import { ScreepsReturnCode } from "common/Library";
 
 const kmeans = new KMeans(new TileGraph(), 33, 3);
 let regions: AdjList<Region, Border>;

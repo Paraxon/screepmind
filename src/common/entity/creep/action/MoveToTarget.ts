@@ -1,10 +1,10 @@
 import { Action } from "common/decisions/actions/Action";
 import { CreepMind } from "common/entity/creep/CreepMind";
 import { ID, ScreepsReturnCode } from "common/Library";
-import { ERR_INVALID_TARGET } from "game/constants";
+import { ERR_INVALID_TARGET, MOVE } from "game/constants";
 import { Creep, GameObject } from "game/prototypes";
 import { getObjectById } from "game/utils";
-import { Move } from "../intent/Intent";
+import { CreepAction } from "./CreepAction";
 
 /* export class TargetNearest<object_t extends GameObject> extends FlagAction<CreepMind, ScreepsReturnCode> {
 	public decide(actor: CreepMind): Action<CreepMind, ScreepsReturnCode> {
@@ -33,10 +33,10 @@ import { Move } from "../intent/Intent";
 	}
 } */
 
-export class MoveToObject extends Move {
+export class MoveToObject extends CreepAction {
 	private targetID: ID;
 	public constructor(id: ID) {
-		super();
+		super(MOVE);
 		this.targetID = id;
 	}
 	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {

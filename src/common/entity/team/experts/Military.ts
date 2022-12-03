@@ -6,13 +6,13 @@ import { MoveToObject } from "common/entity/creep/action/MoveToTarget";
 import { AdjacentTo } from "common/entity/creep/condition/AdjacentTo";
 import { CreepDo } from "common/entity/team/actions/CreepDo";
 import { SpawnCreep } from "common/entity/team/actions/SpawnCreep";
-import { classifier, ScreepsReturnCode, TEAM_ENEMY } from "common/Library";
+import { ScreepsReturnCode } from "common/Library";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
 import { ATTACK, TERRAIN_SWAMP } from "game/constants";
 import { Creep, StructureSpawn } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
-import { Team } from "../Team";
+import { Team, TEAM_ENEMY } from "../Team";
 
 export class Military implements Expert<Team, ScreepsReturnCode> {
 	private melee = new BodyRatio().with(ATTACK).moveEvery(TERRAIN_SWAMP);
@@ -20,14 +20,12 @@ export class Military implements Expert<Team, ScreepsReturnCode> {
 		return 1;
 	}
 	write(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
-		Logger.log('strategy', 'military expert is writing to the blackboard', Verbosity.Trace);
-		if (team.FindRole(classifier, "hauler").length >= team.FindRole(classifier, "melee").length)
+		if (team.FindRole("hauler").length >= team.FindRole("melee").length)
 			this.spawn(team, board);
 		this.attack(team, board);
 	}
 	spawn(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
 		if (team.CanAfford(this.melee.cost)) {
-			Logger.log('strategy', 'military suggests spawning new creep');
 			board.actions.push(new SpawnCreep(this.melee.scaledTo(team.LocalInventory())));
 		}
 	}
@@ -37,7 +35,7 @@ export class Military implements Expert<Team, ScreepsReturnCode> {
 		const moveToSpawn = new MoveToObject(enemySpawn.id);
 		const nextToSpawn = new AdjacentTo(enemySpawn.id);
 		const ai = new DecisionTree<Creep, ScreepsReturnCode>(nextToSpawn, attackSpawn, moveToSpawn);
-		team.FindRole(classifier, "melee").forEach(
+		team.FindRole("melee").forEach(
 			attacker => board.actions.push(new CreepDo(attacker.id, ai.decide(attacker)!)));
 	}
 }

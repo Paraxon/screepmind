@@ -1,13 +1,22 @@
 import { Classifier } from "common/classification/Classifier";
-import { Constructor } from "common/Library";
+import { Prototype } from "common/Library";
 import { Logger } from "common/patterns/Logger";
-import { RESOURCE_ENERGY } from "game/constants";
+import { ATTACK, CARRY, RANGED_ATTACK, RESOURCE_ENERGY, WORK } from "game/constants";
 import { Creep, GameObject, ResourceType, StructureSpawn } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
+import { CreepClassifier } from "../creep/CreepClassifier";
 
 export interface OwnedGameObject extends GameObject {
 	my?: boolean;
 }
+
+export const classifier = new CreepClassifier();
+classifier.add("harvester").set(WORK, 1);
+classifier.add("melee").set(ATTACK, 1);
+classifier.add("harvester").set(WORK, 1);
+classifier.add("hauler").set(CARRY, 1);
+classifier.add("builder").set(CARRY, 1).set(WORK, 1);
+classifier.add("fighter").set(ATTACK, 1).set(RANGED_ATTACK, 1);
 
 export class Team {
 	my: boolean | undefined;
@@ -17,10 +26,10 @@ export class Team {
 	public get Creeps() {
 		return this.GetAll(Creep).filter(creep => !creep.spawning);
 	}
-	public GetAll<object_t extends OwnedGameObject>(prototype: Constructor<object_t>): object_t[] {
+	public GetAll<object_t extends OwnedGameObject>(prototype: Prototype<object_t>): object_t[] {
 		return getObjectsByPrototype(prototype).filter(object => object.my === this.my);
 	}
-	public GetFirst<object_t extends OwnedGameObject>(prototype: Constructor<object_t>): object_t | undefined {
+	public GetFirst<object_t extends OwnedGameObject>(prototype: Prototype<object_t>): object_t | undefined {
 		return getObjectsByPrototype(prototype).find(object => object.my === this.my);
 	}
 	public LocalInventory(resource: ResourceType = RESOURCE_ENERGY): number {
@@ -33,7 +42,7 @@ export class Team {
 			.map(spawn => spawn.store.getUsedCapacity(resource) ?? 0)
 			.reduce((sum, current) => sum + current);
 	}
-	public FindRole(classifier: Classifier<Creep>, role: string, membership: number = 1): Creep[] {
+	public FindRole(role: string, membership: number = 1): Creep[] {
 		const matches = this.Creeps.filter(creep => classifier.classify(creep).test(role) >= membership);
 		Logger.log('classification', `found ${matches.length} matches for role ${role}`);
 		return matches;
@@ -45,3 +54,7 @@ export class Team {
 		return this.GetAll(Creep).length;
 	}
 }
+
+export const TEAM_FRIENDLY = new Team(true);
+export const TEAM_ENEMY = new Team(false);
+export const TEAM_NEUTRAL = new Team(undefined);

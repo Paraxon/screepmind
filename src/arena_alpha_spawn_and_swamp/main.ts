@@ -24,7 +24,7 @@ export interface System {
 
 const strategy = new Arbiter<Team, ScreepsReturnCode>();
 strategy.experts.push(new Economy());
-// strategy.experts.push(new Military());
+strategy.experts.push(new Military());
 
 export function loop() {
 	switch (getTicks()) {

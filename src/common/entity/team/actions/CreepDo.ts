@@ -19,7 +19,7 @@ export class CreepDo implements Action<Team, ScreepsReturnCode> {
 		return this.action.execute(creep);
 	}
 	canDoBoth(other: Action<Team, any>): boolean {
-		return true;
+		return other instanceof CreepDo && this.id === other.id ? this.action.canDoBoth(other.action) : true;
 	}
 	isComplete(actor: Team): boolean {
 		let creep = getObjectById(this.id as string)! as Creep;

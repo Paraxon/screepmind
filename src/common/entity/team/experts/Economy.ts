@@ -3,6 +3,7 @@ import { BodyRatio } from "common/entity/bodyratio";
 import { haulerDecisionTree } from "common/entity/creep/roles";
 import { SpawnCreep } from "common/entity/team/actions/SpawnCreep";
 import { classifier, ScreepsReturnCode } from "common/Library";
+import { Logger } from "common/patterns/Logger";
 import { CARRY, WORK } from "game/constants";
 import { CreepDo } from "../actions/CreepDo";
 import { Team } from "../Team";
@@ -13,11 +14,15 @@ export class Economy implements Expert<Team, ScreepsReturnCode> {
 	private haulerCount = 1;
 	private builderCount = 1;
 	insistence(team: Team, board: Blackboard<Team, ScreepsReturnCode>): number {
-		return team.CanAfford(this.hauler.cost) ? 1 : 0;
+		return 1;
 	}
 	write(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
 		const budget = team.LocalInventory();
-		this.spawn(team, board);
+		const attackers = team.FindRole(classifier, "melee");
+		const haulers = team.FindRole(classifier, "hauler");
+		if (haulers.length === 0 || haulers.length < attackers.length)
+			this.spawn(team, board);
+		this.harvest(team, board);
 	}
 	// build(team: Team, board: Blackboard<Team, any>) {
 	// 	const type = STRUCTURE_PROTOTYPES.StructureTower;
@@ -37,12 +42,15 @@ export class Economy implements Expert<Team, ScreepsReturnCode> {
 	// 	}
 	// }
 	spawn(team: Team, board: Blackboard<Team, ScreepsReturnCode>) {
-		if (team.Population < this.haulerCount && team.CanAfford(this.hauler.cost)) {
+		if (team.CanAfford(this.hauler.cost)) {
+			Logger.log('strategy', `team can afford ${this.hauler.cost} for new hauler`);
 			board.actions.push(new SpawnCreep(this.hauler.scaledTo(team.LocalInventory())));
 		}
 	}
 	harvest(team: Team, board: Blackboard<Team, ScreepsReturnCode>) {
-		team.FindRole(classifier, "hauler").forEach(
-			creep => board.actions.push(new CreepDo(creep.id, haulerDecisionTree.decide(creep)!)))
+		team.FindRole(classifier, "hauler").forEach(creep => {
+			Logger.log('debug', `deciding for hauler ${creep.id}`);
+			board.actions.push(new CreepDo(creep.id, haulerDecisionTree.decide(creep)!));
+		});
 	}
 }

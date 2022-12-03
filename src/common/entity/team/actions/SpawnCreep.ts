@@ -11,13 +11,13 @@ export class SpawnCreep implements Action<Team, ScreepsReturnCode> {
 	ratio: BodyRatio;
 	public constructor(ratio: BodyRatio) {
 		this.ratio = ratio;
-		this.flag = true;
 	}
 	public decide(actor: Team): Action<Team, ScreepsReturnCode> {
 		return new SpawnCreep(this.ratio);
 	}
 	public execute(actor: Team): ScreepsReturnCode | undefined {
 		Logger.log('strategy', 'spawning creep');
+		this.flag = true;
 		return actor.GetFirst(StructureSpawn)?.spawnCreep(this.ratio.spawn).error ?? ERR_NOT_FOUND;
 	}
 	public canDoBoth(other: Action<Team, ScreepsReturnCode>): boolean {

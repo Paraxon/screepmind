@@ -1,5 +1,6 @@
 import { Classifier } from "common/classification/Classifier";
 import { Constructor } from "common/Library";
+import { Logger } from "common/patterns/Logger";
 import { RESOURCE_ENERGY } from "game/constants";
 import { Creep, GameObject, ResourceType, StructureSpawn } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
@@ -12,6 +13,9 @@ export class Team {
 	my: boolean | undefined;
 	public constructor(my: boolean | undefined = true) {
 		this.my = my;
+	}
+	public get Creeps() {
+		return this.GetAll(Creep).filter(creep => !creep.spawning);
 	}
 	public GetAll<object_t extends OwnedGameObject>(prototype: Constructor<object_t>): object_t[] {
 		return getObjectsByPrototype(prototype).filter(object => object.my === this.my);
@@ -30,7 +34,9 @@ export class Team {
 			.reduce((sum, current) => sum + current);
 	}
 	public FindRole(classifier: Classifier<Creep>, role: string, membership: number = 1): Creep[] {
-		return this.GetAll(Creep).filter(creep => classifier.classify(creep).test(role) >= membership);
+		const matches = this.Creeps.filter(creep => classifier.classify(creep).test(role) >= membership);
+		Logger.log('classification', `found ${matches.length} matches for role ${role}`);
+		return matches;
 	}
 	public CanAfford(cost: number, resource: ResourceType = RESOURCE_ENERGY): boolean {
 		return this.GlobalInventory(resource) >= cost;

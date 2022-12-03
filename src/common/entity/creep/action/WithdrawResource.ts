@@ -21,12 +21,9 @@ export class WithdrawResource<container_t extends StructureContainer> extends Wi
 		return this.flag;
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
-		const containers = getObjectsByPrototype(StructureContainer).filter(
-			container => container.store[this.resource] > 0
-		);
-		const targets = actor.findInRange(containers, 1).sort((a, b) => a.store[this.resource] - b.store[this.resource]);
 		this.flag = true;
-
-		return targets.length ? actor.withdraw(targets[0], this.resource) : ERR_NOT_FOUND;
+		const containers = getObjectsByPrototype(StructureContainer).filter(container => container.store[this.resource] > 0);
+		const container = actor.findInRange(containers, 1).reduce((best, current) => best.store[this.resource] > current.store[this.resource] ? best : current);
+		return actor.withdraw(container, this.resource);
 	}
 }

@@ -17,15 +17,16 @@ import { Team } from "../Team";
 export class Military implements Expert<Team, ScreepsReturnCode> {
 	private melee = new BodyRatio().with(ATTACK).moveEvery(TERRAIN_SWAMP);
 	insistence(team: Team, board: Blackboard<Team, ScreepsReturnCode>): number {
-		return team.CanAfford(this.melee.cost) || team.FindRole(classifier, "melee").length > 0 ? 1 : 0;
+		return 1;
 	}
 	write(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
 		Logger.log('strategy', 'military expert is writing to the blackboard', Verbosity.Trace);
-		this.spawn(team, board);
+		if (team.FindRole(classifier, "hauler").length >= team.FindRole(classifier, "melee").length)
+			this.spawn(team, board);
 		this.attack(team, board);
 	}
 	spawn(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
-		if (team.LocalInventory() > this.melee.cost && team.Population === 0) {
+		if (team.CanAfford(this.melee.cost)) {
 			Logger.log('strategy', 'military suggests spawning new creep');
 			board.actions.push(new SpawnCreep(this.melee.scaledTo(team.LocalInventory())));
 		}

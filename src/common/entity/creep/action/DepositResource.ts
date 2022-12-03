@@ -18,9 +18,11 @@ export class DepositResource<container_t extends StructureContainer> extends Tra
 		return new DepositResource(this.prototype, this.resource);
 	}
 	public isComplete(actor: Creep): boolean {
-		const targets = getObjectsByPrototype(this.prototype).filter(container => container.store.getFreeCapacity(this.resource));
-		const target = actor.findInRange(targets, 1)[0];
-		return actor.store.getUsedCapacity(this.resource) === 0 || target.store.getFreeCapacity(this.resource) === 0;
+		if (!actor.store[this.resource]) return true;
+		const containers = getObjectsByPrototype(this.prototype).filter(container => container.store.getFreeCapacity(this.resource));
+		const nearby = actor.findInRange(containers, 1);
+		if (!nearby.length) return true;
+		return !nearby[0].store.getFreeCapacity(this.resource);
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
 		this.flag = true;

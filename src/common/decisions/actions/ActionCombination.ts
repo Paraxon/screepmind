@@ -13,7 +13,7 @@ export class ActionCombination<actor_t, result_t = void>
 	}
 	public execute(actor: actor_t): result_t | undefined {
 		let result: result_t | undefined;
-		this.actions.filter(action => !action.isComplete(actor)).every(action => (result = action.execute(actor)));
+		this.actions.filter(action => !action.isComplete(actor)).forEach(action => (result = action.execute(actor)));
 		return result;
 	}
 	public canDoBoth(other: Action<actor_t, result_t>): boolean {

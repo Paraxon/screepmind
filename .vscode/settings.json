@@ -15,6 +15,7 @@
 "typescript.tsdk": "./node_modules/typescript/lib",
 "cSpell.words": [
 	"Buildable",
+	"bustin",
 	"concaveman",
 	"creepaction",
 	"Screeps",

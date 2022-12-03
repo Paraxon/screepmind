@@ -7,12 +7,12 @@ import { Border, ConnectRegions } from "common/graph/Hierarchy";
 import { KMeans } from "common/graph/KMeans";
 import { Region } from "common/graph/Region";
 import { TileGraph } from "common/graph/Tilegraph";
-import { TEAM_FRIENDLY } from "common/Library";
+import { ScreepsReturnCode, TEAM_FRIENDLY } from "common/Library";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
-import { ScreepsReturnCode } from "game/constants";
 import { getTicks } from "game/utils";
-import { Visual } from "game/visual";
+import { LineVisualStyle, Visual } from "game/visual";
+import * as Consts from "game/constants";
 
 const kmeans = new KMeans(new TileGraph(), 33, 3);
 let regions: AdjList<Region, Border>;
@@ -23,8 +23,8 @@ export interface System {
 }
 
 const strategy = new Arbiter<Team, ScreepsReturnCode>();
-// strategy.experts.push(new Economy());
-strategy.experts.push(new Military());
+strategy.experts.push(new Economy());
+// strategy.experts.push(new Military());
 
 export function loop() {
 	switch (getTicks()) {
@@ -41,7 +41,7 @@ export function loop() {
 
 function drawRegions() {
 	const visual = new Visual();
-	const borderStyle: LineStyle = {
+	const borderStyle: LineVisualStyle = {
 		color: "#0000ff",
 		lineStyle: "dashed",
 		opacity: 1 / 4

@@ -1,9 +1,10 @@
 import { BodyRatio } from "common/entity/bodyratio";
 import { Team } from "common/entity/team/Team";
-import { ScreepsReturnCode, ERR_NOT_FOUND } from "game/constants";
+import { ScreepsReturnCode } from "common/Library";
+import { Logger } from "common/patterns/Logger";
+import { ERR_NOT_FOUND, STRUCTURE_PROTOTYPES } from "game/constants";
 import { StructureSpawn } from "game/prototypes";
 import { Action } from "../../../decisions/actions/Action";
-
 
 export class SpawnCreep implements Action<Team, ScreepsReturnCode> {
 	flag = false;
@@ -16,6 +17,7 @@ export class SpawnCreep implements Action<Team, ScreepsReturnCode> {
 		return new SpawnCreep(this.ratio);
 	}
 	public execute(actor: Team): ScreepsReturnCode | undefined {
+		Logger.log('strategy', 'spawning creep');
 		return actor.GetFirst(StructureSpawn)?.spawnCreep(this.ratio.spawn).error ?? ERR_NOT_FOUND;
 	}
 	public canDoBoth(other: Action<Team, ScreepsReturnCode>): boolean {

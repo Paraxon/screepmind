@@ -1,7 +1,8 @@
 import { Action } from "common/decisions/actions/Action";
 import { CreepMind } from "common/entity/creep/CreepMind";
-import { ERR_INVALID_TARGET, ScreepsReturnCode } from "game/constants";
-import { Creep, GameObject, Id } from "game/prototypes";
+import { ID, ScreepsReturnCode } from "common/Library";
+import { ERR_INVALID_TARGET } from "game/constants";
+import { Creep, GameObject } from "game/prototypes";
 import { getObjectById } from "game/utils";
 import { Move } from "../intent/Intent";
 
@@ -33,8 +34,8 @@ import { Move } from "../intent/Intent";
 } */
 
 export class MoveToObject extends Move {
-	private targetID: Id<GameObject>;
-	public constructor(id: Id<GameObject>) {
+	private targetID: ID;
+	public constructor(id: ID) {
 		super();
 		this.targetID = id;
 	}
@@ -42,12 +43,12 @@ export class MoveToObject extends Move {
 		return new MoveToObject(this.targetID);
 	}
 	public isComplete(actor: Creep): boolean {
-		const target = getObjectById(this.targetID);
+		const target = getObjectById(this.targetID as string);
 		Object.assign(actor, { target: this.targetID });
 		return target ? actor.getRangeTo(target) === 1 : true;
 	}
 	public execute(actor: CreepMind): ScreepsReturnCode | undefined {
-		const target = getObjectById(this.targetID);
+		const target = getObjectById(this.targetID as string);
 		const options = { swampCost: 2 }; // Ignore swamp
 		return target ? actor.moveTo(target, options) : ERR_INVALID_TARGET;
 	}

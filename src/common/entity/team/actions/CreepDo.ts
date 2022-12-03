@@ -1,13 +1,13 @@
 import { Team } from "common/entity/team/Team";
-import { ScreepsReturnCode } from "game/constants";
-import { Creep, Id } from "game/prototypes";
+import { ID, ScreepsReturnCode } from "common/Library";
+import { Creep } from "game/prototypes";
 import { getObjectById } from "game/utils";
 import { Action } from "../../../decisions/actions/Action";
 
 export class CreepDo implements Action<Team, ScreepsReturnCode> {
-	private id: Id<Creep>;
+	private id: ID;
 	private action: Action<Creep, ScreepsReturnCode>;
-	public constructor(id: Id<Creep>, action: Action<Creep, ScreepsReturnCode>) {
+	public constructor(id: ID, action: Action<Creep, ScreepsReturnCode>) {
 		this.id = id;
 		this.action = action;
 	}
@@ -15,14 +15,14 @@ export class CreepDo implements Action<Team, ScreepsReturnCode> {
 		return this;
 	}
 	execute(actor: Team): ScreepsReturnCode | undefined {
-		let creep = getObjectById(this.id)!;
+		let creep = getObjectById(this.id as string)! as Creep;
 		return this.action.execute(creep);
 	}
 	canDoBoth(other: Action<Team, any>): boolean {
 		return true;
 	}
 	isComplete(actor: Team): boolean {
-		let creep = getObjectById(this.id)!;
+		let creep = getObjectById(this.id as string)! as Creep;
 		return this.action.isComplete(creep);
 	}
 }

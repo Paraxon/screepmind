@@ -1,11 +1,11 @@
 import { Classifier } from "common/classification/Classifier";
-import { Role } from "common/classification/Role";
+import { Constructor } from "common/Library";
+import { RESOURCE_ENERGY } from "game/constants";
+import { Creep, GameObject, ResourceType, StructureSpawn } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
-import { Creep, GameObject, StructureSpawn, _Constructor } from "game/prototypes";
-import { ResourceConstant, RESOURCE_ENERGY } from "game/constants";
 
 export interface OwnedGameObject extends GameObject {
-	my: boolean | undefined;
+	my?: boolean;
 }
 
 export class Team {
@@ -13,18 +13,18 @@ export class Team {
 	public constructor(my: boolean | undefined = true) {
 		this.my = my;
 	}
-	public GetAll<object_t extends OwnedGameObject>(prototype: _Constructor<object_t>): object_t[] {
+	public GetAll<object_t extends OwnedGameObject>(prototype: Constructor<object_t>): object_t[] {
 		return getObjectsByPrototype(prototype).filter(object => object.my === this.my);
 	}
-	public GetFirst<object_t extends OwnedGameObject>(prototype: _Constructor<object_t>): object_t | undefined {
+	public GetFirst<object_t extends OwnedGameObject>(prototype: Constructor<object_t>): object_t | undefined {
 		return getObjectsByPrototype(prototype).find(object => object.my === this.my);
 	}
-	public LocalInventory(resource: ResourceConstant = RESOURCE_ENERGY): number {
+	public LocalInventory(resource: ResourceType = RESOURCE_ENERGY): number {
 		return this.GetAll(StructureSpawn)
 			.map(spawn => spawn.store.getUsedCapacity(resource) ?? 0)
 			.reduce((max, current) => Math.max(max, current));
 	}
-	public GlobalInventory(resource: ResourceConstant = RESOURCE_ENERGY): number {
+	public GlobalInventory(resource: ResourceType = RESOURCE_ENERGY): number {
 		return this.GetAll(StructureSpawn)
 			.map(spawn => spawn.store.getUsedCapacity(resource) ?? 0)
 			.reduce((sum, current) => sum + current);
@@ -32,7 +32,7 @@ export class Team {
 	public FindRole(classifier: Classifier<Creep>, role: string, membership: number = 1): Creep[] {
 		return this.GetAll(Creep).filter(creep => classifier.classify(creep).test(role) >= membership);
 	}
-	public CanAfford(cost: number, resource: ResourceConstant = RESOURCE_ENERGY): boolean {
+	public CanAfford(cost: number, resource: ResourceType = RESOURCE_ENERGY): boolean {
 		return this.GlobalInventory(resource) >= cost;
 	}
 	public get Population(): number {

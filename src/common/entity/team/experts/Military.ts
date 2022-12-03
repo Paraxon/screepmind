@@ -6,11 +6,12 @@ import { MoveToObject } from "common/entity/creep/action/MoveToTarget";
 import { AdjacentTo } from "common/entity/creep/condition/AdjacentTo";
 import { CreepDo } from "common/entity/team/actions/CreepDo";
 import { SpawnCreep } from "common/entity/team/actions/SpawnCreep";
-import { classifier, TEAM_ENEMY } from "common/Library";
+import { classifier, ScreepsReturnCode, TEAM_ENEMY } from "common/Library";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
-import { ATTACK, ScreepsReturnCode, TERRAIN_SWAMP } from "game/constants";
+import { ATTACK, TERRAIN_SWAMP } from "game/constants";
 import { Creep, StructureSpawn } from "game/prototypes";
+import { getObjectsByPrototype } from "game/utils";
 import { Team } from "../Team";
 
 export class Military implements Expert<Team, ScreepsReturnCode> {
@@ -25,16 +26,17 @@ export class Military implements Expert<Team, ScreepsReturnCode> {
 	}
 	spawn(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
 		if (team.LocalInventory() > this.melee.cost && team.Population === 0) {
+			Logger.log('strategy', 'military suggests spawning new creep');
 			board.actions.push(new SpawnCreep(this.melee.scaledTo(team.LocalInventory())));
 		}
 	}
 	attack(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
-		const enemySpawn = TEAM_ENEMY.GetFirst(StructureSpawn)!;
+		const enemySpawn = TEAM_ENEMY.GetFirst(StructureSpawn)!
 		const attackSpawn = new AttackMelee(enemySpawn.id);
 		const moveToSpawn = new MoveToObject(enemySpawn.id);
 		const nextToSpawn = new AdjacentTo(enemySpawn.id);
 		const ai = new DecisionTree<Creep, ScreepsReturnCode>(nextToSpawn, attackSpawn, moveToSpawn);
-		team.FindRole(classifier, "melee", 1).forEach(
+		team.FindRole(classifier, "melee").forEach(
 			attacker => board.actions.push(new CreepDo(attacker.id, ai.decide(attacker)!)));
 	}
 }

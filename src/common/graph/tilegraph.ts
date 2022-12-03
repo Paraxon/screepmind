@@ -24,14 +24,14 @@ export class TileGraph implements DiGraph<Flatten.Point> {
 		for (let dy = -1; dy <= 1; dy++) {
 			for (let dx = -1; dx <= 1; dx++) {
 				const to = new Flatten.Point(from.x + dx, from.y + dy);
-				const terrain = Utils.getTerrainAt(to);
+				const terrain = Utils.getTerrainAt(to) as Utils.Terrain;
 				if ((dx === 0 && dy === 0) || !this.contains(to)) continue;
 				else yield new Edge(from, to, Lib.PATH_COST[terrain]);
 			}
 		}
 	}
 	public *edgesTo(to: Flatten.Point): Iterable<Edge<Flatten.Point>> {
-		const terrain = Utils.getTerrainAt(to);
+		const terrain = Utils.getTerrainAt(to) as Utils.Terrain;
 		if (terrain === Consts.TERRAIN_WALL) return;
 
 		for (let dy = -1; dy <= 1; dy++) {

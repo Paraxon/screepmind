@@ -1,12 +1,12 @@
 import Flatten from "@flatten-js/core";
 import { ARENA_SHAPE } from "common/Library";
 import concaveman from "concaveman";
-import { RoomPosition } from "game/prototypes";
-import { Visual } from "game/visual";
+import { Position } from "game/prototypes";
+import { CircleVisualStyle, LineVisualStyle, Visual } from "game/visual";
 import { Equatable } from "./Span/Span";
 import { StateSpan } from "./Span/StateSpan";
 
-export class Region implements RoomPosition, Equatable<Region> {
+export class Region implements Position, Equatable<Region> {
 	public get x(): number { return this.root.x; }
 	public get y(): number { return this.root.y; }
 	public root: Flatten.Point;
@@ -39,7 +39,7 @@ export class Region implements RoomPosition, Equatable<Region> {
 		}
 		return new Flatten.Box(min.x, min.y, max.x - min.x, max.y - min.y);
 	}
-	public draw(visual: Visual, rootStyle: CircleStyle = {}, centroidStyle: CircleStyle = { fill: "#ff0000" }, borderStyle: LineStyle = {}) {
+	public draw(visual: Visual, rootStyle: CircleVisualStyle = {}, centroidStyle: CircleVisualStyle = { fill: "#ff0000" }, borderStyle: LineVisualStyle = {}) {
 		visual.circle(this.root, rootStyle);
 		visual.circle(this.centroid, centroidStyle);
 		visual.poly(this.hull.vertices, borderStyle);

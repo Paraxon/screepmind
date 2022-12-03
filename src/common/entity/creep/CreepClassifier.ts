@@ -1,12 +1,11 @@
 import { LinearClassifier } from "common/classification/LinearClassifier";
 import { Role } from "common/classification/Role";
-import { BodyPartConstant } from "game/constants";
-import { Creep } from "game/prototypes";
+import { BodyPartType, Creep } from "game/prototypes";
 
-export class CreepClassifier extends LinearClassifier<Creep, BodyPartConstant> {
-	getFeatures(creep: Creep): Map<BodyPartConstant, number> {
+export class CreepClassifier extends LinearClassifier<Creep, BodyPartType> {
+	getFeatures(creep: Creep): Map<BodyPartType, number> {
 		return creep.body.reduce(
 			(counts, part) => counts.set(part.type, (counts.get(part.type) ?? 0) + 1),
-			new Map<BodyPartConstant, number>());
+			new Map<BodyPartType, number>());
 	}
 }

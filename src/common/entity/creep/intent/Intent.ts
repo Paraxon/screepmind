@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable max-classes-per-file */
 import { Action } from "common/decisions/actions/Action";
-import { ScreepsReturnCode } from "game/constants";
+import { ScreepsReturnCode } from "common/Library";
 import { Creep } from "game/prototypes";
 
 export abstract class Intent implements Action<Creep, ScreepsReturnCode> {

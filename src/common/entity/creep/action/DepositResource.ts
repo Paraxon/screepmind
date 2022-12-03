@@ -1,19 +1,15 @@
 import { Action } from "common/decisions/actions/Action";
-import {
-	ERR_NOT_FOUND, RESOURCE_ENERGY,
-	ResourceConstant,
-	ScreepsReturnCode
-} from "game/constants";
-import { Creep, StructureContainer, _Constructor } from "game/prototypes";
+import { Constructor, ScreepsReturnCode } from "common/Library";
+import { ERR_NOT_FOUND, RESOURCE_ENERGY } from "game/constants";
+import { Creep, ResourceType, StructureContainer } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
 import { Transfer } from "../intent/Intent";
 
-
 export class DepositResource<container_t extends StructureContainer> extends Transfer {
-	private resource: ResourceConstant;
-	private prototype: _Constructor<container_t>;
+	private resource: ResourceType;
+	private prototype: Constructor<container_t>;
 	private flag = false;
-	public constructor(prototype: _Constructor<container_t>, resource: ResourceConstant = RESOURCE_ENERGY) {
+	public constructor(prototype: Constructor<container_t>, resource: ResourceType = RESOURCE_ENERGY) {
 		super();
 		this.prototype = prototype;
 		this.resource = resource;
@@ -22,7 +18,9 @@ export class DepositResource<container_t extends StructureContainer> extends Tra
 		return new DepositResource(this.prototype, this.resource);
 	}
 	public isComplete(actor: Creep): boolean {
-		return this.flag;
+		const targets = getObjectsByPrototype(this.prototype).filter(container => container.store.getFreeCapacity(this.resource));
+		const target = actor.findInRange(targets, 1)[0];
+		return actor.store.getUsedCapacity(this.resource) === 0 || target.store.getFreeCapacity(this.resource) === 0;
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
 		this.flag = true;

@@ -1,5 +1,5 @@
 import Flatten from "@flatten-js/core";
-import { Visual } from "game/visual";
+import { CircleVisualStyle, LineVisualStyle, Visual } from "game/visual";
 
 export interface Weighted {
 	cost: number;
@@ -33,8 +33,8 @@ export function drawConnections(
 	graph: DiGraph<Flatten.Point>,
 	vertex: Flatten.Point,
 	visual: Visual,
-	vertexStyle: CircleStyle = {},
-	edgeStyle: LineStyle = {}
+	vertexStyle: CircleVisualStyle = {},
+	edgeStyle: LineVisualStyle = {}
 ) {
 	// Draw vertex
 	visual.circle(vertex, vertexStyle);

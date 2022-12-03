@@ -1,14 +1,16 @@
 import * as Consts from "game/constants";
 import * as Lib from "../Library.js";
+import * as Utils from "game/utils";
+import { BodyPartType } from "game/prototypes";
 
 export class BodyRatio {
-	private parts = new Map<Consts.BodyPartConstant, number>();
+	private parts = new Map<BodyPartType, number>();
 
-	public with(type: Consts.BodyPartConstant, qty: number = 1) {
+	public with(type: BodyPartType, qty: number = 1) {
 		this.parts.set(type, qty);
 		return this;
 	}
-	public add(type: Consts.BodyPartConstant, qty: number) {
+	public add(type: BodyPartType, qty: number) {
 		this.parts.set(type, this.parts.get(type) ?? 0 + qty);
 		return this;
 	}
@@ -17,16 +19,16 @@ export class BodyRatio {
 		for (const [type, qty] of this.parts) cost += Consts.BODYPART_COST[type] * qty;
 		return cost;
 	}
-	public get spawn(): Consts.BodyPartConstant[] {
-		return this.priorities.flatMap(type => new Array(this.parts.get(type)).fill(type) as Consts.BodyPartConstant[]);
+	public get spawn(): BodyPartType[] {
+		return this.priorities.flatMap(type => new Array(this.parts.get(type)).fill(type) as BodyPartType[]);
 	}
-	public get priorities(): Consts.BodyPartConstant[] {
+	public get priorities(): BodyPartType[] {
 		return Array.from(this.parts.keys()).sort((a, b) => Consts.BODYPART_COST[a] - Consts.BODYPART_COST[b]);
 	}
 	public get size() {
 		return Array.from(this.parts.values()).reduce((sum, qty) => sum + qty);
 	}
-	public count(type: Consts.BodyPartConstant): number {
+	public count(type: BodyPartType): number {
 		return this.parts.get(type) ?? 0;
 	}
 	public fatigueParts(carryCapacity: number) {
@@ -35,12 +37,12 @@ export class BodyRatio {
 		const usedCarries = Math.ceil(carryParts * carryCapacity);
 		return this.size - this.count(Consts.MOVE) - (carryParts - usedCarries);
 	}
-	public fatigue(onTerrain: Lib.Terrain = Lib.TERRAIN_PLAIN, carryCapacity = 1) {
+	public fatigue(onTerrain: Utils.Terrain = Consts.TERRAIN_PLAIN, carryCapacity = 1) {
 		const fatigue = this.fatigueParts(carryCapacity) * Lib.FATIGUE_FACTOR[onTerrain];
 		// MOVE parts reduce fatigue
 		return fatigue - this.count(Consts.MOVE) * Lib.MOVE_FATIGUE_MODIFIER;
 	}
-	public moveEvery(onTerrain: Lib.Terrain = Lib.TERRAIN_PLAIN, tickPeriod = 1) {
+	public moveEvery(onTerrain: Utils.Terrain = Consts.TERRAIN_PLAIN, tickPeriod = 1) {
 		const result = new BodyRatio();
 		this.parts.forEach((qty, type) => result.with(type, qty));
 		const movesNeeded = result.fatigue(onTerrain) / Lib.MOVE_FATIGUE_MODIFIER /* / tickPeriod */;

@@ -1,17 +1,17 @@
 import { Action } from "common/decisions/actions/Action";
-import { ERR_INVALID_TARGET, ScreepsReturnCode } from "game/constants";
-import { Creep, GameObject, _Constructor } from "game/prototypes";
+import { Constructor, ScreepsReturnCode } from "common/Library";
+import { ERR_INVALID_TARGET } from "game/constants";
+import { Creep, GameObject } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
 import { MoveTo } from "../intent/Intent";
 
-
 export class MoveToNearest<object_t extends GameObject> extends MoveTo {
 	private predicate?: (object: object_t) => boolean;
-	private prototype: _Constructor<object_t>;
+	private prototype: Constructor<object_t>;
 	private range: number;
 	private target?: object_t;
 
-	public constructor(prototype: _Constructor<object_t>, range = 1, predicate?: (object: object_t) => boolean) {
+	public constructor(prototype: Constructor<object_t>, range = 1, predicate?: (object: object_t) => boolean) {
 		super();
 		this.range = range;
 		this.prototype = prototype;

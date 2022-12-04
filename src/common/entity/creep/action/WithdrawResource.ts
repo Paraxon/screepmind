@@ -1,9 +1,9 @@
 import { Action } from "common/decisions/actions/Action";
-import { INTENT_RANGE, Prototype, ScreepsReturnCode } from "common/Library";
+import { INTENT_RANGE, Prototype, ScreepsReturnCode, WITHDRAW } from "common/Library";
 import { RESOURCE_ENERGY, ERR_NOT_FOUND } from "game/constants";
 import { Creep, ResourceType, StructureContainer } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
-import { CreepAction, WITHDRAW } from "./CreepAction";
+import { CreepAction } from "./CreepAction";
 
 export class WithdrawResource<container_t extends StructureContainer> extends CreepAction {
 	private resource: ResourceType;

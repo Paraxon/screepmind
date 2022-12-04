@@ -3,9 +3,6 @@ import * as Consts from "game/constants";
 import { RANGED_ATTACK } from "game/constants";
 import * as Proto from "game/prototypes";
 import * as Utils from "game/utils";
-import { Intent } from "./entity/creep/action/CreepAction";
-import { CreepClassifier } from "./entity/creep/CreepClassifier";
-import { Team } from "./entity/team/Team";
 import * as Metric from "./math/Metric";
 
 export const ARENA_SHAPE = new Flatten.Box(0, 0, 99, 99);

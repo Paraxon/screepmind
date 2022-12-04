@@ -2,7 +2,7 @@ import { Blackboard, Expert } from "common/decisions/Blackboard";
 import { BodyRatio } from "common/entity/bodyratio";
 import { haulerDecisionTree } from "common/entity/creep/roles";
 import { SpawnCreep } from "common/entity/team/actions/SpawnCreep";
-import { classifier, ScreepsReturnCode } from "common/Library";
+import { ScreepsReturnCode } from "common/Library";
 import { Logger } from "common/patterns/Logger";
 import { CARRY, WORK } from "game/constants";
 import { CreepDo } from "../actions/CreepDo";

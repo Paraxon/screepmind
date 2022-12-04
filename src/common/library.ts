@@ -3,6 +3,8 @@ import * as Consts from "game/constants";
 import * as Proto from "game/prototypes";
 import * as Utils from "game/utils";
 
+export type Predicate<arg_t> = (arg: arg_t) => boolean;
+
 // Screeps Oversights
 export type ScreepsReturnCode = number;
 export type ID = number | string;

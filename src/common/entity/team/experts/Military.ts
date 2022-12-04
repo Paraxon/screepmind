@@ -4,6 +4,7 @@ import { BodyRatio } from "common/entity/bodyratio";
 import { AttackMelee } from "common/entity/creep/action/AttackMelee";
 import { MoveToObject } from "common/entity/creep/action/MoveToTarget";
 import { AdjacentTo } from "common/entity/creep/condition/AdjacentTo";
+import { raider } from "common/entity/creep/roles";
 import { CreepDo } from "common/entity/team/actions/CreepDo";
 import { SpawnCreep } from "common/entity/team/actions/SpawnCreep";
 import { ScreepsReturnCode } from "common/Library";
@@ -36,6 +37,6 @@ export class Military implements Expert<Team, ScreepsReturnCode> {
 		const nextToSpawn = new AdjacentTo(enemySpawn.id);
 		const ai = new DecisionTree<Creep, ScreepsReturnCode>(nextToSpawn, attackSpawn, moveToSpawn);
 		team.FindRole("melee").forEach(
-			attacker => board.actions.push(new CreepDo(attacker.id, ai.decide(attacker)!)));
+			attacker => board.actions.push(new CreepDo(attacker.id, raider.decide(attacker)!)));
 	}
 }

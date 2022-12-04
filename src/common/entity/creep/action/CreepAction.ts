@@ -14,7 +14,7 @@ export abstract class CreepAction implements Action<Creep, ScreepsReturnCode> {
 	public constructor(intent: Intent) {
 		this.intent = intent;
 	}
-	canDoBoth(other: Action<Creep, ScreepsReturnCode>): boolean {
+	public canDoBoth(other: Action<Creep, ScreepsReturnCode>): boolean {
 		if (other instanceof CreepAction)
 			return CreepAction.compareIntents(this.intent, other.intent) === undefined;
 		return true;
@@ -24,7 +24,7 @@ export abstract class CreepAction implements Action<Creep, ScreepsReturnCode> {
 			pipeline => pipeline.includes(a) && pipeline.includes(b));
 		return conflict && conflict.indexOf(a) - conflict.indexOf(b);
 	}
-	abstract decide(actor: Creep): Action<Creep, number>;
-	abstract execute(actor: Creep): number | undefined;
-	abstract isComplete(actor: Creep): boolean;
+	public abstract decide(actor: Creep): Action<Creep, number>;
+	public abstract execute(actor: Creep): ScreepsReturnCode | undefined;
+	public abstract isComplete(actor: Creep): boolean;
 }

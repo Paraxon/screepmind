@@ -15,7 +15,7 @@ export class AttackLowest<target_t extends Creep | Structure> extends CreepActio
 		this.predicate = predicate;
 	}
 	public decide(actor: Creep): Action<Creep, number> {
-		throw new Error("Method not implemented.");
+		return new AttackLowest(this.prototype, this.predicate);
 	}
 	public execute(actor: Creep): number | undefined {
 		const targets = actor.findInRange(TEAM_ENEMY.GetAll(this.prototype), INTENT_RANGE[ATTACK]!);

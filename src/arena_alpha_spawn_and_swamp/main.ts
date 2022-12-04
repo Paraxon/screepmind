@@ -33,7 +33,8 @@ export function loop() {
 			regions = ConnectRegions(new TileGraph(), kmeans.execute());
 		default:
 			const action = strategy.decide(TEAM_FRIENDLY);
-			action?.execute(TEAM_FRIENDLY);
+			const result = action?.execute(TEAM_FRIENDLY);
+			if (result ?? Consts.OK < 0) Logger.log('error', `action returned error ${result}`, Verbosity.Error);
 			break;
 	}
 	drawRegions();

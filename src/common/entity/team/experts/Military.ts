@@ -26,7 +26,7 @@ export class Military implements Expert<Team, ScreepsReturnCode> {
 		this.attack(team, board);
 	}
 	spawn(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
-		if (team.CanAfford(this.melee.cost)) {
+		if (team.CanAfford(this.melee.cost) && !team.GetFirst(StructureSpawn)?.spawning) {
 			board.actions.push(new SpawnCreep(this.melee.scaledTo(team.LocalInventory())));
 		}
 	}
@@ -36,7 +36,7 @@ export class Military implements Expert<Team, ScreepsReturnCode> {
 		const moveToSpawn = new MoveToObject(enemySpawn.id);
 		const nextToSpawn = new AdjacentTo(enemySpawn.id);
 		const ai = new DecisionTree<Creep, ScreepsReturnCode>(nextToSpawn, attackSpawn, moveToSpawn);
-		team.FindRole("melee").forEach(
+		team.FindRole("melee").filter(creep => !creep.spawning).forEach(
 			attacker => board.actions.push(new CreepDo(attacker.id, raider.decide(attacker)!)));
 	}
 }

@@ -42,3 +42,9 @@ export const INTENT_RANGE: Record<Intent, number | undefined> = {
 	[TRANSFER]: 1,
 	[WITHDRAW]: 1
 };
+
+export const ACTION_PIPELINES: Intent[][] = [
+	[HARVEST, ATTACK, BUILD, RANGED_HEAL, HEAL],
+	[RANGED_ATTACK, RANGED_MASS_ATTACK, BUILD, RANGED_HEAL],
+	[BUILD, WITHDRAW, TRANSFER, DROP]
+];

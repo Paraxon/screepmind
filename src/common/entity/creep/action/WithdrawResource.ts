@@ -1,5 +1,5 @@
 import { Action } from "common/decisions/actions/Action";
-import { Prototype, ScreepsReturnCode } from "common/Library";
+import { INTENT_RANGE, Prototype, ScreepsReturnCode } from "common/Library";
 import { RESOURCE_ENERGY, ERR_NOT_FOUND } from "game/constants";
 import { Creep, ResourceType, StructureContainer } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
@@ -23,7 +23,9 @@ export class WithdrawResource<container_t extends StructureContainer> extends Cr
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
 		this.flag = true;
 		const containers = getObjectsByPrototype(StructureContainer).filter(container => container.store[this.resource] > 0);
-		const container = actor.findInRange(containers, 1).reduce((best, current) => best.store[this.resource] > current.store[this.resource] ? best : current);
+		const container = actor
+			.findInRange(containers, INTENT_RANGE[WITHDRAW]!).
+			reduce((best, current) => best.store[this.resource] > current.store[this.resource] ? best : current);
 		return actor.withdraw(container, this.resource);
 	}
 }

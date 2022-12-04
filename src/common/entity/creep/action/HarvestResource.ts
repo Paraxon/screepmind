@@ -1,9 +1,9 @@
 import { Action } from "common/decisions/actions/Action";
-import { ScreepsReturnCode } from "common/Library";
+import { HARVEST, INTENT_RANGE, ScreepsReturnCode } from "common/Library";
 import { ERR_NOT_FOUND } from "game/constants";
 import { Creep, Source } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
-import { CreepAction, HARVEST } from "./CreepAction";
+import { CreepAction } from "./CreepAction";
 
 export class HarvestResource extends CreepAction {
 	private target?: Source;
@@ -19,7 +19,7 @@ export class HarvestResource extends CreepAction {
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
 		if (!this.target) {
 			const targets = getObjectsByPrototype(Source);
-			this.target = actor.findInRange(targets, 1)[0];
+			this.target = actor.findInRange(targets, INTENT_RANGE[HARVEST]!)[0];
 		}
 		return this.target ? actor.harvest(this.target) : ERR_NOT_FOUND;
 	}

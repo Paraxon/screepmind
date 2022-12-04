@@ -45,7 +45,7 @@ export class MoveToObject extends CreepAction {
 	public isComplete(actor: Creep): boolean {
 		const target = getObjectById(this.targetID as string);
 		Object.assign(actor, { target: this.targetID });
-		return target ? actor.getRangeTo(target) === 1 : true;
+		return target ? actor.getRangeTo(target) <= 1 : true;
 	}
 	public execute(actor: CreepMind): ScreepsReturnCode | undefined {
 		const target = getObjectById(this.targetID as string);

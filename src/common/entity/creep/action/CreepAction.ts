@@ -1,32 +1,7 @@
 import { Action } from "common/decisions/actions/Action";
-import { ScreepsReturnCode } from "common/Library";
+import { BUILD, DROP, HARVEST, Intent, RANGED_HEAL, RANGED_MASS_ATTACK, ScreepsReturnCode, TRANSFER, WITHDRAW } from "common/Library";
 import { ATTACK, HEAL, MOVE, RANGED_ATTACK, WORK } from "game/constants";
 import { Creep } from "game/prototypes";
-
-export const DROP = 'drop';
-export const BUILD = 'build';
-export const HARVEST = 'harvest';
-export const PICKUP = 'pickup';
-export const PULL = 'pull';
-export const RANGED_HEAL = 'ranged_heal';
-export const RANGED_MASS_ATTACK = 'ranged_mass_attack';
-export const WITHDRAW = 'withdraw';
-export const TRANSFER = 'transfer';
-
-export type Intent =
-	typeof ATTACK |
-	typeof BUILD |
-	typeof DROP |
-	typeof HARVEST |
-	typeof HEAL |
-	typeof MOVE |
-	typeof PICKUP |
-	typeof PULL |
-	typeof RANGED_ATTACK |
-	typeof RANGED_HEAL |
-	typeof RANGED_MASS_ATTACK |
-	typeof TRANSFER |
-	typeof WITHDRAW;
 
 export abstract class CreepAction implements Action<Creep, ScreepsReturnCode> {
 	private readonly intent: Intent;

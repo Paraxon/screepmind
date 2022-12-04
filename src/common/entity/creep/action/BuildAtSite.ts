@@ -1,9 +1,8 @@
 import { Action } from "common/decisions/actions/Action";
-import { ID, ScreepsReturnCode } from "common/Library";
-import { ERR_NOT_IN_RANGE } from "game/constants";
+import { BUILD, ID, ScreepsReturnCode } from "common/Library";
 import { ConstructionSite, Creep } from "game/prototypes";
 import { getObjectById } from "game/utils";
-import { BUILD, CreepAction } from "./CreepAction";
+import { CreepAction } from "./CreepAction";
 
 export class BuildAtSite extends CreepAction {
 	private id: ID;
@@ -21,9 +20,6 @@ export class BuildAtSite extends CreepAction {
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
 		const site = getObjectById(this.id as string) as ConstructionSite;
-		const result = actor.build(site);
-		if (result === ERR_NOT_IN_RANGE)
-			return actor.moveTo(site);
-		return result;
+		return actor.build(site);
 	}
 }

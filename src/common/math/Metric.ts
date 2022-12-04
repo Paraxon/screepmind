@@ -9,6 +9,8 @@ export const KILO = 1e3;
 export const HECTO = 1e2;
 export const DECA = 1e1;
 
+export const NONE = 1;
+
 export const DECI = 10e-1;
 export const CENTI = 10e-2;
 export const MILLI = 10e-3;
@@ -20,6 +22,29 @@ export const ATTO = 10e-18;
 export const ZEPTO = 10e-21;
 export const YOCTO = 10e-24;
 
-export function convert(value: number, from: number, to: number) {
+export type Units
+	= typeof YOTTA
+	| typeof ZETTA
+	| typeof EXA
+	| typeof PETA
+	| typeof TERA
+	| typeof GIGA
+	| typeof MEGA
+	| typeof KILO
+	| typeof HECTO
+	| typeof DECA
+	| typeof NONE
+	| typeof DECI
+	| typeof CENTI
+	| typeof MILLI
+	| typeof MICRO
+	| typeof NANO
+	| typeof PICO
+	| typeof FEMTO
+	| typeof ATTO
+	| typeof ZEPTO
+	| typeof YOCTO;
+
+export function convert(value: number, from: Units, to: Units) {
 	return value * (from / to);
 }

@@ -1,6 +1,7 @@
 import { ActionSequence } from "common/decisions/actions/ActionSequence";
 import { DecisionTree } from "common/decisions/DecisionTree";
-import { INTENT_RANGE, ScreepsReturnCode } from "common/Library";
+import { ScreepsReturnCode } from "common/Library";
+import { INTENT_RANGE } from "common/entity/creep/CreepIntent";
 import { RANGED_ATTACK, RESOURCE_ENERGY } from "game/constants";
 import { Creep, GameObject, StructureContainer, StructureSpawn } from "game/prototypes";
 import { TEAM_ENEMY } from "../team/Team";

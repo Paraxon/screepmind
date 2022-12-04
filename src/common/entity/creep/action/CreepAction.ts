@@ -1,5 +1,6 @@
 import { Action } from "common/decisions/actions/Action";
-import { BUILD, DROP, HARVEST, Intent, RANGED_HEAL, RANGED_MASS_ATTACK, ScreepsReturnCode, TRANSFER, WITHDRAW } from "common/Library";
+import { ScreepsReturnCode } from "common/Library";
+import { BUILD, DROP, HARVEST, Intent, RANGED_HEAL, RANGED_MASS_ATTACK, TRANSFER, WITHDRAW } from "common/entity/creep/CreepIntent";
 import { ATTACK, HEAL, MOVE, RANGED_ATTACK, WORK } from "game/constants";
 import { Creep } from "game/prototypes";
 

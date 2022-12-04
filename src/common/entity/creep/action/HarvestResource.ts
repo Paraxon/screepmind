@@ -1,5 +1,6 @@
 import { Action } from "common/decisions/actions/Action";
-import { HARVEST, INTENT_RANGE, ScreepsReturnCode } from "common/Library";
+import { ScreepsReturnCode } from "common/Library";
+import { HARVEST, INTENT_RANGE } from "common/entity/creep/CreepIntent";
 import { ERR_NOT_FOUND } from "game/constants";
 import { Creep, Source } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";

@@ -1,5 +1,6 @@
 import { Action } from "common/decisions/actions/Action";
-import { BUILD, ID, ScreepsReturnCode } from "common/Library";
+import { ID, ScreepsReturnCode } from "common/Library";
+import { BUILD } from "common/entity/creep/CreepIntent";
 import { ConstructionSite, Creep } from "game/prototypes";
 import { getObjectById } from "game/utils";
 import { CreepAction } from "./CreepAction";

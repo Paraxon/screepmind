@@ -1,6 +1,7 @@
 import Flatten from "@flatten-js/core";
 import { Action } from "common/decisions/actions/Action";
-import { ID, INTENT_RANGE, ScreepsReturnCode } from "common/Library";
+import { ID, ScreepsReturnCode } from "common/Library";
+import { INTENT_RANGE } from "common/entity/creep/CreepIntent";
 import { ATTACK } from "game/constants";
 import { Creep, Structure } from "game/prototypes";
 import { getObjectById } from "game/utils";

@@ -16,7 +16,6 @@ export class SpawnCreep implements Action<Team, ScreepsReturnCode> {
 		return new SpawnCreep(this.ratio);
 	}
 	public execute(actor: Team): ScreepsReturnCode | undefined {
-		Logger.log('strategy', 'spawning creep');
 		this.flag = true;
 		return actor.GetFirst(StructureSpawn)?.spawnCreep(this.ratio.spawn).error ?? ERR_NOT_FOUND;
 	}

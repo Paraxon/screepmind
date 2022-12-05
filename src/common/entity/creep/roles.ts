@@ -29,13 +29,12 @@ export const haulerDecisionTree = new DecisionTree<Creep, ScreepsReturnCode>(isF
 const canShootThreat = new InRangeOfAny((actor: GameObject) => actor.findInRange(TEAM_ENEMY.FindRole("combat"), INTENT_RANGE[RANGED_ATTACK]!).length > 0);
 
 const isEnemy = (object: OwnedGameObject) => object.my === false;
-const isThreat = (creep: Creep) => creep.body.some(({ type, hits }) => [ATTACK, RANGED_ATTACK].some(weapon => type === weapon));
+const isThreat = (creep: Creep) => creep.body.some(({ type, hits }) => type === ATTACK || type === RANGED_ATTACK);
 const isVillager = (creep: Creep) => !isThreat(creep);
 const ignoreSwamp: FindPathOptions = { swampCost: PATH_COST[TERRAIN_PLAIN] };
-// Object.assign(ignoreSwamp, { ignoreCreeps: false });
 const enemyHasCreeps = new TeamHasAny(TEAM_ENEMY, Creep);
-const threatInShootingRange = new TeamHasAny(TEAM_ENEMY, Creep, (actor: GameObject, threat: Creep) =>
-	actor.getRangeTo(threat) < INTENT_RANGE[RANGED_ATTACK]! && isThreat(threat));
+const threatInRange = new TeamHasAny(TEAM_ENEMY, Creep, (actor: GameObject, enemy: Creep) =>
+	actor.getRangeTo(enemy) <= 10 && isThreat(enemy));
 const fleeNearestThreat = new FleeClosest(Creep, INTENT_RANGE[RANGED_ATTACK]!, (actor, threat) => isThreat(threat), ignoreSwamp);
 const moveToEnemyVillager = new MoveToNearest(Creep, INTENT_RANGE[ATTACK], creep => isVillager(creep) && isEnemy(creep), ignoreSwamp);
 const attackVillager = new AttackLowest(Creep, isEnemy);
@@ -43,7 +42,7 @@ const moveToEnemySpawn = new MoveToNearest(StructureSpawn, INTENT_RANGE[ATTACK],
 const attackEnemySpawn = new AttackLowest(StructureSpawn, isEnemy);
 const moveAttackVillagers = new ActionSequence(moveToEnemyVillager, attackVillager);
 const moveAttackSpawn = new ActionSequence(moveToEnemySpawn, attackEnemySpawn);
-const attackCreeps = new DecisionTree(threatInShootingRange, fleeNearestThreat, moveAttackVillagers);
+const attackCreeps = new DecisionTree(threatInRange, fleeNearestThreat, moveAttackVillagers);
 export const raider = new DecisionTree(enemyHasCreeps, attackCreeps, moveAttackSpawn);
 
 // const buildConstructionSite = new ActionSequence(

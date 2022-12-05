@@ -31,6 +31,6 @@ export class MoveToNearest<object_t extends GameObject> extends CreepAction {
 		const targets = getObjectsByPrototype(this.prototype).filter(this.predicate);
 		if (targets.length === 0) return ERR_NOT_FOUND;
 		const nearest = actor.findClosestByRange(targets);
-		return actor.moveTo(nearest, /* this.options */ undefined);
+		return actor.moveTo(nearest, { ...this.options });
 	}
 }

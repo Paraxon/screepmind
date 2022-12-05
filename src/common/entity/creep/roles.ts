@@ -29,7 +29,7 @@ export const haulerDecisionTree = new DecisionTree<Creep, ScreepsReturnCode>(isF
 const canShootThreat = new InRangeOfAny((actor: GameObject) => actor.findInRange(TEAM_ENEMY.FindRole("combat"), INTENT_RANGE[RANGED_ATTACK]!).length > 0);
 
 const isEnemy = (object: OwnedGameObject) => object.my === false;
-const isThreat = (creep: Creep) => creep.body.some(({ type, hits }) => [ATTACK, RANGED_ATTACK].some(type));
+const isThreat = (creep: Creep) => creep.body.some(({ type, hits }) => [ATTACK, RANGED_ATTACK].some(weapon => type === weapon));
 const isVillager = (creep: Creep) => !isThreat(creep);
 const ignoreSwamp: FindPathOptions = { swampCost: PATH_COST[TERRAIN_PLAIN] };
 // Object.assign(ignoreSwamp, { ignoreCreeps: false });
@@ -37,7 +37,7 @@ const enemyHasCreeps = new TeamHasAny(TEAM_ENEMY, Creep);
 const threatInShootingRange = new TeamHasAny(TEAM_ENEMY, Creep, (actor: GameObject, threat: Creep) =>
 	actor.getRangeTo(threat) < INTENT_RANGE[RANGED_ATTACK]! && isThreat(threat));
 const fleeNearestThreat = new FleeClosest(Creep, INTENT_RANGE[RANGED_ATTACK]!, (actor, threat) => isThreat(threat), ignoreSwamp);
-const moveToEnemyVillager = new MoveToNearest(Creep, INTENT_RANGE[ATTACK], isVillager, ignoreSwamp);
+const moveToEnemyVillager = new MoveToNearest(Creep, INTENT_RANGE[ATTACK], creep => isVillager(creep) && isEnemy(creep), ignoreSwamp);
 const attackVillager = new AttackLowest(Creep, isEnemy);
 const moveToEnemySpawn = new MoveToNearest(StructureSpawn, INTENT_RANGE[ATTACK], isEnemy, ignoreSwamp);
 const attackEnemySpawn = new AttackLowest(StructureSpawn, isEnemy);

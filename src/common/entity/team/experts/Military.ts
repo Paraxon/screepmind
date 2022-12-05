@@ -31,11 +31,6 @@ export class Military implements Expert<Team, ScreepsReturnCode> {
 		}
 	}
 	attack(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
-		const enemySpawn = TEAM_ENEMY.GetFirst(StructureSpawn)!
-		const attackSpawn = new AttackMelee(enemySpawn.id);
-		const moveToSpawn = new MoveToObject(enemySpawn.id);
-		const nextToSpawn = new AdjacentTo(enemySpawn.id);
-		const ai = new DecisionTree<Creep, ScreepsReturnCode>(nextToSpawn, attackSpawn, moveToSpawn);
 		team.FindRole("melee").filter(creep => !creep.spawning).forEach(
 			attacker => board.actions.push(new CreepDo(attacker.id, raider.decide(attacker)!)));
 	}

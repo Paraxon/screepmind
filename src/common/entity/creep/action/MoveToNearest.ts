@@ -20,7 +20,7 @@ export class MoveToNearest<object_t extends GameObject> extends CreepAction {
 	}
 	public isComplete(actor: Creep): boolean {
 		const targets = getObjectsByPrototype(this.prototype).filter(this.predicate);
-		if (!targets) return true;
+		if (targets.length === 0) return true;
 		const nearest = actor.findClosestByRange(targets);
 		return actor.getRangeTo(nearest) <= this.radius;
 	}
@@ -29,9 +29,8 @@ export class MoveToNearest<object_t extends GameObject> extends CreepAction {
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
 		const targets = getObjectsByPrototype(this.prototype).filter(this.predicate);
-		if (!targets) return ERR_NOT_FOUND;
+		if (targets.length === 0) return ERR_NOT_FOUND;
 		const nearest = actor.findClosestByRange(targets);
-		Logger.log('debug', `actor ${actor.id} swampCost: ${this.options?.swampCost}`);
-		return actor.moveTo(nearest, this.options);
+		return actor.moveTo(nearest, /* this.options */ undefined);
 	}
 }

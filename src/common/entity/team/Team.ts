@@ -43,9 +43,7 @@ export class Team {
 			.reduce((sum, current) => sum + current);
 	}
 	public FindRole(role: string, membership: number = 1): Creep[] {
-		const matches = this.Creeps.filter(creep => classifier.classify(creep).test(role) >= membership);
-		Logger.log('classification', `found ${matches.length} matches for role ${role}`);
-		return matches;
+		return this.Creeps.filter(creep => classifier.classify(creep).test(role) >= membership);
 	}
 	public CanAfford(cost: number, resource: ResourceType = RESOURCE_ENERGY): boolean {
 		return this.GlobalInventory(resource) >= cost;

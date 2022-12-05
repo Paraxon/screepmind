@@ -9,12 +9,12 @@ import { Region } from "common/graph/Region";
 import { TileGraph } from "common/graph/Tilegraph";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
-import { getTicks } from "game/utils";
+import { FindPathOptions, getTicks } from "game/utils";
 import { LineVisualStyle, Visual } from "game/visual";
 import * as Consts from "game/constants";
-import { ScreepsReturnCode } from "common/Library";
+import { PATH_COST, ScreepsReturnCode } from "common/Library";
 
-const kmeans = new KMeans(new TileGraph(), 33, 3);
+const kmeans = new KMeans(new TileGraph(), 33, 4);
 let regions: AdjList<Region, Border>;
 
 export interface System {

@@ -13,6 +13,8 @@ import { IsFull } from "./condition/IsFull";
 import { TeamHasAny } from "./TeamHasAny";
 import { FleeClosest } from "./action/Flee";
 import { AttackLowest } from "./action/AttackLowest";
+import { FindPathOptions } from "game/utils";
+import { Logger } from "common/patterns/Logger";
 
 const isFull = new IsFull();
 // const isEmpty = new IsEmpty(RESOURCE_ENERGY);
@@ -29,7 +31,8 @@ const canShootThreat = new InRangeOfAny((actor: GameObject) => actor.findInRange
 const isEnemy = (object: OwnedGameObject) => object.my === false;
 const isThreat = (creep: Creep) => creep.body.some(({ type, hits }) => [ATTACK, RANGED_ATTACK].some(type));
 const isVillager = (creep: Creep) => !isThreat(creep);
-const ignoreSwamp = { swampCost: PATH_COST[TERRAIN_PLAIN] };
+const ignoreSwamp: FindPathOptions = { swampCost: PATH_COST[TERRAIN_PLAIN] };
+// Object.assign(ignoreSwamp, { ignoreCreeps: false });
 const enemyHasCreeps = new TeamHasAny(TEAM_ENEMY, Creep);
 const threatInShootingRange = new TeamHasAny(TEAM_ENEMY, Creep, (actor: GameObject, threat: Creep) =>
 	actor.getRangeTo(threat) < INTENT_RANGE[RANGED_ATTACK]! && isThreat(threat));

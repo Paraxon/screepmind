@@ -43,13 +43,13 @@ export class Economy implements Expert<Team, ScreepsReturnCode> {
 	// }
 	spawn(team: Team, board: Blackboard<Team, ScreepsReturnCode>) {
 		if (team.CanAfford(this.hauler.cost)) {
-			Logger.log('strategy', `team can afford ${this.hauler.cost} for new hauler`);
+			// Logger.log('strategy', `team can afford ${this.hauler.cost} for new hauler`);
 			board.actions.push(new SpawnCreep(this.hauler.scaledTo(team.LocalInventory())));
 		}
 	}
 	harvest(team: Team, board: Blackboard<Team, ScreepsReturnCode>) {
 		team.FindRole("hauler").forEach(creep => {
-			Logger.log('debug', `deciding for hauler ${creep.id}`);
+			// Logger.log('debug', `deciding for hauler ${creep.id}`);
 			board.actions.push(new CreepDo(creep.id, haulerDecisionTree.decide(creep)!));
 		});
 	}

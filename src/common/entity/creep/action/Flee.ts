@@ -29,14 +29,7 @@ export class FleeClosest<threat_t extends GameObject> extends CreepAction {
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
 		const threats = TEAM_ENEMY.GetAll(this.prototype).filter(this.predicate.bind(null, actor));
 		const closest = actor.findClosestByRange(threats);
-		const goal: Goal = { x: closest.x, y: closest.y, range: this.range };
-		const path = searchPath(actor, goal, this.options);
-		if (path.incomplete)
-			return ERR_NO_PATH;
-		const destination = path.path[0];
-		const dx = destination.x - actor.x;
-		const dy = destination.y - actor.y;
-		return actor.move(getDirection(dx, dy));
+		return actor.moveTo(closest, { flee: true });
 	}
 	public isComplete(actor: Creep): boolean {
 		const threat = actor.findClosestByRange(TEAM_ENEMY.GetAll(this.prototype).filter(this.predicate.bind(null, actor)));

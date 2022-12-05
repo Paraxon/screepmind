@@ -14,7 +14,6 @@ export class Blackboard<actor_t, result_t> {
 	data = new Map<string, any>();
 	actions = new Array<Action<actor_t, result_t>>();
 	action(): Action<actor_t, result_t> | undefined {
-		Logger.log('action', `${this.actions.length} actions are written to the blackboard`);
 		return new ActionCombination<actor_t, result_t>(...this.actions).reduce();
 	}
 	clear(): void {

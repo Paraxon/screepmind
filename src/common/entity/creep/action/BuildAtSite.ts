@@ -6,7 +6,7 @@ import { getObjectById } from "game/utils";
 import { CreepAction } from "./CreepAction";
 
 export class BuildAtSite extends CreepAction {
-	private id: ID;
+	private readonly id: ID;
 	public constructor(target: ConstructionSite) {
 		super(BUILD);
 		this.id = target.id;

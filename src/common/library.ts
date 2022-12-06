@@ -4,11 +4,15 @@ import * as Proto from "game/prototypes";
 import * as Utils from "game/utils";
 
 export type Predicate<arg_t> = (arg: arg_t) => boolean;
+export type BinaryPredicate<lhs_t, rhs_t> = (lhs: lhs_t, rhs: rhs_t) => boolean;
+export type Distance = number;
 
 // Screeps Oversights
 export type ScreepsReturnCode = number;
 export type ID = number | string;
 export type Prototype<object_t extends Proto.GameObject> = new () => object_t;
+export type Health = { hits?: number, hitsMax?: number };
+export type Target = Proto.Creep | Proto.Structure;
 
 // Arena Dimensions
 export const ARENA_SHAPE = new Flatten.Box(0, 0, 99, 99);

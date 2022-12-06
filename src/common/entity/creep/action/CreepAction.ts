@@ -5,14 +5,13 @@ import { Creep } from "game/prototypes";
 
 export abstract class CreepAction implements Action<Creep, ScreepsReturnCode> {
 	private readonly intent: Intent;
-
 	public constructor(intent: Intent) {
 		this.intent = intent;
 	}
 	public canDoBoth(other: Action<Creep, ScreepsReturnCode>): boolean {
-		if (other instanceof CreepAction)
-			return CreepAction.compareIntents(this.intent, other.intent) === undefined;
-		return true;
+		return other instanceof CreepAction ?
+			!CreepAction.compareIntents(this.intent, other.intent) :
+			true;
 	}
 	public static compareIntents(a: Intent, b: Intent): number | undefined {
 		const conflict = ACTION_PIPELINES.find(

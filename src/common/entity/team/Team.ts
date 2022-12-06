@@ -17,6 +17,7 @@ classifier.add("harvester").set(WORK, 1);
 classifier.add("hauler").set(CARRY, 1);
 classifier.add("builder").set(CARRY, 1).set(WORK, 1);
 classifier.add("combat").set(ATTACK, 1).set(RANGED_ATTACK, 1);
+classifier.add("shooter").set(RANGED_ATTACK, 1);
 
 export class Team {
 	my: boolean | undefined;

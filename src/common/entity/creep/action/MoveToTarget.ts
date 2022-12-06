@@ -34,7 +34,7 @@ import { CreepAction } from "./CreepAction";
 } */
 
 export class MoveToObject extends CreepAction {
-	private targetID: ID;
+	private readonly targetID: ID;
 	public constructor(id: ID) {
 		super(MOVE);
 		this.targetID = id;

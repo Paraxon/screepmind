@@ -31,3 +31,4 @@ export const FATIGUE_FACTOR: Record<Utils.Terrain, number> = {
 	[Consts.TERRAIN_SWAMP]: 10
 };
 export const MOVE_FATIGUE_MODIFIER = 2;
+export const FLEE_SEARCH_RADIUS = 10;

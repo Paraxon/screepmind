@@ -3,6 +3,7 @@ import { TEAM_ENEMY } from "common/entity/team/Team";
 import { Predicate, Prototype, ScreepsReturnCode, Target } from "common/Library";
 import { ERR_NOT_FOUND, RANGED_ATTACK } from "game/constants";
 import { Creep } from "game/prototypes";
+import { Visual } from "game/visual";
 import { INTENT_RANGE } from "../CreepIntent";
 import { CreepAction } from "./CreepAction";
 
@@ -15,12 +16,13 @@ export class ShootLowest<target_t extends Target> extends CreepAction {
 		this.predicate = predicate;
 	}
 	public decide(actor: Creep): Action<Creep, number> {
-		throw new Error("Method not implemented.");
+		return new ShootLowest(this.prototype, this.predicate);
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
 		const targets = this.getTargets(actor);
 		if (!targets.length) return ERR_NOT_FOUND;
 		const lowest = targets.reduce((lowest, current) => lowest.hits! < current.hits! ? lowest : current);
+		new Visual().text("🔫", actor, { font: 1 / 2 });
 		return actor.rangedAttack(lowest);
 	}
 	public isComplete(actor: Creep): boolean {

@@ -33,6 +33,8 @@ const isArmed = (creep: Creep) => creep.body.some(({ type, hits }) => type === A
 const isThreat = (creep: Creep) => isEnemy(creep) && isArmed(creep);
 const isVillager = (creep: Creep) => !isArmed(creep);
 const isEnemyVillager = (creep: Creep) => isEnemy(creep) && isVillager(creep);
+const approachingMelee = (actor: GameObject, target: Creep) => actor.getRangeTo(target) <= INTENT_RANGE[ATTACK]! + 1;
+
 const ignoreSwamp: FindPathOptions = { swampCost: PATH_COST[TERRAIN_PLAIN] };
 const enemyHasCreeps = new TeamHasAny(TEAM_ENEMY, Creep);
 const threatInShootingRange = new TeamHasAny(TEAM_ENEMY, Creep,
@@ -47,13 +49,17 @@ const moveAttackSpawn = new ActionSequence(moveToEnemySpawn, attackEnemySpawn);
 const attackCreeps = new DecisionTree(threatInShootingRange, fleeThreats, moveAttackVillagers);
 export const raider = new DecisionTree(enemyHasCreeps, attackCreeps, moveAttackSpawn);
 
+const enemyHasThreats = new TeamHasAny(TEAM_ENEMY, Creep, (actor, target) => isThreat(target));
 const threatApproachingMeleeRange = new TeamHasAny(TEAM_ENEMY, Creep,
-	(actor: GameObject, enemy: Creep) => actor.getRangeTo(enemy) <= INTENT_RANGE[ATTACK]! + 1 && isThreat(enemy));
+	(actor: GameObject, enemy: Creep) => approachingMelee(actor, enemy) && isThreat(enemy));
 const moveToThreat = new MoveToNearest(Creep, INTENT_RANGE[RANGED_ATTACK], isThreat, ignoreSwamp);
 const shootLowest = new ShootLowest(Creep, isThreat);
 const moveShootThreats = new ActionSequence(moveToThreat, shootLowest);
 const kiteThreats = new DecisionTree(threatApproachingMeleeRange, fleeThreats, moveShootThreats);
-export const kiter = new DecisionTree(enemyHasCreeps, kiteThreats, moveAttackSpawn);
+const shootEnemySpawn = new ShootLowest(StructureSpawn, isEnemy);
+const moveRangeEnemySpawn = new MoveToNearest(StructureSpawn, INTENT_RANGE[RANGED_ATTACK], isEnemy, ignoreSwamp);
+const moveShootSpawn = new ActionSequence(moveRangeEnemySpawn, shootEnemySpawn);
+export const kiter = new DecisionTree(enemyHasThreats, kiteThreats, moveShootSpawn);
 
 // const buildConstructionSite = new ActionSequence(
 // 	new MoveToNearest(ConstructionSite, 1, (site: ConstructionSite) => site.progress < site.progressTotal),

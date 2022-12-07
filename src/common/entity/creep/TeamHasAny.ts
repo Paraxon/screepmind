@@ -1,13 +1,13 @@
 import { Condition } from "common/decisions/Condition";
-import { Prototype } from "common/Library";
+import { BinaryPredicate, Prototype } from "common/Library";
 import { GameObject } from "game/prototypes";
 import { Team } from "../team/Team";
 
 export class TeamHasAny<object_t extends GameObject> implements Condition<GameObject> {
 	private readonly team: Team;
 	private readonly prototype: Prototype<object_t>;
-	private readonly predicate: (actor: GameObject, object: object_t) => boolean;
-	public constructor(team: Team, prototype: Prototype<object_t>, predicate: (actor: GameObject, object: object_t) => boolean = (actor) => true) {
+	private readonly predicate: BinaryPredicate<GameObject, object_t>;
+	public constructor(team: Team, prototype: Prototype<object_t>, predicate: BinaryPredicate<GameObject, object_t> = () => true) {
 		this.team = team;
 		this.prototype = prototype;
 		this.predicate = predicate;

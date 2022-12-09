@@ -1,6 +1,6 @@
 import { Condition } from "common/decisions/Condition";
 import { Distance } from "common/Library";
-import { Targeter } from "common/Targeter";
+import { Targeter } from "common/gameobject/Targeter";
 import { Creep, GameObject } from "game/prototypes";
 
 export class InRangeOfAny implements Condition<GameObject>{

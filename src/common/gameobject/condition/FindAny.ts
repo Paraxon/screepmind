@@ -1,5 +1,5 @@
 import { Condition } from "common/decisions/Condition";
-import { Targeter } from "common/Targeter";
+import { Targeter } from "common/gameobject/Targeter";
 import { GameObject } from "game/prototypes";
 
 export class FindAny<object_t extends GameObject> implements Condition<GameObject> {

@@ -1,5 +1,5 @@
 import { Action } from "common/decisions/actions/Action";
-import { ACTION_PIPELINES, Intent } from "common/entity/creep/CreepIntent";
+import { ACTION_PIPELINES, Intent } from "common/gameobject/creep/CreepIntent";
 import { ScreepsReturnCode } from "common/Library";
 import { Creep } from "game/prototypes";
 

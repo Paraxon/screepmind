@@ -1,6 +1,6 @@
 import { Action } from "common/decisions/actions/Action";
 import { Distance, Predicate, Prototype, ScreepsReturnCode } from "common/Library";
-import { Targeter } from "common/Targeter";
+import { Targeter } from "common/gameobject/Targeter";
 import { ERR_NOT_FOUND, MOVE } from "game/constants";
 import { Creep, GameObject } from "game/prototypes";
 import { FindPathOptions, getObjectsByPrototype } from "game/utils";

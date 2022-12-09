@@ -1,7 +1,7 @@
 import { Action } from "common/decisions/actions/Action";
 import { TEAM_ENEMY } from "common/entity/team/Team";
 import { Predicate, Prototype, ScreepsReturnCode, Target } from "common/Library";
-import { Targeter } from "common/Targeter";
+import { Targeter } from "common/gameobject/Targeter";
 import { ERR_NOT_FOUND, RANGED_ATTACK } from "game/constants";
 import { Creep, GameObject } from "game/prototypes";
 import { Visual } from "game/visual";

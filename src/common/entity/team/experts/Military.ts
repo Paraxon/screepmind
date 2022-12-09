@@ -1,10 +1,10 @@
 import { Blackboard, Expert } from "common/decisions/Blackboard";
 import { DecisionTree } from "common/decisions/DecisionTree";
-import { BodyRatio } from "common/entity/creep/bodyratio";
-import { AttackMelee } from "common/entity/creep/action/AttackMelee";
-import { MoveToObject } from "common/entity/creep/action/MoveToTarget";
-import { AdjacentTo } from "common/entity/creep/condition/AdjacentTo";
-import { kiter, raider } from "common/entity/creep/roles";
+import { BodyRatio } from "common/gameobject/creep/BodyRatio";
+import { AttackMelee } from "common/gameobject/creep/action/AttackMelee";
+import { MoveToObject } from "common/gameobject/creep/action/MoveToTarget";
+import { AdjacentTo } from "common/gameobject/condition/AdjacentTo";
+import { kiter, raider } from "common/gameobject/creep/Roles";
 import { CreepDo } from "common/entity/team/actions/CreepDo";
 import { SpawnCreep } from "common/entity/team/actions/SpawnCreep";
 import { ScreepsReturnCode } from "common/Library";

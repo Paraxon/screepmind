@@ -21,6 +21,7 @@ export type Prototype<object_t extends Proto.GameObject> = new () => object_t;
 export type Health = { hits?: number, hitsMax?: number };
 export type Target = Proto.Creep | Proto.Structure;
 export type Distance = number;
+export type Inventory = Proto.GameObject & { store: Proto.Store };
 
 // Arena Dimensions
 export const ARENA_SHAPE = new Flatten.Box(0, 0, 99, 99);

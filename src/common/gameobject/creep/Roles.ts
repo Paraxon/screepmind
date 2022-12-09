@@ -1,21 +1,22 @@
 import { ActionSequence } from "common/decisions/actions/ActionSequence";
 import { DecisionTree } from "common/decisions/DecisionTree";
-import { HARVEST, INTENT_RANGE, TRANSFER } from "common/entity/creep/CreepIntent";
+import { BUILD, HARVEST, INTENT_RANGE, TRANSFER } from "common/gameobject/creep/CreepIntent";
 import { PATH_COST, Predicate, ScreepsReturnCode } from "common/Library";
-import { Targeter } from "common/Targeter";
+import { Targeter } from "common/gameobject/Targeter";
 import { ATTACK, RANGED_ATTACK, RESOURCE_ENERGY, TERRAIN_PLAIN } from "game/constants";
-import { Creep, GameObject, StructureContainer, StructureSpawn } from "game/prototypes";
+import { ConstructionSite, Creep, GameObject, StructureContainer, StructureSpawn } from "game/prototypes";
 import { FindPathOptions } from "game/utils";
-import { OwnedGameObject, TEAM_ENEMY, TEAM_FRIENDLY, TEAM_NEUTRAL } from "../team/Team";
+import { OwnedGameObject, TEAM_ENEMY, TEAM_FRIENDLY, TEAM_NEUTRAL } from "../../entity/team/Team";
 import { AttackLowest } from "./action/AttackLowest";
 import { DepositResource } from "./action/DepositResource";
 import { FleeThreats } from "./action/FleeThreats";
 import { MoveToNearest } from "./action/MoveToNearest";
 import { ShootLowest } from "./action/ShootLowest";
 import { WithdrawResource } from "./action/WithdrawResource";
-import { AnyInRange } from "./condition/AnyInRange";
-import { RelativeCapacity } from "./condition/StoreCapacity";
-import { FindAny } from "./FindAny";
+import { AnyInRange } from "../condition/AnyInRange";
+import { RelativeCapacity } from "../condition/RelativeCapacity";
+import { FindAny } from "../condition/FindAny";
+import { BuildAtSite } from "./action/BuildAtSite";
 
 const isEnemy: Predicate<GameObject> = (object: OwnedGameObject) => object.my === false;
 const isArmed: Predicate<Creep> = (creep: Creep) => creep.body.some(({ type, hits }) => type === ATTACK || type === RANGED_ATTACK);
@@ -30,6 +31,7 @@ const friendlySpawn = new Targeter(TEAM_FRIENDLY, StructureSpawn, () => true);
 const threats = new Targeter(TEAM_ENEMY, Creep, isArmed);
 const enemyCreeps = new Targeter(TEAM_ENEMY, Creep, () => true);
 const energySource = new Targeter(TEAM_NEUTRAL, StructureContainer, hasEnergy);
+const friendlySites = new Targeter(TEAM_FRIENDLY, ConstructionSite, () => true);
 
 const withdrawEnergy = new ActionSequence(
 	new MoveToNearest(energySource, INTENT_RANGE[HARVEST],),
@@ -37,7 +39,13 @@ const withdrawEnergy = new ActionSequence(
 const deliverToSpawn = new ActionSequence(
 	new MoveToNearest(friendlySpawn, INTENT_RANGE[TRANSFER]),
 	new DepositResource(StructureSpawn));
-export const hauler = new DecisionTree<Creep, ScreepsReturnCode>(new RelativeCapacity(1), deliverToSpawn, withdrawEnergy);
+const isFull = new RelativeCapacity(1);
+export const hauler = new DecisionTree<Creep, ScreepsReturnCode>(isFull, deliverToSpawn, withdrawEnergy);
+
+const moveToSite = new MoveToNearest(friendlySites, INTENT_RANGE[BUILD]);
+const build = new BuildAtSite(friendlySites);
+const moveBuild = new ActionSequence(moveToSite, build);
+export const builder = new DecisionTree(isFull, moveBuild, withdrawEnergy);
 
 const ignoreSwamp: FindPathOptions = { swampCost: PATH_COST[TERRAIN_PLAIN] };
 const enemyHasCreeps = new FindAny(enemyCreeps);
@@ -62,11 +70,6 @@ const shootEnemySpawn = new ShootLowest(enemySpawn);
 const moveRangeEnemySpawn = new MoveToNearest(enemySpawn, INTENT_RANGE[RANGED_ATTACK], ignoreSwamp);
 const moveShootSpawn = new ActionSequence(moveRangeEnemySpawn, shootEnemySpawn);
 export const kiter = new DecisionTree(enemyHasThreats, kiteThreats, moveShootSpawn);
-
-// const buildConstructionSite = new ActionSequence(
-// 	new MoveToNearest(ConstructionSite, 1, (site: ConstructionSite) => site.progress < site.progressTotal),
-// 	new BuildAtSite());
-// export const builderDecisionTree = new DecisionTree(isFull, buildConstructionSite, withdrawEnergy);
 
 // const harvestEnergy = new ActionSequence(
 // 	new MoveToNearest(Source),

@@ -1,6 +1,6 @@
 import { Creep, GameObject, Position } from "game/prototypes";
-import { Team } from "./entity/team/Team";
-import { Distance, Predicate, Prototype, Reducer } from "./Library";
+import { Team } from "../entity/team/Team";
+import { Distance, Predicate, Prototype, Reducer } from "../Library";
 
 export class Targeter<target_t extends GameObject = GameObject> {
 	private readonly team: Team;
@@ -22,5 +22,8 @@ export class Targeter<target_t extends GameObject = GameObject> {
 	}
 	public inRange(actor: GameObject, radius: Distance): target_t[] {
 		return actor.findInRange(this.all(), radius);
+	}
+	public isEmpty(): boolean {
+		return this.all().length === 0;
 	}
 }

@@ -19,7 +19,9 @@
 	"bustin",
 	"concaveman",
 	"creepaction",
+	"gameobject",
 	"Screeps",
+	"targeter",
 	"Tilegraph"
 ]
 }

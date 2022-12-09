@@ -9,12 +9,12 @@ import { Region } from "common/graph/Region";
 import { TileGraph } from "common/graph/Tilegraph";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
-import { FindPathOptions, getTicks } from "game/utils";
+import { createConstructionSite, FindPathOptions, getTicks } from "game/utils";
 import { LineVisualStyle, Visual } from "game/visual";
 import * as Consts from "game/constants";
 import { PATH_COST, Predicate, ScreepsReturnCode } from "common/Library";
-import { Targeter } from "common/Targeter";
-import { StructureContainer } from "game/prototypes";
+import { Targeter } from "common/gameobject/Targeter";
+import { StructureContainer, StructureRampart, StructureSpawn } from "game/prototypes";
 
 const kmeans = new KMeans(new TileGraph(), 33, 4);
 let regions: AdjList<Region, Border>;
@@ -33,6 +33,7 @@ export function loop() {
 		case 1:
 			Logger.verbosity = Verbosity.Trace;
 			regions = ConnectRegions(new TileGraph(), kmeans.execute());
+			createConstructionSite(TEAM_FRIENDLY.GetFirst(StructureSpawn)!, StructureRampart);
 		default:
 			const action = strategy.decide(TEAM_FRIENDLY);
 			const result = action?.execute(TEAM_FRIENDLY);

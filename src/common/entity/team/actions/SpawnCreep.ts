@@ -1,4 +1,4 @@
-import { BodyRatio } from "common/entity/creep/bodyratio";
+import { BodyRatio } from "common/gameobject/creep/BodyRatio";
 import { Team } from "common/entity/team/Team";
 import { ScreepsReturnCode } from "common/Library";
 import { Logger } from "common/patterns/Logger";

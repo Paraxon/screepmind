@@ -1,6 +1,6 @@
 import { Action } from "common/decisions/actions/Action";
 import { ScreepsReturnCode, Target } from "common/Library";
-import { Targeter } from "common/Targeter";
+import { Targeter } from "common/gameobject/Targeter";
 import { ATTACK, ERR_NOT_FOUND } from "game/constants";
 import { Creep } from "game/prototypes";
 import { INTENT_RANGE } from "../CreepIntent";

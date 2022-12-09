@@ -2,7 +2,7 @@ import { Classifier } from "./Classifier";
 import { Classification } from "./Classification";
 
 export abstract class LinearClassifier<instance_t, feature_t, class_t = string> implements Classifier<instance_t, class_t> {
-	private classifications = new Map<class_t, Map<feature_t, number>>();
+	private readonly classifications = new Map<class_t, Map<feature_t, number>>();
 	abstract getFeatures(instance: instance_t): Map<feature_t, number>;
 	public classify(instance: instance_t): Classification<class_t> {
 		const result = new Classification<class_t>();

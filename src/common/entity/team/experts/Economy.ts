@@ -1,6 +1,6 @@
 import { Blackboard, Expert } from "common/decisions/Blackboard";
 import { BodyRatio } from "common/entity/bodyratio";
-import { haulerDecisionTree } from "common/entity/creep/roles";
+import { hauler } from "common/entity/creep/roles";
 import { SpawnCreep } from "common/entity/team/actions/SpawnCreep";
 import { ScreepsReturnCode } from "common/Library";
 import { Logger } from "common/patterns/Logger";
@@ -50,7 +50,7 @@ export class Economy implements Expert<Team, ScreepsReturnCode> {
 	harvest(team: Team, board: Blackboard<Team, ScreepsReturnCode>) {
 		team.FindRole("hauler").forEach(creep => {
 			// Logger.log('debug', `deciding for hauler ${creep.id}`);
-			board.actions.push(new CreepDo(creep.id, haulerDecisionTree.decide(creep)!));
+			board.actions.push(new CreepDo(creep.id, hauler.decide(creep)!));
 		});
 	}
 }

@@ -20,8 +20,8 @@ classifier.add("combat").set(ATTACK, 1).set(RANGED_ATTACK, 1);
 classifier.add("shooter").set(RANGED_ATTACK, 1);
 
 export class Team {
-	my: boolean | undefined;
-	public constructor(my: boolean | undefined = true) {
+	my?: boolean;
+	public constructor(my: boolean | undefined) {
 		this.my = my;
 	}
 	public get Creeps() {

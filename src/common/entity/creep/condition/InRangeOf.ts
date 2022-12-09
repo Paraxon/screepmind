@@ -1,12 +1,16 @@
 import { Condition } from "common/decisions/Condition";
+import { Distance } from "common/Library";
+import { Targeter } from "common/Targeter";
 import { Creep, GameObject } from "game/prototypes";
 
 export class InRangeOfAny implements Condition<GameObject>{
-	private predicate: (actor: GameObject) => boolean;
-	public constructor(predicate: (actor: GameObject) => boolean) {
-		this.predicate = predicate;
+	private readonly targeter: Targeter;
+	private readonly radius: Distance;
+	public constructor(targeter: Targeter, radius: Distance) {
+		this.targeter = targeter;
+		this.radius = radius;
 	}
 	evaluate(actor: GameObject): boolean {
-		return this.predicate(actor);
+		return actor.findInRange(this.targeter.select(), this.radius).length > 0;
 	}
 }

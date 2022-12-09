@@ -1,22 +1,21 @@
 import { Action } from "common/decisions/actions/Action";
 import { TEAM_ENEMY } from "common/entity/team/Team";
 import { Predicate, Prototype, ScreepsReturnCode, Target } from "common/Library";
+import { Targeter } from "common/Targeter";
 import { ERR_NOT_FOUND, RANGED_ATTACK } from "game/constants";
-import { Creep } from "game/prototypes";
+import { Creep, GameObject } from "game/prototypes";
 import { Visual } from "game/visual";
 import { INTENT_RANGE } from "../CreepIntent";
 import { CreepAction } from "./CreepAction";
 
 export class ShootLowest<target_t extends Target> extends CreepAction {
-	private readonly prototype: Prototype<target_t>;
-	private readonly predicate: Predicate<target_t>;
-	public constructor(prototype: Prototype<target_t>, predicate: Predicate<target_t>) {
+	private readonly targeter: Targeter<target_t>;
+	public constructor(targeter: Targeter<target_t>) {
 		super(RANGED_ATTACK);
-		this.prototype = prototype;
-		this.predicate = predicate;
+		this.targeter = targeter;
 	}
 	public decide(actor: Creep): Action<Creep, number> {
-		return new ShootLowest(this.prototype, this.predicate);
+		return new ShootLowest(this.targeter);
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
 		const targets = this.getTargets(actor);
@@ -30,7 +29,7 @@ export class ShootLowest<target_t extends Target> extends CreepAction {
 	}
 	private getTargets(actor: Creep): target_t[] {
 		return actor.findInRange(
-			TEAM_ENEMY.GetAll(this.prototype).filter(this.predicate),
+			this.targeter.select(),
 			INTENT_RANGE[RANGED_ATTACK]!)
 	}
 }

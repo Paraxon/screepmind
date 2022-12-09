@@ -6,6 +6,7 @@ import * as Utils from "game/utils";
 export type Predicate<arg_t> = (arg: arg_t) => boolean;
 export type BinaryPredicate<lhs_t, rhs_t> = (lhs: lhs_t, rhs: rhs_t) => boolean;
 export type Distance = number;
+export type Reducer<value_t> = (lhs: value_t, rhs: value_t) => value_t;
 
 // Screeps Oversights
 export type ScreepsReturnCode = number;

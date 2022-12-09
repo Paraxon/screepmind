@@ -1,5 +1,5 @@
 import { Blackboard, Expert } from "common/decisions/Blackboard";
-import { BodyRatio } from "common/entity/bodyratio";
+import { BodyRatio } from "common/entity/creep/bodyratio";
 import { hauler } from "common/entity/creep/roles";
 import { SpawnCreep } from "common/entity/team/actions/SpawnCreep";
 import { ScreepsReturnCode } from "common/Library";

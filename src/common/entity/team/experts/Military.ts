@@ -1,6 +1,6 @@
 import { Blackboard, Expert } from "common/decisions/Blackboard";
 import { DecisionTree } from "common/decisions/DecisionTree";
-import { BodyRatio } from "common/entity/bodyratio";
+import { BodyRatio } from "common/entity/creep/bodyratio";
 import { AttackMelee } from "common/entity/creep/action/AttackMelee";
 import { MoveToObject } from "common/entity/creep/action/MoveToTarget";
 import { AdjacentTo } from "common/entity/creep/condition/AdjacentTo";

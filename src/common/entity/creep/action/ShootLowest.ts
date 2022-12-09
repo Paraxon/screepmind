@@ -29,7 +29,7 @@ export class ShootLowest<target_t extends Target> extends CreepAction {
 	}
 	private getTargets(actor: Creep): target_t[] {
 		return actor.findInRange(
-			this.targeter.select(),
+			this.targeter.all(),
 			INTENT_RANGE[RANGED_ATTACK]!)
 	}
 }

@@ -11,6 +11,6 @@ export class InRangeOfAny implements Condition<GameObject>{
 		this.radius = radius;
 	}
 	evaluate(actor: GameObject): boolean {
-		return actor.findInRange(this.targeter.select(), this.radius).length > 0;
+		return actor.findInRange(this.targeter.all(), this.radius).length > 0;
 	}
 }

@@ -1,6 +1,9 @@
 import { Action } from "common/decisions/actions/Action";
-import { ACTION_PIPELINES, Intent } from "common/gameobject/creep/CreepIntent";
+import { ACTION_PIPELINES, Intent, INTENT_EMOJI } from "common/gameobject/creep/CreepIntent";
+import { Logger } from "common/patterns/Logger";
+import { OK } from "game/constants";
 import { Creep } from "game/prototypes";
+import { Visual } from "game/visual";
 import { ScreepsReturnCode } from "../../ReturnCode";
 
 export abstract class CreepAction implements Action<Creep, ScreepsReturnCode> {
@@ -17,6 +20,9 @@ export abstract class CreepAction implements Action<Creep, ScreepsReturnCode> {
 		const conflict = ACTION_PIPELINES.find(
 			pipeline => pipeline.includes(a) && pipeline.includes(b));
 		return conflict && conflict.indexOf(a) - conflict.indexOf(b);
+	}
+	protected emote(actor: Creep): void {
+		Logger.say(actor, INTENT_EMOJI[this.intent]);
 	}
 	public abstract decide(actor: Creep): Action<Creep, ScreepsReturnCode>;
 	public abstract execute(actor: Creep): ScreepsReturnCode | undefined;

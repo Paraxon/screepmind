@@ -22,6 +22,7 @@ export class DepositResource<container_t extends StructureContainer> extends Cre
 		return !actor.store[this.resource] || !this.getTargets(actor).length;
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
+		this.emote(actor);
 		const targets = this.getTargets(actor);
 		return this.getTargets.length ? actor.transfer(targets[0], this.resource) : ERR_NOT_FOUND;
 	}

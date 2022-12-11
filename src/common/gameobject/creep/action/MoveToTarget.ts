@@ -48,6 +48,7 @@ export class MoveToObject extends CreepAction {
 		return target ? actor.getRangeTo(target) <= 1 : true;
 	}
 	public execute(actor: CreepMind): ScreepsReturnCode | undefined {
+		this.emote(actor);
 		const target = getObjectById(this.targetID as string);
 		const options = { swampCost: 2 }; // Ignore swamp
 		return target ? actor.moveTo(target, options) : ERR_INVALID_TARGET;

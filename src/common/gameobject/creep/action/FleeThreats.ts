@@ -25,6 +25,7 @@ export class FleeThreats<threat_t extends GameObject> extends CreepAction {
 		return new FleeThreats(this.prototype, this.radius, this.predicate, this._options);
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
+		this.emote(actor);
 		return this.fleeMulti(actor, this.targets(actor));
 	}
 	private fleeSingle(actor: Creep, threat: threat_t) {

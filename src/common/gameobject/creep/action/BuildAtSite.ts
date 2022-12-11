@@ -21,9 +21,9 @@ export class BuildAtSite<structure_t extends Structure> extends CreepAction {
 		return this.targeter.isEmpty();
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
+		this.emote(actor);
 		const sites = this.targeter.inRange(actor, INTENT_RANGE[BUILD]!);
 		if (!sites.length) return ERR_NOT_FOUND;
-		new Visual().text("🔨", actor, { font: 2 / 3 });
 		const mostProgress = (best: ConstructionSite, current: ConstructionSite) =>
 			(best.progress ?? 0) > (current.progress ?? 0) ? best : current;
 		return actor.build(sites.reduce(mostProgress));

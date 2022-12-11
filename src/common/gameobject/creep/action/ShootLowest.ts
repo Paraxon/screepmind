@@ -19,6 +19,7 @@ export class ShootLowest<target_t extends Target> extends CreepAction {
 		return new ShootLowest(this.targeter);
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
+		this.emote(actor);
 		const targets = this.getTargets(actor);
 		if (!targets.length) return ERR_NOT_FOUND;
 		const lowest = targets.reduce((lowest, current) => lowest.hits! < current.hits! ? lowest : current);

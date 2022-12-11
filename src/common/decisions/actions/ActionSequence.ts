@@ -1,3 +1,5 @@
+import { Logger } from "common/patterns/Logger";
+import { Verbosity } from "common/patterns/Verbosity";
 import { Action } from "./Action";
 
 export class ActionSequence<actor_t, result_t = void> implements Action<actor_t, result_t> {

@@ -22,6 +22,7 @@ export class WithdrawResource<container_t extends StructureContainer> extends Cr
 		return !actor.store.getFreeCapacity(this.resource);
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
+		this.emote(actor);
 		const containers = this.getTargets(actor);
 		if (!containers.length) return ERR_NOT_FOUND;
 		const fullest = containers.reduce((fullest, current) =>

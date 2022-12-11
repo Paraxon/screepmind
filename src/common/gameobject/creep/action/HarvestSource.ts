@@ -17,6 +17,7 @@ export class HarvestSource extends CreepAction {
 		return !actor.store.getFreeCapacity();
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
+		this.emote(actor);
 		const targets = this.getTargets(actor);
 		return targets.length ? actor.harvest(targets[0]) : ERR_NOT_FOUND;
 	}

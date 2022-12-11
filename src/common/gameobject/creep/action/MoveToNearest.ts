@@ -27,6 +27,7 @@ export class MoveToNearest<object_t extends GameObject> extends CreepAction {
 		return new MoveToNearest(this.targeter, this.radius, this._options);
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
+		this.emote(actor);
 		const targets = this.targeter.all();
 		if (!targets.length) return ERR_NOT_FOUND;
 		const nearest = actor.findClosestByRange(targets);

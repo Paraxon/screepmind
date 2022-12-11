@@ -48,3 +48,19 @@ export const ACTION_PIPELINES: Intent[][] = [
 	[RANGED_ATTACK, RANGED_MASS_ATTACK, BUILD, RANGED_HEAL],
 	[BUILD, WITHDRAW, TRANSFER, DROP]
 ];
+
+export const INTENT_EMOJI: Record<Intent, string> = {
+	[ATTACK]: "⚔️",
+	[BUILD]: "🛠️",
+	[DROP]: "🪂",
+	[HARVEST]: "🧑‍🌾",
+	[HEAL]: "⚕️",
+	[MOVE]: "🏃",
+	[PICKUP]: "🏋️",
+	[PULL]: "🧲",
+	[RANGED_ATTACK]: "🏹",
+	[RANGED_HEAL]: "🏹⚕️",
+	[RANGED_MASS_ATTACK]: "🏹💣",
+	[TRANSFER]: "📤",
+	[WITHDRAW]: "📥"
+}

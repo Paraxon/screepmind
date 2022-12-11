@@ -36,11 +36,12 @@ export function loop() {
 			if (result ?? Consts.OK < 0) Logger.log('error', `action returned error ${result}`, Verbosity.Error);
 			break;
 	}
-	drawRegions();
+	const visual = new Visual();
+	drawRegions(visual);
+	Logger.draw(visual);
 }
 
-function drawRegions() {
-	const visual = new Visual();
+function drawRegions(visual = new Visual()) {
 	const borderStyle: LineVisualStyle = {
 		color: "#0000ff",
 		lineStyle: "dashed",

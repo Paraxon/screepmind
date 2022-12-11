@@ -21,6 +21,7 @@ export class AttackMelee extends CreepAction {
 		return (target.hits ?? 0) <= 0 || actor.getRangeTo(target) > INTENT_RANGE[ATTACK]!;
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
+		this.emote(actor);
 		const target = getObjectById(this.targetID as string) as Creep | Structure;
 		return actor.attack(target);
 	}

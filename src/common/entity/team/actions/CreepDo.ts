@@ -1,10 +1,10 @@
 import { Team } from "common/entity/team/Team";
 import { CreepAction } from "common/gameobject/creep/action/CreepAction";
+import { INTENT_EMOJI } from "common/gameobject/creep/CreepIntent";
 import { ERROR_EMOJI, is_error, ScreepsReturnCode } from "common/gameobject/ReturnCode";
 import { ID } from "common/Library";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
-import { OK } from "game/constants";
 import { Creep } from "game/prototypes";
 import { getObjectById } from "game/utils";
 import { Visual } from "game/visual";
@@ -18,15 +18,15 @@ export class CreepDo implements Action<Team, ScreepsReturnCode> {
 		this.action = action;
 	}
 	decide(actor: Team): Action<Team, any> {
-		return this;
+		const creep = getObjectById(this.id as string)! as Creep;
+		return new CreepDo(this.id, this.action.decide(creep));
 	}
 	execute(actor: Team): ScreepsReturnCode | undefined {
-		let creep = getObjectById(this.id as string)! as Creep;
+		const creep = getObjectById(this.id as string)! as Creep;
 		const result = this.action.execute(creep)!;
 		if (is_error(result)) {
-			new Visual().text(ERROR_EMOJI[result], creep, { font: 2 / 3 });
-			if (this.action instanceof CreepAction)
-				Logger.log("action", `creep ${this.id} returned error ${result} while attempting to ${this.action.intent}`, Verbosity.Error);
+			Logger.say(creep, ERROR_EMOJI[result]);
+			Logger.log("action", `creep ${this.id} returned error ${result} after acting`, Verbosity.Error);
 		}
 		return result;
 	}

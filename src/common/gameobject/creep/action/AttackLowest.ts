@@ -1,8 +1,9 @@
 import { Action } from "common/decisions/actions/Action";
-import { ScreepsReturnCode, Target } from "common/Library";
 import { Targeter } from "common/gameobject/Targeter";
-import { ATTACK, ERR_NOT_FOUND } from "game/constants";
+import { Target } from "common/Library";
+import { ATTACK, ERR_INVALID_TARGET } from "game/constants";
 import { Creep } from "game/prototypes";
+import { ScreepsReturnCode } from "../../ReturnCode";
 import { INTENT_RANGE } from "../CreepIntent";
 import { CreepAction } from "./CreepAction";
 
@@ -12,12 +13,12 @@ export class AttackLowest<target_t extends Target> extends CreepAction {
 		super(ATTACK);
 		this.targeter = targeter;
 	}
-	public decide(actor: Creep): Action<Creep, number> {
+	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
 		return new AttackLowest(this.targeter);
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
 		const targets = this.targeter.inRange(actor, INTENT_RANGE[ATTACK]!);
-		if (!targets) return ERR_NOT_FOUND;
+		if (!targets) return ERR_INVALID_TARGET;
 		const lowest = targets.reduce((lowest, current) => lowest.hits! < current.hits! ? lowest : current);
 		return actor.attack(lowest);
 	}

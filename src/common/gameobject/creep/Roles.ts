@@ -1,22 +1,23 @@
 import { ActionSequence } from "common/decisions/actions/ActionSequence";
 import { DecisionTree } from "common/decisions/DecisionTree";
 import { BUILD, HARVEST, INTENT_RANGE, TRANSFER } from "common/gameobject/creep/CreepIntent";
-import { PATH_COST, Predicate, ScreepsReturnCode } from "common/Library";
 import { Targeter } from "common/gameobject/Targeter";
+import { PATH_COST, Predicate } from "common/Library";
 import { ATTACK, RANGED_ATTACK, RESOURCE_ENERGY, TERRAIN_PLAIN } from "game/constants";
 import { ConstructionSite, Creep, GameObject, StructureContainer, StructureSpawn } from "game/prototypes";
 import { FindPathOptions } from "game/utils";
 import { OwnedGameObject, TEAM_ENEMY, TEAM_FRIENDLY, TEAM_NEUTRAL } from "../../entity/team/Team";
+import { AnyInRange } from "../condition/AnyInRange";
+import { FindAny } from "../condition/FindAny";
+import { RelativeCapacity } from "../condition/RelativeCapacity";
 import { AttackLowest } from "./action/AttackLowest";
+import { BuildAtSite } from "./action/BuildAtSite";
 import { DepositResource } from "./action/DepositResource";
 import { FleeThreats } from "./action/FleeThreats";
 import { MoveToNearest } from "./action/MoveToNearest";
 import { ShootLowest } from "./action/ShootLowest";
 import { WithdrawResource } from "./action/WithdrawResource";
-import { AnyInRange } from "../condition/AnyInRange";
-import { RelativeCapacity } from "../condition/RelativeCapacity";
-import { FindAny } from "../condition/FindAny";
-import { BuildAtSite } from "./action/BuildAtSite";
+import { ScreepsReturnCode } from "../ReturnCode";
 
 const isEnemy: Predicate<GameObject> = (object: OwnedGameObject) => object.my === false;
 const isArmed: Predicate<Creep> = (creep: Creep) => creep.body.some(({ type, hits }) => type === ATTACK || type === RANGED_ATTACK);

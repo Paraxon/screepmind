@@ -1,17 +1,16 @@
-import Flatten from "@flatten-js/core";
-import { Team } from "common/entity/team/Team";
-import { createConstructionSite } from "game";
-import { ScreepsReturnCode, BuildableStructure, OK } from "game/constants";
-import { ConstructionSite, StructureConstant } from "game/prototypes";
+import { Team, TEAM_FRIENDLY } from "common/entity/team/Team";
+import { ScreepsReturnCode } from "common/gameobject/ReturnCode";
+import { Prototype } from "common/Library";
+import { MAX_CONSTRUCTION_SITES, OK } from "game/constants";
+import { ConstructionSite, Position, Structure } from "game/prototypes";
+import { createConstructionSite } from "game/utils";
 import { Action } from "../../../decisions/actions/Action";
 
-
 export class CreateSite implements Action<Team, ScreepsReturnCode> {
-	private position: Flatten.Point;
-	private structure: StructureConstant;
-	private site?: ConstructionSite<BuildableStructure>;
-	private flag = false;
-	public constructor(structure: StructureConstant, position: Flatten.Point) {
+	private position: Position;
+	private structure: Prototype<Structure>;
+	private site?: ConstructionSite;
+	public constructor(structure: Prototype<Structure>, position: Position) {
 		this.structure = structure;
 		this.position = position;
 	}
@@ -19,13 +18,16 @@ export class CreateSite implements Action<Team, ScreepsReturnCode> {
 		return new CreateSite(this.structure, this.position);
 	}
 	execute(actor: Team): ScreepsReturnCode | undefined {
-		const result = createConstructionSite(this.position.x, this.position.y, this.structure);
+		const result = createConstructionSite(this.position, this.structure);
+		this.site = result.object;
 		return result.object ? OK : result.error;
 	}
 	canDoBoth(other: Action<Team, ScreepsReturnCode>): boolean {
-		throw new Error("Method not implemented.");
+		return other instanceof CreateSite ?
+			TEAM_FRIENDLY.GetAll(ConstructionSite).length + 1 <= MAX_CONSTRUCTION_SITES :
+			true;
 	}
 	isComplete(actor: Team): boolean {
-		return this.site !== undefined && this.site?.progress === this.site?.progressTotal;
+		return this.site !== undefined;
 	}
 }

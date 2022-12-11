@@ -1,7 +1,8 @@
 import { Action } from "common/decisions/actions/Action";
-import { Prototype, ScreepsReturnCode } from "common/Library";
 import { INTENT_RANGE, WITHDRAW } from "common/gameobject/creep/CreepIntent";
-import { RESOURCE_ENERGY, ERR_NOT_FOUND } from "game/constants";
+import { ScreepsReturnCode } from "common/gameobject/ReturnCode";
+import { Prototype } from "common/Library";
+import { ERR_NOT_FOUND, RESOURCE_ENERGY } from "game/constants";
 import { Creep, ResourceType, StructureContainer } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
 import { CreepAction } from "./CreepAction";

@@ -1,8 +1,7 @@
-import { BodyRatio } from "common/gameobject/creep/BodyRatio";
 import { Team } from "common/entity/team/Team";
-import { ScreepsReturnCode } from "common/Library";
-import { Logger } from "common/patterns/Logger";
-import { ERR_NOT_FOUND, STRUCTURE_PROTOTYPES } from "game/constants";
+import { BodyRatio } from "common/gameobject/creep/BodyRatio";
+import { ScreepsReturnCode } from "common/gameobject/ReturnCode";
+import { ERR_NOT_FOUND } from "game/constants";
 import { StructureSpawn } from "game/prototypes";
 import { Action } from "../../../decisions/actions/Action";
 

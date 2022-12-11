@@ -1,13 +1,12 @@
 import { Action } from "common/decisions/actions/Action";
 import { TEAM_ENEMY } from "common/entity/team/Team";
-import { BinaryPredicate, Distance, FLEE_SEARCH_RADIUS, Predicate, Prototype, ScreepsReturnCode } from "common/Library";
-import { Logger } from "common/patterns/Logger";
+import { ScreepsReturnCode } from "common/gameobject/ReturnCode";
+import { BinaryPredicate, Distance, FLEE_SEARCH_RADIUS, Prototype } from "common/Library";
 import { ERR_NOT_FOUND, ERR_NO_PATH, MOVE } from "game/constants";
 import { Goal, searchPath, SearchPathOptions, SearchPathResult } from "game/path-finder";
 import { Creep, GameObject } from "game/prototypes";
-import { FindPathOptions, getDirection, getObjects } from "game/utils";
+import { FindPathOptions, getDirection } from "game/utils";
 import { Visual } from "game/visual";
-import path from "path";
 import { CreepAction } from "./CreepAction";
 
 export class FleeThreats<threat_t extends GameObject> extends CreepAction {
@@ -22,11 +21,10 @@ export class FleeThreats<threat_t extends GameObject> extends CreepAction {
 		this.predicate = predicate;
 		this._options = { ...options };
 	}
-	public decide(actor: Creep): Action<Creep, number> {
+	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
 		return new FleeThreats(this.prototype, this.radius, this.predicate, this._options);
 	}
 	public execute(actor: Creep): ScreepsReturnCode | undefined {
-		// new Visual().text("🐔", actor, { font: 1, align: "center" });
 		return this.fleeMulti(actor, this.targets(actor));
 	}
 	private fleeSingle(actor: Creep, threat: threat_t) {
@@ -50,10 +48,8 @@ export class FleeThreats<threat_t extends GameObject> extends CreepAction {
 		return { ...this._options, flee: true };
 	}
 	private followPath(actor: Creep, path: SearchPathResult) {
-		if (path.incomplete || !path.path.length) {
-			new Visual().text("🗺️❓", actor, { font: 1 / 2, align: "center" });
+		if (path.incomplete || !path.path.length)
 			return ERR_NO_PATH;
-		}
 		const destination = path.path[0];
 		const dx = destination.x - actor.x;
 		const dy = destination.y - actor.y;

@@ -2,15 +2,15 @@ import { ATTACK, HEAL, MOVE, RANGED_ATTACK } from "game/constants";
 
 // https://docs.screeps.com/simultaneous-actions.html
 
-export const DROP = 'drop';
 export const BUILD = 'build';
+export const DROP = 'drop';
 export const HARVEST = 'harvest';
 export const PICKUP = 'pickup';
 export const PULL = 'pull';
 export const RANGED_HEAL = 'ranged_heal';
 export const RANGED_MASS_ATTACK = 'ranged_mass_attack';
-export const WITHDRAW = 'withdraw';
 export const TRANSFER = 'transfer';
+export const WITHDRAW = 'withdraw';
 
 export type Intent =
 	typeof ATTACK |

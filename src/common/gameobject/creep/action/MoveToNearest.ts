@@ -1,9 +1,10 @@
 import { Action } from "common/decisions/actions/Action";
-import { Distance, Predicate, Prototype, ScreepsReturnCode } from "common/Library";
 import { Targeter } from "common/gameobject/Targeter";
+import { Distance } from "common/Library";
 import { ERR_NOT_FOUND, MOVE } from "game/constants";
 import { Creep, GameObject } from "game/prototypes";
-import { FindPathOptions, getObjectsByPrototype } from "game/utils";
+import { FindPathOptions } from "game/utils";
+import { ScreepsReturnCode } from "../../ReturnCode";
 import { CreepAction } from "./CreepAction";
 
 export class MoveToNearest<object_t extends GameObject> extends CreepAction {

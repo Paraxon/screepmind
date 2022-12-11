@@ -1,7 +1,13 @@
 import { Team } from "common/entity/team/Team";
-import { ID, ScreepsReturnCode } from "common/Library";
+import { CreepAction } from "common/gameobject/creep/action/CreepAction";
+import { ERROR_EMOJI, is_error, ScreepsReturnCode } from "common/gameobject/ReturnCode";
+import { ID } from "common/Library";
+import { Logger } from "common/patterns/Logger";
+import { Verbosity } from "common/patterns/Verbosity";
+import { OK } from "game/constants";
 import { Creep } from "game/prototypes";
 import { getObjectById } from "game/utils";
+import { Visual } from "game/visual";
 import { Action } from "../../../decisions/actions/Action";
 
 export class CreepDo implements Action<Team, ScreepsReturnCode> {
@@ -16,10 +22,16 @@ export class CreepDo implements Action<Team, ScreepsReturnCode> {
 	}
 	execute(actor: Team): ScreepsReturnCode | undefined {
 		let creep = getObjectById(this.id as string)! as Creep;
-		return this.action.execute(creep);
+		const result = this.action.execute(creep)!;
+		if (is_error(result)) {
+			new Visual().text(ERROR_EMOJI[result], creep, { font: 2 / 3 });
+			if (this.action instanceof CreepAction)
+				Logger.log("action", `creep ${this.id} returned error ${result} while attempting to ${this.action.intent}`, Verbosity.Error);
+		}
+		return result;
 	}
 	canDoBoth(other: Action<Team, any>): boolean {
-		return other instanceof CreepDo && this.id === other.id ? this.action.canDoBoth(other.action) : true;
+		return other instanceof CreepDo && this.id === other.id && this.action.canDoBoth(other.action);
 	}
 	isComplete(actor: Team): boolean {
 		let creep = getObjectById(this.id as string)! as Creep;

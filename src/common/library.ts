@@ -15,11 +15,10 @@ export const less: Compare<number> = (lhs: number, rhs: number) => lhs < rhs;
 export const less_equal: Compare<number> = (lhs: number, rhs: number) => lhs <= rhs;
 
 // Screeps Oversights
-export type ScreepsReturnCode = number;
 export type ID = number | string;
 export type Prototype<object_t extends Proto.GameObject> = new () => object_t;
 export type Health = { hits?: number, hitsMax?: number };
-export type Target = Proto.Creep | Proto.Structure;
+export type Target = Proto.GameObject & Health;
 export type Distance = number;
 export type Inventory = Proto.GameObject & { store: Proto.Store };
 

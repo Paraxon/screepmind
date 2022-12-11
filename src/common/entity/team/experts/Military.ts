@@ -1,40 +1,21 @@
 import { Blackboard, Expert } from "common/decisions/Blackboard";
-import { DecisionTree } from "common/decisions/DecisionTree";
-import { BodyRatio } from "common/gameobject/creep/BodyRatio";
-import { AttackMelee } from "common/gameobject/creep/action/AttackMelee";
-import { MoveToObject } from "common/gameobject/creep/action/MoveToTarget";
-import { AdjacentTo } from "common/gameobject/condition/AdjacentTo";
-import { kiter, raider } from "common/gameobject/creep/Roles";
 import { CreepDo } from "common/entity/team/actions/CreepDo";
-import { SpawnCreep } from "common/entity/team/actions/SpawnCreep";
-import { ScreepsReturnCode } from "common/Library";
-import { Logger } from "common/patterns/Logger";
-import { Verbosity } from "common/patterns/Verbosity";
-import { ATTACK, RANGED_ATTACK, TERRAIN_SWAMP } from "game/constants";
-import { Creep, StructureSpawn } from "game/prototypes";
-import { getObjectsByPrototype } from "game/utils";
-import { Team, TEAM_ENEMY } from "../Team";
+import { ScreepsReturnCode } from "common/gameobject/ReturnCode";
+import { kiter, raider } from "common/gameobject/creep/Roles";
+import { Team } from "../Team";
 
 export class Military implements Expert<Team, ScreepsReturnCode> {
-	private melee = new BodyRatio().with(ATTACK).moveEvery(TERRAIN_SWAMP);
-	private ranged = new BodyRatio().with(RANGED_ATTACK).moveEvery(TERRAIN_SWAMP);
+
 	insistence(team: Team, board: Blackboard<Team, ScreepsReturnCode>): number {
-		return 1;
+		return team.FindRole("combat").length;
 	}
 	write(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
-		if (team.FindRole("hauler").length >= team.FindRole("melee").length)
-			this.spawn(team, board);
 		this.attack(team, board);
 	}
-	spawn(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
-		if (team.CanAfford(this.ranged.cost) && !team.GetFirst(StructureSpawn)?.spawning) {
-			board.actions.push(new SpawnCreep(this.ranged.scaledTo(team.LocalInventory())));
-		}
-	}
 	attack(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
-		team.FindRole("melee").filter(creep => !creep.spawning).forEach(
-			attacker => board.actions.push(new CreepDo(attacker.id, raider.decide(attacker)!)));
-		team.FindRole("shooter").filter(creep => !creep.spawning).forEach(
-			attacker => board.actions.push(new CreepDo(attacker.id, kiter.decide(attacker)!)));
+		team.FindRole("melee").forEach(creep => board.actions.push(
+			new CreepDo(creep.id, raider.decide(creep)!)));
+		team.FindRole("ranged").forEach(creep => board.actions.push(
+			new CreepDo(creep.id, kiter.decide(creep)!)));
 	}
 }

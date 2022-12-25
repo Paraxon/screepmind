@@ -1,13 +1,11 @@
 import { Team } from "common/entity/team/Team";
-import { CreepAction } from "common/gameobject/creep/action/CreepAction";
-import { INTENT_EMOJI } from "common/gameobject/creep/CreepIntent";
 import { ERROR_EMOJI, is_error, ScreepsReturnCode } from "common/gameobject/ReturnCode";
+import { Speech } from "common/gameobject/Speech";
 import { ID } from "common/Library";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
 import { Creep } from "game/prototypes";
 import { getObjectById } from "game/utils";
-import { Visual } from "game/visual";
 import { Action } from "../../../decisions/actions/Action";
 
 export class CreepDo implements Action<Team, ScreepsReturnCode> {
@@ -25,7 +23,7 @@ export class CreepDo implements Action<Team, ScreepsReturnCode> {
 		const creep = getObjectById(this.id as string)! as Creep;
 		const result = this.action.execute(creep)!;
 		if (is_error(result)) {
-			Logger.say(creep, ERROR_EMOJI[result]);
+			Speech.say(creep, ERROR_EMOJI[result]);
 			Logger.log("action", `creep ${this.id} returned error ${result} after acting`, Verbosity.Error);
 		}
 		return result;

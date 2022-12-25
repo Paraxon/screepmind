@@ -1,10 +1,9 @@
 import { Arbiter } from "common/decisions/Blackboard";
-import { Construction } from "common/entity/team/experts/Construction";
-import { Economy } from "common/entity/team/experts/Economy";
-import { Military } from "common/entity/team/experts/Military";
+import { TEAM_FRIENDLY, Team } from "common/entity/team/Team";
 import { Population } from "common/entity/team/experts/Population";
-import { Team, TEAM_FRIENDLY } from "common/entity/team/Team";
 import { ScreepsReturnCode } from "common/gameobject/ReturnCode";
+import { Speech } from "common/gameobject/Speech";
+import { classifier } from "common/gameobject/creep/Roles";
 import { AdjList } from "common/graph/AdjacencyList";
 import { Border, ConnectRegions } from "common/graph/Hierarchy";
 import { KMeans } from "common/graph/KMeans";
@@ -21,24 +20,25 @@ let regions: AdjList<Region, Border>;
 
 const strategy = new Arbiter<Team, ScreepsReturnCode>();
 strategy.experts.push(new Population());
-strategy.experts.push(new Economy());
-strategy.experts.push(new Military());
-strategy.experts.push(new Construction());
+// strategy.experts.push(new Economy());
+// strategy.experts.push(new Military());
+// strategy.experts.push(new Construction());
 
 export function loop() {
+	const visual = new Visual();
+	Speech.draw(visual);
 	switch (getTicks()) {
 		case 1:
 			Logger.verbosity = Verbosity.Trace;
 			regions = ConnectRegions(new TileGraph(), kmeans.execute());
 		default:
 			const action = strategy.decide(TEAM_FRIENDLY);
+			if (!action) Logger.log('action', "no actions were decided for the team");
 			const result = action?.execute(TEAM_FRIENDLY);
-			if (result ?? Consts.OK < 0) Logger.log('error', `action returned error ${result}`, Verbosity.Error);
+			if (result ?? Consts.OK < 0) Logger.log('error', `team action returned error ${result}`, Verbosity.Error);
 			break;
 	}
-	const visual = new Visual();
 	drawRegions(visual);
-	Logger.draw(visual);
 }
 
 function drawRegions(visual = new Visual()) {

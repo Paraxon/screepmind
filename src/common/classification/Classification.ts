@@ -1,8 +1,12 @@
 
 export class Classification<class_t> {
-	private membership = new Map<class_t, number>();
+	membership = new Map<class_t, number>();
 	public get best(): class_t | undefined {
-		return Array.from(this.membership.entries()).reduce((a, b) => a[1] > b[1] ? a : b)[0];
+		return this.membership.size ? Array
+			.from(this.membership.entries())
+			.reduce(([best, bestScore], [current, currentScore]) =>
+				bestScore > currentScore ? [best, bestScore] : [current, currentScore])[0]
+			: undefined;
 	}
 	public set(classification: class_t, membership: number) {
 		this.membership.set(classification, membership);

@@ -1,4 +1,5 @@
 import { ATTACK, HEAL, MOVE, RANGED_ATTACK } from "game/constants";
+import { Creep } from "game/prototypes";
 
 // https://docs.screeps.com/simultaneous-actions.html
 
@@ -26,6 +27,22 @@ export type Intent =
 	typeof RANGED_MASS_ATTACK |
 	typeof TRANSFER |
 	typeof WITHDRAW;
+
+export const INTENT_METHODS: Record<string, Intent> = {
+	[Creep.prototype.attack.name]: ATTACK,
+	[Creep.prototype.build.name]: BUILD,
+	[Creep.prototype.drop.name]: DROP,
+	[Creep.prototype.harvest.name]: HARVEST,
+	[Creep.prototype.heal.name]: HEAL,
+	[Creep.prototype.move.name]: MOVE,
+	[Creep.prototype.pickup.name]: PICKUP,
+	[Creep.prototype.pull.name]: PULL,
+	[Creep.prototype.rangedAttack.name]: RANGED_ATTACK,
+	[Creep.prototype.rangedHeal.name]: RANGED_HEAL,
+	[Creep.prototype.rangedMassAttack.name]: RANGED_MASS_ATTACK,
+	[Creep.prototype.transfer.name]: TRANSFER,
+	[Creep.prototype.withdraw.name]: WITHDRAW
+}
 
 export const INTENT_RANGE: Record<Intent, number | undefined> = {
 	[ATTACK]: 1,

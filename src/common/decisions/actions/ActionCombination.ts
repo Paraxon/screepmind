@@ -12,9 +12,10 @@ export class ActionCombination<actor_t, result_t = void>
 		return new ActionCombination(...this.actions.map(action => action.decide(actor)));
 	}
 	public execute(actor: actor_t): result_t | undefined {
-		let result: result_t | undefined;
-		this.actions.filter(action => !action.isComplete(actor)).forEach(action => (result = action.execute(actor)));
-		return result;
+		return this.actions
+			.filter(action => !action.isComplete(actor))
+			.map(action => action.execute(actor))
+			.reduce((prev, current) => current);
 	}
 	public canDoBoth(other: Action<actor_t, result_t>): boolean {
 		return this.actions.every(action => action.canDoBoth(other));

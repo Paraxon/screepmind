@@ -1,22 +1,8 @@
-import { Classifier } from "common/classification/Classifier";
-import { Prototype } from "common/Library";
-import { Logger } from "common/patterns/Logger";
-import { ATTACK, CARRY, RANGED_ATTACK, RESOURCE_ENERGY, WORK } from "game/constants";
-import { Creep, GameObject, ResourceType, StructureSpawn } from "game/prototypes";
+import { classifier } from "common/gameobject/creep/Roles";
+import { OwnedGameObject, Prototype } from "common/Library";
+import { RESOURCE_ENERGY } from "game/constants";
+import { Creep, ResourceType, StructureSpawn } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
-import { CreepClassifier } from "../../gameobject/creep/CreepClassifier";
-
-export interface OwnedGameObject extends GameObject {
-	my?: boolean;
-}
-
-export const classifier = new CreepClassifier();
-classifier.add("builder").set(WORK, 1);
-classifier.add("combat").set(ATTACK, 1).set(RANGED_ATTACK, 1);
-classifier.add("harvester").set(WORK, 1);
-classifier.add("hauler").set(CARRY, 1);
-classifier.add("melee").set(ATTACK, 1);
-classifier.add("ranged").set(RANGED_ATTACK, 1);
 
 export class Team {
 	my?: boolean;
@@ -42,9 +28,9 @@ export class Team {
 			.map(spawn => spawn.store.getUsedCapacity(resource) ?? 0)
 			.reduce((sum, current) => sum + current);
 	}
-	public FindRole(role: string, membership: number = 1): Creep[] {
+	/* public FindRole(role: Role, membership: number = 1): Creep[] {
 		return this.Creeps.filter(creep => classifier.classify(creep).test(role) >= membership);
-	}
+	} */
 	public CanAfford(cost: number, resource: ResourceType = RESOURCE_ENERGY): boolean {
 		return this.GlobalInventory(resource) >= cost;
 	}

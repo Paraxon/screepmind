@@ -4,6 +4,7 @@ import { ScreepsReturnCode } from "common/gameobject/ReturnCode";
 import { ERR_NOT_FOUND } from "game/constants";
 import { StructureSpawn } from "game/prototypes";
 import { Action } from "../../../decisions/actions/Action";
+import { Logger } from "common/patterns/Logger";
 
 export class SpawnCreep implements Action<Team, ScreepsReturnCode> {
 	flag = false;
@@ -16,6 +17,8 @@ export class SpawnCreep implements Action<Team, ScreepsReturnCode> {
 	}
 	public execute(actor: Team): ScreepsReturnCode | undefined {
 		this.flag = true;
+		const spawn = actor.GetFirst(StructureSpawn);
+		Logger.log("debug", `spawning creep from spawn ${spawn?.id}`);
 		return actor.GetFirst(StructureSpawn)?.spawnCreep(this.ratio.spawn).error ?? ERR_NOT_FOUND;
 	}
 	public canDoBoth(other: Action<Team, ScreepsReturnCode>): boolean {

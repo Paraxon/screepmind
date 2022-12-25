@@ -3,7 +3,6 @@ import { Targeter } from "common/gameobject/Targeter";
 import { Target } from "common/Library";
 import { ATTACK, ERR_INVALID_TARGET } from "game/constants";
 import { Creep } from "game/prototypes";
-import { prototype } from "mocha";
 import { ScreepsReturnCode } from "../../ReturnCode";
 import { INTENT_RANGE } from "../CreepIntent";
 import { CreepAction } from "./CreepAction";

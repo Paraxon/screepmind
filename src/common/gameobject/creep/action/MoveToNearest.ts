@@ -6,12 +6,13 @@ import { Creep, GameObject } from "game/prototypes";
 import { FindPathOptions } from "game/utils";
 import { ScreepsReturnCode } from "../../ReturnCode";
 import { CreepAction } from "./CreepAction";
+import { Logger } from "common/patterns/Logger";
 
 export class MoveToNearest<object_t extends GameObject> extends CreepAction {
 	private readonly radius: Distance;
 	private readonly _options?: FindPathOptions;
 	private readonly targeter: Targeter<object_t>;
-	public constructor(targeter: Targeter<object_t>, radius = 1, options?: FindPathOptions) {
+	public constructor(targeter: Targeter<object_t>, radius = 1, options: FindPathOptions = {}) {
 		super(MOVE);
 		this.radius = radius;
 		this.targeter = targeter;
@@ -31,6 +32,7 @@ export class MoveToNearest<object_t extends GameObject> extends CreepAction {
 		const targets = this.targeter.all();
 		if (!targets.length) return ERR_NOT_FOUND;
 		const nearest = actor.findClosestByRange(targets);
+		Logger.log("action", `creep #${actor.id} is moving to target #${nearest.id}`);
 		return actor.moveTo(nearest, this.options);
 	}
 	private get options(): FindPathOptions {

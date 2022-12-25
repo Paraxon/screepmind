@@ -4,7 +4,7 @@ import * as Utils from "game/utils";
 import { BodyPartType } from "game/prototypes";
 
 export class BodyRatio {
-	private parts = new Map<BodyPartType, number>();
+	public readonly parts = new Map<BodyPartType, number>();
 
 	public with(type: BodyPartType, qty: number = 1) {
 		this.parts.set(type, qty);

@@ -1,9 +1,6 @@
 import { Action } from "common/decisions/actions/Action";
-import { ActionSequence } from "common/decisions/actions/ActionSequence";
-import { Logger } from "common/patterns/Logger";
-import exp from "constants";
-import { ActionCombination } from "./actions/ActionCombination";
 import { DecisionMaker } from "./DecisionMaker";
+import { ActionCombination } from "./actions/ActionCombination";
 
 export interface Expert<actor_t, result_t> {
 	insistence(actor: actor_t, board: Blackboard<actor_t, result_t>): number;

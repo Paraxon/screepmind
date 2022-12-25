@@ -17,7 +17,7 @@ export class Role implements DecisionMaker<Creep, ScreepsReturnCode> {
 		this.body = body;
 		this.ai = ai;
 		this.popMin = popMin;
-		this.popSlope = 1 / spawnPeriod;
+		this.popSlope = spawnPeriod ? 1 / spawnPeriod : 0;
 		this.features = new Map(features);
 	}
 	public expectedPop(atTick: number = getTicks()) {

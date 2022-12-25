@@ -103,14 +103,14 @@ const rangedHealOrMove = new DecisionTree(canReachInjured, rangedHeal, moveToWou
 const touchOrRangedHeal = new DecisionTree(canTouchInjured, touchHeal, rangedHealOrMove);
 const moveToSafety = new DecisionTree(allyExists, followAlly, goHome);
 const healOrPosition = new DecisionTree(anyAlliesInjured, touchOrRangedHeal, moveToSafety);
-const healSelfOrOthers = new DecisionTree(isSelfHurt, healSelf, healOrPosition);
+const medic = new DecisionTree(isSelfHurt, healSelf, healOrPosition);
 
 export const roles: Role[] = [
 	new Role("raider", new BodyRatio().with(ATTACK).moveEvery(TERRAIN_SWAMP), raider, [[ATTACK, 1]], 0, 33),
 	new Role("kiter", new BodyRatio().with(RANGED_ATTACK).moveEvery(TERRAIN_SWAMP), kiter, [[RANGED_ATTACK, 1]], 0, 50),
 	new Role("hauler", new BodyRatio().with(CARRY).moveEvery(), hauler, [[CARRY, 1]], 2, 100),
 	new Role("builder", new BodyRatio().with(CARRY).with(WORK).moveEvery(), builder, [[BUILD, 1]], 1, 200),
-	// new Role("medic", new BodyRatio().with(HEAL).moveEvery(TERRAIN_SWAMP), healSelfOrOthers,[], 1, 150)
+	new Role("medic", new BodyRatio().with(HEAL).moveEvery(TERRAIN_SWAMP), medic, [[HEAL, 1]], 1, 150)
 ];
 
 export const classifier = new CreepClassifier<Role>();

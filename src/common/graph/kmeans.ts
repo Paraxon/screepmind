@@ -1,6 +1,6 @@
-import { DiGraph } from "./Digraph";
+import { DiGraph } from "./digraph";
 import Flatten from "@flatten-js/core";
-import { Region } from "./Region";
+import { Region } from "./region";
 import { Summary } from "common/math/Statistics";
 import { VertexRecord } from "./Span/VertexRecord";
 

@@ -1,7 +1,7 @@
 import { Team } from "common/entity/team/Team";
 import { ERROR_EMOJI, is_error, ScreepsReturnCode } from "common/gameobject/ReturnCode";
 import { Speech } from "common/gameobject/Speech";
-import { ID } from "common/Library";
+import { ID } from "common/library";
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
 import { Creep } from "game/prototypes";

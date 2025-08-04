@@ -1,6 +1,6 @@
 import { Creep, GameObject, Position } from "game/prototypes";
 import { Team } from "../entity/team/Team";
-import { Distance, Predicate, Prototype, Reducer } from "../Library";
+import { Distance, Predicate, Prototype, Reducer } from "../library";
 
 export class Targeter<target_t extends GameObject = GameObject> {
 	private readonly team: Team;

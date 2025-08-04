@@ -1,8 +1,8 @@
 import * as Consts from "game/constants";
-import * as Lib from "../Library";
+import * as Lib from "../library";
 import * as Utils from "game/utils";
-import { DiGraph, Edge } from "./Digraph";
-import { ARENA_SHAPE } from "../Library";
+import { DiGraph, Edge } from "./digraph";
+import { ARENA_SHAPE } from "../library";
 import Flatten from "@flatten-js/core";
 
 export class TileGraph implements DiGraph<Flatten.Point> {

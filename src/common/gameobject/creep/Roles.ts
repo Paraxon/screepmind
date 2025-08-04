@@ -1,4 +1,4 @@
-import { Health, OwnedGameObject, PATH_COST, Predicate, less } from "common/Library";
+import { Health, OwnedGameObject, PATH_COST, Predicate, less } from "common/library";
 import { DecisionTree } from "common/decisions/DecisionTree";
 import { ActionSequence } from "common/decisions/actions/ActionSequence";
 import { Targeter } from "common/gameobject/Targeter";
@@ -46,8 +46,8 @@ const friendlySpawn = new Targeter(TEAM_FRIENDLY, StructureSpawn, () => true);
 const threats = new Targeter(TEAM_ENEMY, Creep, isArmed);
 const enemyCreeps = new Targeter(TEAM_ENEMY, Creep, () => true);
 const energySource = new Targeter(TEAM_NEUTRAL, StructureContainer, hasEnergy);
-const friendlySites = new Targeter(TEAM_FRIENDLY, ConstructionSite, () => true);
-const injuredFriendlies = new Targeter(TEAM_FRIENDLY, Creep, creep => creep.hits < creep.hitsMax);
+const friendlySites = new Targeter<ConstructionSite>(TEAM_FRIENDLY, ConstructionSite, () => true);
+const injuredFriendlies = new Targeter<Creep>(TEAM_FRIENDLY, Creep, (creep: { hits: number; hitsMax: number; }) => creep.hits < creep.hitsMax);
 const armedFriendlies = new Targeter(TEAM_FRIENDLY, Creep, isArmed);
 
 const withdrawEnergy = new ActionSequence(
@@ -67,7 +67,7 @@ export const builder = new DecisionTree(isFull, moveBuild, withdrawEnergy);
 const ignoreSwamp: FindPathOptions = { swampCost: PATH_COST[TERRAIN_PLAIN] };
 const enemyHasCreeps = new FindAny(enemyCreeps);
 const threatInShootingRange = new AnyInRange(threats, INTENT_RANGE[RANGED_ATTACK]!);
-const fleeThreats = new FleeThreats(Creep, INTENT_RANGE[RANGED_ATTACK]!, (actor, threat) => isThreat(threat), ignoreSwamp);
+const fleeThreats = new FleeThreats(Creep, INTENT_RANGE[RANGED_ATTACK]!, (actor: any, threat: Creep) => isThreat(threat), ignoreSwamp);
 const moveToEnemyVillager = new MoveToNearest(enemyVillagers, INTENT_RANGE[ATTACK], ignoreSwamp);
 const attackVillager = new AttackLowest(enemyVillagers);
 const moveToEnemySpawn = new MoveToNearest(enemySpawn, INTENT_RANGE[ATTACK], ignoreSwamp);

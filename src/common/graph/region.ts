@@ -1,5 +1,5 @@
 import Flatten from "@flatten-js/core";
-import { ARENA_SHAPE } from "common/Library";
+import { ARENA_SHAPE } from "common/library";
 import concaveman from "concaveman";
 import { Position } from "game/prototypes";
 import { CircleVisualStyle, LineVisualStyle, Visual } from "game/visual";

@@ -1,5 +1,5 @@
 import { Condition } from "common/decisions/Condition";
-import { Compare, Inventory, strict_equal } from "common/Library";
+import { Compare, Inventory, strict_equal } from "common/library";
 import { RESOURCE_ENERGY } from "game/constants";
 import { Creep, ResourceType } from "game/prototypes";
 

@@ -1,4 +1,4 @@
-import { BinaryPredicate, Reducer, SingleTargetIntent } from "common/Library";
+import { BinaryPredicate, Reducer, SingleTargetIntent } from "common/library";
 import { Action } from "common/decisions/actions/Action";
 import { ScreepsReturnCode } from "common/gameobject/ReturnCode";
 import { Targeter } from "common/gameobject/Targeter";

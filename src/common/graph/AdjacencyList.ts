@@ -1,5 +1,5 @@
 import { State } from "common/decisions/StateMachine";
-import { DiGraph, DirectedEdge, Edge, Weighted } from "./Digraph";
+import { DiGraph, DirectedEdge, Edge, Weighted } from "./digraph";
 
 export class AdjList<vertex_t, edge_t extends DirectedEdge<vertex_t>> implements DiGraph<vertex_t, edge_t> {
 	private _vertices: vertex_t[];

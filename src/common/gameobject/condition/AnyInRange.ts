@@ -1,5 +1,5 @@
 import { Condition } from "common/decisions/Condition";
-import { Distance } from "common/Library";
+import { Distance } from "common/library";
 import { Targeter } from "common/gameobject/Targeter";
 import { GameObject } from "game/prototypes";
 

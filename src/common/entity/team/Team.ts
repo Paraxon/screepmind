@@ -1,5 +1,5 @@
 import { classifier } from "common/gameobject/creep/Roles";
-import { OwnedGameObject, Prototype } from "common/Library";
+import { OwnedGameObject, Prototype } from "common/library";
 import { RESOURCE_ENERGY } from "game/constants";
 import { Creep, ResourceType, StructureSpawn } from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";

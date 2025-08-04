@@ -1,7 +1,7 @@
 import { Action } from "common/decisions/actions/Action";
 import { TEAM_ENEMY } from "common/entity/team/Team";
 import { ScreepsReturnCode } from "common/gameobject/ReturnCode";
-import { BinaryPredicate, Distance, FLEE_SEARCH_RADIUS, Prototype } from "common/Library";
+import { BinaryPredicate, Distance, FLEE_SEARCH_RADIUS, Prototype } from "common/library";
 import { ERR_NOT_FOUND, ERR_NO_PATH, MOVE } from "game/constants";
 import { Goal, searchPath, SearchPathOptions, SearchPathResult } from "game/path-finder";
 import { Creep, GameObject } from "game/prototypes";

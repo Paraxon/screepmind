@@ -1,5 +1,5 @@
 import * as Consts from "game/constants";
-import * as Lib from "../../Library.js";
+import * as Lib from "../../library.js";
 import * as Utils from "game/utils";
 import { BodyPartType } from "game/prototypes";
 

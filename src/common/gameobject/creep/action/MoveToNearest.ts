@@ -1,6 +1,6 @@
 import { Action } from "common/decisions/actions/Action";
 import { Targeter } from "common/gameobject/Targeter";
-import { Distance } from "common/Library";
+import { Distance } from "common/library";
 import { ERR_NOT_FOUND, MOVE } from "game/constants";
 import { Creep, GameObject } from "game/prototypes";
 import { FindPathOptions } from "game/utils";

@@ -1,7 +1,7 @@
 import Flatten from "@flatten-js/core";
 import { AdjList } from "./AdjacencyList";
-import { DiGraph, DirectedEdge, Edge, Weighted } from "./Digraph";
-import { Region } from "./Region";
+import { DiGraph, DirectedEdge, Edge, Weighted } from "./digraph";
+import { Region } from "./region";
 
 export class Border implements DirectedEdge<Region>, Weighted {
 	private edges = new Array<Edge<Flatten.Point>>();

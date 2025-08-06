@@ -1,13 +1,12 @@
 import { Blackboard, Expert } from "common/decisions/Blackboard";
-import { ScreepsReturnCode } from "common/gameobject/ReturnCode";
+import { ScreepsResult } from "common/gameobject/Result";
 import { hauler } from "common/gameobject/creep/Roles";
 import { CreepDo } from "../actions/CreepDo";
 import { Team } from "../Team";
 
-export class Economy implements Expert<Team, ScreepsReturnCode> {
-	insistence(team: Team, board: Blackboard<Team, ScreepsReturnCode>): number {
+export class Economy implements Expert<Team, ScreepsResult> {
+	insistence(team: Team, board: Blackboard<Team, ScreepsResult>): number {
 		return 0;
 	}
-	write(team: Team, board: Blackboard<Team, ScreepsReturnCode>): void {
-	}
+	write(team: Team, board: Blackboard<Team, ScreepsResult>): void {}
 }

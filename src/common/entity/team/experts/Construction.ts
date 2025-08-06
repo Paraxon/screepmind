@@ -1,10 +1,10 @@
 import { Blackboard, Expert } from "common/decisions/Blackboard";
-import { ScreepsReturnCode } from "common/gameobject/ReturnCode";
+import { ScreepsResult } from "common/gameobject/Result";
 import { ConstructionSite, StructureRampart, StructureSpawn } from "game/prototypes";
 import { CreateSite } from "../actions/CreateSite";
 import { Team } from "../Team";
 
-export class Construction implements Expert<Team, ScreepsReturnCode> {
+export class Construction implements Expert<Team, ScreepsResult> {
 	insistence(actor: Team, board: Blackboard<Team, number>): number {
 		return this.undefended.length;
 	}
@@ -19,7 +19,8 @@ export class Construction implements Expert<Team, ScreepsReturnCode> {
 	private undefended(actor: Team): StructureSpawn[] {
 		const ramparts = actor.GetAll(StructureRampart);
 		const sites = actor.GetAll(ConstructionSite).filter(site => site.structure instanceof StructureRampart);
-		return actor.GetAll(StructureSpawn)
+		return actor
+			.GetAll(StructureSpawn)
 			.filter(spawn => ramparts.every(rampart => spawn.x != rampart.x && spawn.y != rampart.y))
 			.filter(spawn => sites.every(site => spawn.x != site.x && spawn.x != site.y));
 	}

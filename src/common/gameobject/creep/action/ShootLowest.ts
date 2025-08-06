@@ -5,9 +5,9 @@ import { Targeter } from "common/gameobject/Targeter";
 import { ERR_NOT_FOUND, RANGED_ATTACK } from "game/constants";
 import { Creep, GameObject } from "game/prototypes";
 import { Visual } from "game/visual";
-import { INTENT_RANGE } from "../CreepIntent";
+import { RANGES } from "../CreepIntent";
 import { CreepAction } from "./CreepAction";
-import { ScreepsReturnCode } from "common/gameobject/ReturnCode";
+import { ScreepsResult } from "common/gameobject/Result";
 
 export class ShootLowest<target_t extends Target> extends CreepAction {
 	private readonly targeter: Targeter<target_t>;
@@ -15,22 +15,20 @@ export class ShootLowest<target_t extends Target> extends CreepAction {
 		super(RANGED_ATTACK);
 		this.targeter = targeter;
 	}
-	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
+	public decide(actor: Creep): Action<Creep, ScreepsResult> {
 		return new ShootLowest(this.targeter);
 	}
-	public execute(actor: Creep): ScreepsReturnCode | undefined {
+	public execute(actor: Creep): ScreepsResult | undefined {
 		this.emote(actor);
 		const targets = this.getTargets(actor);
 		if (!targets.length) return ERR_NOT_FOUND;
-		const lowest = targets.reduce((lowest, current) => lowest.hits! < current.hits! ? lowest : current);
+		const lowest = targets.reduce((lowest, current) => (lowest.hits! < current.hits! ? lowest : current));
 		return actor.rangedAttack(lowest);
 	}
 	public isComplete(actor: Creep): boolean {
 		return !this.getTargets(actor).length;
 	}
 	private getTargets(actor: Creep): target_t[] {
-		return actor.findInRange(
-			this.targeter.all(),
-			INTENT_RANGE[RANGED_ATTACK]!)
+		return actor.findInRange(this.targeter.all(), RANGES[RANGED_ATTACK]!);
 	}
 }

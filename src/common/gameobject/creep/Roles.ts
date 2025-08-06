@@ -3,11 +3,21 @@ import { DecisionTree } from "common/decisions/DecisionTree";
 import { ActionSequence } from "common/decisions/actions/ActionSequence";
 import { Targeter } from "common/gameobject/Targeter";
 import { BUILD, HARVEST, INTENT_RANGE, RANGED_HEAL, TRANSFER, WITHDRAW } from "common/gameobject/creep/CreepIntent";
-import { ATTACK, CARRY, HEAL, MOVE, RANGED_ATTACK, RESOURCE_ENERGY, TERRAIN_PLAIN, TERRAIN_SWAMP, WORK } from "game/constants";
+import {
+	ATTACK,
+	CARRY,
+	HEAL,
+	MOVE,
+	RANGED_ATTACK,
+	RESOURCE_ENERGY,
+	TERRAIN_PLAIN,
+	TERRAIN_SWAMP,
+	WORK
+} from "game/constants";
 import { ConstructionSite, Creep, GameObject, StructureContainer, StructureSpawn } from "game/prototypes";
 import { FindPathOptions } from "game/utils";
 import { TEAM_ENEMY, TEAM_FRIENDLY, TEAM_NEUTRAL } from "../../entity/team/Team";
-import { ScreepsReturnCode } from "../ReturnCode";
+import { ScreepsResult } from "../Result";
 import { AnyInRange } from "../condition/AnyInRange";
 import { FindAny } from "../condition/FindAny";
 import { RelativeCapacity } from "../condition/RelativeCapacity";
@@ -28,16 +38,19 @@ import { Logger } from "common/patterns/Logger";
 
 // Predicates
 const isEnemy: Predicate<GameObject> = (object: OwnedGameObject) => object.my === false;
-const isArmed: Predicate<Creep> = (creep: Creep) => creep.body.some(({ type, hits }) => type === ATTACK || type === RANGED_ATTACK);
+const isArmed: Predicate<Creep> = (creep: Creep) =>
+	creep.body.some(({ type, hits }) => type === ATTACK || type === RANGED_ATTACK);
 const isThreat: Predicate<Creep> = (creep: Creep) => isEnemy(creep) && isArmed(creep);
 const isVillager: Predicate<Creep> = (creep: Creep) => !isArmed(creep);
 const isEnemyVillager: Predicate<Creep> = (creep: Creep) => isEnemy(creep) && isVillager(creep);
-const hasEnergy: Predicate<StructureContainer> = (container: StructureContainer) => container.store[RESOURCE_ENERGY] > 0;
+const hasEnergy: Predicate<StructureContainer> = (container: StructureContainer) =>
+	container.store[RESOURCE_ENERGY] > 0;
 const isInjured: Predicate<Creep> = (creep: Creep) => creep.hits < creep.hitsMax;
 const targetDead = <actor_t, target_t extends Health>(actor: actor_t, target: target_t) => (target.hits ?? 0) > 0;
 
 // Reducers
-const leastHealth = <target_t extends Health>(lhs: target_t, rhs: target_t) => (lhs.hits ?? 0) < (rhs.hits ?? 0) ? lhs : rhs
+const leastHealth = <target_t extends Health>(lhs: target_t, rhs: target_t) =>
+	(lhs.hits ?? 0) < (rhs.hits ?? 0) ? lhs : rhs;
 
 // Targeters
 const enemyVillagers = new Targeter(TEAM_ENEMY, Creep, isVillager);
@@ -47,15 +60,21 @@ const threats = new Targeter(TEAM_ENEMY, Creep, isArmed);
 const enemyCreeps = new Targeter(TEAM_ENEMY, Creep, () => true);
 const energySource = new Targeter(TEAM_NEUTRAL, StructureContainer, hasEnergy);
 const friendlySites = new Targeter<ConstructionSite>(TEAM_FRIENDLY, ConstructionSite, () => true);
-const injuredFriendlies = new Targeter<Creep>(TEAM_FRIENDLY, Creep, (creep: { hits: number; hitsMax: number; }) => creep.hits < creep.hitsMax);
+const injuredFriendlies = new Targeter<Creep>(
+	TEAM_FRIENDLY,
+	Creep,
+	(creep: { hits: number; hitsMax: number }) => creep.hits < creep.hitsMax
+);
 const armedFriendlies = new Targeter(TEAM_FRIENDLY, Creep, isArmed);
 
 const withdrawEnergy = new ActionSequence(
 	new MoveToNearest(energySource, INTENT_RANGE[WITHDRAW]),
-	new WithdrawResource(StructureContainer));
+	new WithdrawResource(StructureContainer)
+);
 const deliverToSpawn = new ActionSequence(
 	new MoveToNearest(friendlySpawn, INTENT_RANGE[TRANSFER]),
-	new DepositResource(StructureSpawn));
+	new DepositResource(StructureSpawn)
+);
 const isFull = new RelativeCapacity(1);
 export const hauler = new DecisionTree(isFull, deliverToSpawn, withdrawEnergy);
 
@@ -67,7 +86,12 @@ export const builder = new DecisionTree(isFull, moveBuild, withdrawEnergy);
 const ignoreSwamp: FindPathOptions = { swampCost: PATH_COST[TERRAIN_PLAIN] };
 const enemyHasCreeps = new FindAny(enemyCreeps);
 const threatInShootingRange = new AnyInRange(threats, INTENT_RANGE[RANGED_ATTACK]!);
-const fleeThreats = new FleeThreats(Creep, INTENT_RANGE[RANGED_ATTACK]!, (actor: any, threat: Creep) => isThreat(threat), ignoreSwamp);
+const fleeThreats = new FleeThreats(
+	Creep,
+	INTENT_RANGE[RANGED_ATTACK]!,
+	(actor: any, threat: Creep) => isThreat(threat),
+	ignoreSwamp
+);
 const moveToEnemyVillager = new MoveToNearest(enemyVillagers, INTENT_RANGE[ATTACK], ignoreSwamp);
 const attackVillager = new AttackLowest(enemyVillagers);
 const moveToEnemySpawn = new MoveToNearest(enemySpawn, INTENT_RANGE[ATTACK], ignoreSwamp);

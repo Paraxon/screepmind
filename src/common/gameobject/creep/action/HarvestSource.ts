@@ -1,5 +1,5 @@
 import { Action } from "common/decisions/actions/Action";
-import { HARVEST, INTENT_RANGE } from "common/gameobject/creep/CreepIntent";
+import { HARVEST, RANGES } from "common/gameobject/creep/CreepIntent";
 import { ScreepsReturnCode } from "common/Library";
 import { ERR_NOT_FOUND } from "game/constants";
 import { Creep, Source } from "game/prototypes";
@@ -22,6 +22,6 @@ export class HarvestSource extends CreepAction {
 		return targets.length ? actor.harvest(targets[0]) : ERR_NOT_FOUND;
 	}
 	private getTargets(actor: Creep) {
-		return actor.findInRange(getObjectsByPrototype(Source), INTENT_RANGE[HARVEST]!);
+		return actor.findInRange(getObjectsByPrototype(Source), RANGES[HARVEST]!);
 	}
 }

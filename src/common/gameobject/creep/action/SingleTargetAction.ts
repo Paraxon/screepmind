@@ -1,6 +1,6 @@
 import { BinaryPredicate, Reducer, SingleTargetIntent } from "common/library";
 import { Action } from "common/decisions/actions/Action";
-import { ScreepsReturnCode } from "common/gameobject/ReturnCode";
+import { ScreepsResult } from "common/gameobject/Result";
 import { Targeter } from "common/gameobject/Targeter";
 import { ATTACK, ERR_NOT_FOUND } from "game/constants";
 import { Creep, GameObject } from "game/prototypes";
@@ -11,18 +11,23 @@ export class SingleTargetAction<target_t extends GameObject> extends CreepAction
 	private readonly targeter: Targeter<target_t>;
 	private readonly reducer: Reducer<target_t>;
 	private readonly method: SingleTargetIntent;
-	private readonly predicate: BinaryPredicate<Creep, target_t>
-	public constructor(targeter: Targeter<target_t>, reducer: Reducer<target_t>, method: SingleTargetIntent, predicate: BinaryPredicate<Creep, target_t>) {
+	private readonly predicate: BinaryPredicate<Creep, target_t>;
+	public constructor(
+		targeter: Targeter<target_t>,
+		reducer: Reducer<target_t>,
+		method: SingleTargetIntent,
+		predicate: BinaryPredicate<Creep, target_t>
+	) {
 		super(INTENT_METHODS[method.name]);
 		this.targeter = targeter;
 		this.reducer = reducer;
 		this.method = method;
 		this.predicate = predicate;
 	}
-	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
+	public decide(actor: Creep): Action<Creep, ScreepsResult> {
 		return this;
 	}
-	public execute(actor: Creep): ScreepsReturnCode | undefined {
+	public execute(actor: Creep): ScreepsResult | undefined {
 		const targets = this.targeter.all();
 		if (!targets.length) return ERR_NOT_FOUND;
 		const best = targets.reduce(this.reducer);

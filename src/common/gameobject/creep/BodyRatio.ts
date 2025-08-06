@@ -10,7 +10,7 @@ export class BodyRatio {
 		this.parts.set(type, qty);
 		return this;
 	}
-	public add(type: BodyPartType, qty: number) {
+	public add(type: BodyPartType, qty: number = 1) {
 		this.parts.set(type, this.parts.get(type) ?? 0 + qty);
 		return this;
 	}
@@ -45,7 +45,7 @@ export class BodyRatio {
 	public moveEvery(onTerrain: Utils.Terrain = Consts.TERRAIN_PLAIN, tickPeriod = 1) {
 		const result = new BodyRatio();
 		this.parts.forEach((qty, type) => result.with(type, qty));
-		const movesNeeded = result.fatigue(onTerrain) / Lib.MOVE_FATIGUE_MODIFIER /* / tickPeriod */;
+		const movesNeeded = result.fatigue(onTerrain) / Lib.MOVE_FATIGUE_MODIFIER; /* / tickPeriod */
 		return result.add(Consts.MOVE, movesNeeded);
 	}
 	public scaledTo(budget: number, fractional = false) {

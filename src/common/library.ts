@@ -2,13 +2,13 @@ import Flatten from "@flatten-js/core";
 import * as Consts from "game/constants";
 import * as Proto from "game/prototypes";
 import * as Utils from "game/utils";
-import { ScreepsReturnCode } from "./gameobject/ReturnCode";
+import { ScreepsResult } from "./gameobject/Result";
 
 // Functional
 export type Predicate<arg_t> = (arg: arg_t) => boolean;
 export type BinaryPredicate<lhs_t, rhs_t> = (lhs: lhs_t, rhs: rhs_t) => boolean;
 export type Reducer<value_t> = (lhs: value_t, rhs: value_t) => value_t;
-export type SingleTargetIntent = (target: Proto.Creep | Proto.Structure) => ScreepsReturnCode;
+export type SingleTargetIntent = (target: Proto.Creep | Proto.Structure) => ScreepsResult;
 export type Compare<value_t> = (lhs: value_t, rhs: value_t) => boolean;
 export const strict_equal: Compare<number> = (lhs: number, rhs: number) => lhs === rhs;
 export const greater: Compare<number> = (lhs: number, rhs: number) => lhs > rhs;
@@ -19,11 +19,13 @@ export const less_equal: Compare<number> = (lhs: number, rhs: number) => lhs <= 
 // Screeps Oversights
 export type ID = number | string;
 export type Prototype<object_t extends Proto.GameObject> = new () => object_t;
-export type Health = { hits?: number, hitsMax?: number };
+export type Health = { hits?: number; hitsMax?: number };
 export type Target = Proto.GameObject & Health;
 export type Distance = number;
 export type Inventory = Proto.GameObject & { store: Proto.Store };
-export interface OwnedGameObject extends Proto.GameObject { my?: boolean; }
+export interface OwnedGameObject extends Proto.GameObject {
+	my?: boolean;
+}
 
 // Arena Dimensions
 export const ARENA_SHAPE = new Flatten.Box(0, 0, 99, 99);

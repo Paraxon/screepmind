@@ -4,7 +4,7 @@ import { Distance } from "common/library";
 import { ERR_NOT_FOUND, MOVE } from "game/constants";
 import { Creep, GameObject } from "game/prototypes";
 import { FindPathOptions } from "game/utils";
-import { ScreepsReturnCode } from "../../ReturnCode";
+import { ScreepsResult } from "../../Result";
 import { CreepAction } from "./CreepAction";
 import { Logger } from "common/patterns/Logger";
 
@@ -24,10 +24,10 @@ export class MoveToNearest<object_t extends GameObject> extends CreepAction {
 		const nearest = actor.findClosestByRange(targets);
 		return actor.getRangeTo(nearest) <= this.radius;
 	}
-	public decide(actor: Creep): Action<Creep, ScreepsReturnCode> {
+	public decide(actor: Creep): Action<Creep, ScreepsResult> {
 		return new MoveToNearest(this.targeter, this.radius, this._options);
 	}
-	public execute(actor: Creep): ScreepsReturnCode | undefined {
+	public execute(actor: Creep): ScreepsResult | undefined {
 		this.emote(actor);
 		const targets = this.targeter.all();
 		if (!targets.length) return ERR_NOT_FOUND;

@@ -1,6 +1,6 @@
 {
-	"name": "screeps-arena-typescript-starter",
-	"version": "3.0.0",
+	"name": "screepmind",
+	"version": "2025.08.05",
 	"description": "",
 	"main": "index.js",
 	"//": "If you add or change the names of destinations in screeps.json, make sure you update these scripts to reflect the changes",
@@ -14,14 +14,14 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/screepers/screeps-arena-typescript-starter.git"
+		"url": ""
 	},
 	"author": "",
 	"license": "Unlicense",
 	"bugs": {
-		"url": "https://github.com/screepers/screeps-arena-typescript-starter/issues"
+		"url": ""
 	},
-	"homepage": "https://github.com/screepers/screeps-arena-typescript-starter#readme",
+	"homepage": "",
 	"engines": {
 		"node": "10.x || 12.x || 16.x"
 	},

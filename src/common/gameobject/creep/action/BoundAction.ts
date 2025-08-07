@@ -22,7 +22,7 @@ export class BoundAction<target_t> extends CreepAction {
 		return this.action.call(actor, this.selector(actor));
 	}
 	public isComplete(actor: Proto.Creep): boolean {
-		return this.selector(actor) === undefined;
+		return !this.selector(actor);
 	}
 }
 

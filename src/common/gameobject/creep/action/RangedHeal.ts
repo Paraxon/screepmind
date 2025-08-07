@@ -3,7 +3,7 @@ import { ScreepsResult } from "common/gameobject/Result";
 import { Creep } from "game/prototypes";
 import { CreepAction } from "./CreepAction";
 import { Targeter } from "common/gameobject/Targeter";
-import { RANGES, RANGED_HEAL } from "../CreepIntent";
+import { INTENT_RANGE, RANGED_HEAL } from "../CreepIntent";
 import { ERR_NOT_FOUND } from "game/constants";
 
 export class RangedHeal extends CreepAction {
@@ -16,7 +16,7 @@ export class RangedHeal extends CreepAction {
 		return new RangedHeal(this.targeter);
 	}
 	public execute(actor: Creep): ScreepsResult | undefined {
-		const targets = this.targeter.inRange(actor, RANGES[RANGED_HEAL]!);
+		const targets = this.targeter.inRange(actor, INTENT_RANGE[RANGED_HEAL]!);
 		if (!targets.length) return ERR_NOT_FOUND;
 		const lowest = targets.reduce((lowest, current) =>
 			lowest.hits / lowest.hitsMax < current.hits / current.hitsMax ? lowest : current

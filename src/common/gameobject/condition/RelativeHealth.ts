@@ -11,6 +11,6 @@ export class RelativeHealth implements Condition<Creep | Structure> {
 		this.compare = compare;
 	}
 	evaluate(actor: Creep): boolean {
-		return this.compare(actor.hits / actor.hitsMax, this.percent);
+		return this.compare(actor.hits / actor.hitsMax, this.percent) > 0;
 	}
 }

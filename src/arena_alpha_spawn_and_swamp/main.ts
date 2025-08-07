@@ -4,7 +4,7 @@ import { LineVisualStyle, Visual } from "game/visual";
 import { Arbiter } from "../common/decisions/Blackboard";
 import { TEAM_FRIENDLY, Team } from "../common/entity/team/Team";
 import { Population } from "../common/entity/team/experts/Population";
-import { ERROR_EMOJI, ScreepsResult } from "../common/gameobject/Result";
+import { ScreepsResult } from "../common/gameobject/Result";
 import { Speech } from "../common/gameobject/Speech";
 import { AdjList } from "../common/graph/AdjacencyList";
 import { Border, ConnectRegions } from "../common/graph/Hierarchy";
@@ -13,6 +13,7 @@ import { Region } from "../common/graph/region";
 import { TileGraph } from "../common/graph/tilegraph";
 import { Logger } from "../common/patterns/Logger";
 import { Verbosity } from "../common/patterns/Verbosity";
+import { ERROR_EMOJI } from "../common/gameobject/Emoji";
 
 const kmeans = new KMeans(new TileGraph(), 33, 4);
 let regions: AdjList<Region, Border>;

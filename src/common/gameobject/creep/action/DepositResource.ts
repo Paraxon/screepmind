@@ -1,5 +1,5 @@
 import { Action } from "common/decisions/actions/Action";
-import { RANGES, TRANSFER } from "common/gameobject/creep/CreepIntent";
+import { INTENT_RANGE, TRANSFER } from "common/gameobject/creep/CreepIntent";
 import { Prototype } from "common/library";
 import { ERR_NOT_FOUND, RESOURCE_ENERGY } from "game/constants";
 import { Creep, ResourceType, StructureContainer } from "game/prototypes";
@@ -29,7 +29,7 @@ export class DepositResource<container_t extends StructureContainer> extends Cre
 	public getTargets(actor: Creep): container_t[] {
 		return actor.findInRange(
 			getObjectsByPrototype(this.prototype).filter(container => container.store.getFreeCapacity(this.resource)),
-			RANGES[TRANSFER]!
+			INTENT_RANGE[TRANSFER]!
 		);
 	}
 }

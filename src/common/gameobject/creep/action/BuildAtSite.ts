@@ -1,5 +1,5 @@
 import { Action } from "common/decisions/actions/Action";
-import { BUILD, RANGES } from "common/gameobject/creep/CreepIntent";
+import { BUILD, INTENT_RANGE } from "common/gameobject/creep/CreepIntent";
 import { ScreepsResult } from "common/gameobject/Result";
 import { Targeter } from "common/gameobject/Targeter";
 import { ERR_NOT_FOUND } from "game/constants";
@@ -21,7 +21,7 @@ export class BuildAtSite<structure_t extends Structure> extends CreepAction {
 	}
 	public execute(actor: Creep): ScreepsResult | undefined {
 		this.emote(actor);
-		const sites = this.targeter.inRange(actor, RANGES[BUILD]!);
+		const sites = this.targeter.inRange(actor, INTENT_RANGE[BUILD]!);
 		if (!sites.length) return ERR_NOT_FOUND;
 		const mostProgress = (best: ConstructionSite, current: ConstructionSite) =>
 			(best.progress ?? 0) > (current.progress ?? 0) ? best : current;

@@ -15,6 +15,6 @@ export class RelativeCapacity implements Condition<Inventory> {
 	evaluate(actor: Creep): boolean {
 		if (!actor.store.getCapacity(this.resource)) return true;
 		const value = (actor.store.getUsedCapacity(this.resource) ?? 0) / actor.store.getCapacity(this.resource)!;
-		return this.compare(value, this.percent);
+		return this.compare(value, this.percent) > 0;
 	}
 }

@@ -1,5 +1,5 @@
 import { Action } from "common/decisions/actions/Action";
-import { RANGES, WITHDRAW } from "common/gameobject/creep/CreepIntent";
+import { INTENT_RANGE, WITHDRAW } from "common/gameobject/creep/CreepIntent";
 import { ScreepsResult } from "common/gameobject/Result";
 import { Prototype } from "common/library";
 import { ERR_NOT_FOUND, RESOURCE_ENERGY } from "game/constants";
@@ -33,7 +33,7 @@ export class WithdrawResource<container_t extends StructureContainer> extends Cr
 	private getTargets(actor: Creep): container_t[] {
 		return actor.findInRange(
 			getObjectsByPrototype(this.prototype).filter(container => container.store[this.resource]),
-			RANGES[WITHDRAW]!
+			INTENT_RANGE[WITHDRAW]!
 		);
 	}
 }

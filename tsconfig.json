@@ -1,21 +1,21 @@
 {
-  "compilerOptions": {
-    "module": "esnext",
-    "lib": ["esnext"],
-    "target": "es2017",
-    "moduleResolution": "Node",
-    "outDir": "dist",
-    "baseUrl": "src/",
-    "sourceMap": true,
-    "strict": true,
-    "experimentalDecorators": true,
-    "noImplicitReturns": true,
-    "allowSyntheticDefaultImports": true,
-    "allowUnreachableCode": false,
-    "typeRoots": ["./node_modules/@types", "./@types",],
-	"paths": {
-		"game/*": ["./typings/game/*"]
-	}
-  },
-  "exclude": ["node_modules"]
+	"compilerOptions": {
+		"module": "esnext",
+		"lib": ["esnext"],
+		"target": "esnext",
+		"moduleResolution": "Node",
+		"outDir": "dist",
+		"baseUrl": "src/",
+		"sourceMap": true,
+		"strict": true,
+		"experimentalDecorators": true,
+		"noImplicitReturns": true,
+		"allowSyntheticDefaultImports": true,
+		"allowUnreachableCode": false,
+		"typeRoots": ["./node_modules/@types", "./@types"],
+		"paths": {
+			"game/*": ["./typings/game/*"]
+		}
+	},
+	"exclude": ["node_modules"]
 }

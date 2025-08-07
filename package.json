@@ -3,13 +3,14 @@
 	"version": "2025.08.05",
 	"description": "",
 	"main": "index.js",
+	"types": "src/common/*.ts",
 	"//": "If you add or change the names of destinations in screeps.json, make sure you update these scripts to reflect the changes",
 	"scripts": {
 		"lint": "eslint \"src/**/*.ts\"",
 		"format": "prettier --write --ignore-unknown --ignore-path .gitignore '**/*'",
 		"build": "rollup -c --config-",
 		"test": "npm run test-unit",
-		"test-unit": "mocha test/unit/**/*.ts",
+		"test-unit": "mocha",
 		"watch": "rollup -cw --config-"
 	},
 	"repository": {
@@ -23,13 +24,14 @@
 	},
 	"homepage": "",
 	"engines": {
-		"node": "10.x || 12.x || 16.x"
+		"node": ">=24.5.0"
 	},
+	"mocha": {},
 	"devDependencies": {
 		"@rollup/plugin-commonjs": "^11.1.0",
 		"@rollup/plugin-node-resolve": "^7.1.3",
 		"@types/chai": "^4.1.6",
-		"@types/mocha": "^5.2.5",
+		"@types/mocha": "^5.2.7",
 		"@types/node": "^13.13.1",
 		"@types/sinon": "^5.0.5",
 		"@types/sinon-chai": "^3.2.0",
@@ -47,11 +49,11 @@
 		"prettier": "^2.6.2",
 		"rollup": "^2.79.2",
 		"rollup-plugin-clear": "^2.0.7",
-		"rollup-plugin-screeps": "^1.0.0",
+		"rollup-plugin-screeps": "^0.1.2",
 		"rollup-plugin-typescript2": "^0.31.2",
 		"sinon": "^6.3.5",
 		"sinon-chai": "^3.2.0",
-		"ts-node": "^10.7.0",
+		"ts-node": "^10.9.2",
 		"tsconfig-paths": "^3.9.0",
 		"typescript": "^4.6.3"
 	},

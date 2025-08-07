@@ -26,38 +26,4 @@ export class BoundAction<target_t> extends CreepAction {
 	}
 }
 
-const attack = new BoundAction(
-	Proto.Creep.prototype.attack,
-	(actor: Proto.Creep) => Utils.getObjectsByPrototype(Proto.Creep)[0]
-);
-const build = new BoundAction(
-	Proto.Creep.prototype.build,
-	(actor: Proto.Creep) => Utils.getObjectsByPrototype(Proto.ConstructionSite)[0]
-);
-const harvest = new BoundAction(
-	Proto.Creep.prototype.harvest,
-	(actor: Proto.Creep) => Utils.getObjectsByPrototype(Proto.Source)[0]
-);
-const heal = new BoundAction(
-	Proto.Creep.prototype.heal,
-	(actor: Proto.Creep) => Utils.getObjectsByPrototype(Proto.Creep)[0]
-);
-const move = new BoundAction<Utils.Direction>(Proto.Creep.prototype.move, (actor: Proto.Creep) => Consts.TOP);
-const pickup = new BoundAction(
-	Proto.Creep.prototype.pickup,
-	(actor: Proto.Creep) => Utils.getObjectsByPrototype(Proto.Resource)[0]
-);
-const pull = new BoundAction(
-	Proto.Creep.prototype.pull,
-	(actor: Proto.Creep) => Utils.getObjectsByPrototype(Proto.Creep)[0]
-);
-const rangedAttack = new BoundAction(
-	Proto.Creep.prototype.rangedAttack,
-	(actor: Proto.Creep) => Utils.getObjectsByPrototype(Proto.Creep)[0]
-);
-const rangedHeal = new BoundAction(
-	Proto.Creep.prototype.rangedHeal,
-	(actor: Proto.Creep) => Utils.getObjectsByPrototype(Proto.Creep)[0]
-);
-const rangedMassAttack = new BoundAction(Proto.Creep.prototype.rangedMassAttack, (actor: Proto.Creep) => undefined);
 // transfer, withdraw, drop, and moveTo are not implemented as BoundActions

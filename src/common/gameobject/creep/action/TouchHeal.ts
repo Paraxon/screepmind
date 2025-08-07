@@ -4,7 +4,7 @@ import { Action } from "common/decisions/actions/Action";
 import { ScreepsResult } from "common/gameobject/Result";
 import { Creep } from "game/prototypes";
 import { Targeter } from "common/gameobject/Targeter";
-import { INTENT_RANGE } from "../CreepIntent";
+import { RANGE } from "../CreepIntent";
 
 export class TouchHeal extends CreepAction {
 	private readonly targeter: Targeter<Creep>;
@@ -12,7 +12,7 @@ export class TouchHeal extends CreepAction {
 		return new TouchHeal(this.targeter);
 	}
 	public execute(actor: Creep): ScreepsResult | undefined {
-		const targets = this.targeter.inRange(actor, INTENT_RANGE[HEAL]!);
+		const targets = this.targeter.inRange(actor, RANGE[HEAL]!);
 		if (!targets.length) return ERR_NOT_FOUND;
 		const lowest = targets.reduce((lowest, current) =>
 			lowest.hits / lowest.hitsMax < current.hits / current.hitsMax ? lowest : current
@@ -20,7 +20,7 @@ export class TouchHeal extends CreepAction {
 		return actor.heal(lowest);
 	}
 	public isComplete(actor: Creep): boolean {
-		return !this.targeter.inRange(actor, INTENT_RANGE[HEAL]!).length;
+		return !this.targeter.inRange(actor, RANGE[HEAL]!).length;
 	}
 	constructor(targeter: Targeter<Creep>) {
 		super(HEAL);

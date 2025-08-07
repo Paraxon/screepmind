@@ -5,7 +5,7 @@ import { Targeter } from "common/gameobject/Targeter";
 import { ERR_NOT_FOUND, RANGED_ATTACK } from "game/constants";
 import { Creep, GameObject } from "game/prototypes";
 import { Visual } from "game/visual";
-import { INTENT_RANGE } from "../CreepIntent";
+import { RANGE } from "../CreepIntent";
 import { CreepAction } from "./CreepAction";
 import { ScreepsResult } from "common/gameobject/Result";
 
@@ -29,6 +29,6 @@ export class ShootLowest<target_t extends Target> extends CreepAction {
 		return !this.getTargets(actor).length;
 	}
 	private getTargets(actor: Creep): target_t[] {
-		return actor.findInRange(this.targeter.all(), INTENT_RANGE[RANGED_ATTACK]!);
+		return actor.findInRange(this.targeter.all(), RANGE[RANGED_ATTACK]!);
 	}
 }

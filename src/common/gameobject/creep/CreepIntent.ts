@@ -1,5 +1,7 @@
-import { ATTACK, HEAL, MOVE, RANGED_ATTACK } from "game/constants";
 import { Creep } from "game/prototypes";
+import * as Consts from "game/constants";
+import { CreepResult } from "../Result";
+import * as Proto from "game/prototypes";
 
 // https://docs.screeps.com/simultaneous-actions.html
 
@@ -12,48 +14,49 @@ export const RANGED_HEAL = "ranged_heal";
 export const RANGED_MASS_ATTACK = "ranged_mass_attack";
 export const TRANSFER = "transfer";
 export const WITHDRAW = "withdraw";
+export { ATTACK, HEAL, MOVE, RANGED_ATTACK } from "game/constants";
 
 export type Intent =
-	| typeof ATTACK
+	| typeof Consts.ATTACK
 	| typeof BUILD
 	| typeof DROP
 	| typeof HARVEST
-	| typeof HEAL
-	| typeof MOVE
+	| typeof Consts.HEAL
+	| typeof Consts.MOVE
 	| typeof PICKUP
 	| typeof PULL
-	| typeof RANGED_ATTACK
+	| typeof Consts.RANGED_ATTACK
 	| typeof RANGED_HEAL
 	| typeof RANGED_MASS_ATTACK
 	| typeof TRANSFER
 	| typeof WITHDRAW;
 
-export const INTENT_METHODS: Record<string, Intent> = {
-	[Creep.prototype.attack.name]: ATTACK,
-	[Creep.prototype.build.name]: BUILD,
-	[Creep.prototype.drop.name]: DROP,
-	[Creep.prototype.harvest.name]: HARVEST,
-	[Creep.prototype.heal.name]: HEAL,
-	[Creep.prototype.move.name]: MOVE,
-	[Creep.prototype.pickup.name]: PICKUP,
-	[Creep.prototype.pull.name]: PULL,
-	[Creep.prototype.rangedAttack.name]: RANGED_ATTACK,
-	[Creep.prototype.rangedHeal.name]: RANGED_HEAL,
-	[Creep.prototype.rangedMassAttack.name]: RANGED_MASS_ATTACK,
-	[Creep.prototype.transfer.name]: TRANSFER,
-	[Creep.prototype.withdraw.name]: WITHDRAW
-};
+export const METHOD = new Map<Function, Intent>([
+	[Proto.Creep.prototype.attack, Consts.ATTACK],
+	[Proto.Creep.prototype.build, BUILD],
+	[Proto.Creep.prototype.drop, DROP],
+	[Proto.Creep.prototype.harvest, HARVEST],
+	[Proto.Creep.prototype.heal, Consts.HEAL],
+	[Proto.Creep.prototype.move, Consts.MOVE],
+	[Proto.Creep.prototype.pickup, PICKUP],
+	[Proto.Creep.prototype.pull, PULL],
+	[Proto.Creep.prototype.rangedAttack, Consts.RANGED_ATTACK],
+	[Proto.Creep.prototype.rangedHeal, RANGED_HEAL],
+	[Proto.Creep.prototype.rangedMassAttack, RANGED_MASS_ATTACK],
+	[Proto.Creep.prototype.transfer, TRANSFER],
+	[Proto.Creep.prototype.withdraw, WITHDRAW]
+]);
 
-export const INTENT_RANGE: Record<Intent, number | undefined> = {
-	[ATTACK]: 1,
+export const RANGE: Record<Intent, number | undefined> = {
+	[Consts.ATTACK]: 1,
 	[BUILD]: 3,
 	[DROP]: undefined,
 	[HARVEST]: 1,
-	[HEAL]: 1,
-	[MOVE]: undefined,
+	[Consts.HEAL]: 1,
+	[Consts.MOVE]: undefined,
 	[PICKUP]: 1,
 	[PULL]: 1,
-	[RANGED_ATTACK]: 3,
+	[Consts.RANGED_ATTACK]: 3,
 	[RANGED_HEAL]: 3,
 	[RANGED_MASS_ATTACK]: 3,
 	[TRANSFER]: 1,
@@ -61,7 +64,7 @@ export const INTENT_RANGE: Record<Intent, number | undefined> = {
 };
 
 export const ACTION_PIPELINES: Intent[][] = [
-	[HARVEST, ATTACK, BUILD, RANGED_HEAL, HEAL],
-	[RANGED_ATTACK, RANGED_MASS_ATTACK, BUILD, RANGED_HEAL],
+	[HARVEST, Consts.ATTACK, BUILD, RANGED_HEAL, Consts.HEAL],
+	[Consts.RANGED_ATTACK, RANGED_MASS_ATTACK, BUILD, RANGED_HEAL],
 	[BUILD, WITHDRAW, TRANSFER, DROP]
 ];

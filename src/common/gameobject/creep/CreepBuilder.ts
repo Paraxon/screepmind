@@ -21,7 +21,7 @@ export class CreepBuilder {
 	public get cost() {
 		return Array.from(this.parts.entries()).reduce((sum, [type, qty]) => sum + Consts.BODYPART_COST[type] * qty, 0);
 	}
-	public finalize(compare: Lib.Compare<BodyPartType> = cheapestFirst): BodyPartType[] {
+	public finalize(compare: Lib.Compare<BodyPartType> = expensiveFirst): BodyPartType[] {
 		return Array.from(this.parts.entries().flatMap(([type, qty]) => Array(qty).fill(type))).sort(compare);
 	}
 	public get size() {

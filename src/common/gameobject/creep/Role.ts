@@ -1,20 +1,20 @@
 import { Action } from "common/decisions/actions/Action";
 import { DecisionMaker } from "common/decisions/DecisionMaker";
-import { BodyRatio } from "common/gameobject/creep/BodyRatio";
+import { CreepBuilder } from "common/gameobject/creep/CreepBuilder";
 import { ScreepsResult } from "common/gameobject/Result";
 import { BodyPartType, Creep } from "game/prototypes";
 import { getTicks } from "game/utils";
 
 export class Role implements DecisionMaker<Creep, ScreepsResult> {
 	public readonly name: string;
-	public readonly body: BodyRatio;
+	public readonly body: CreepBuilder;
 	public readonly features: Map<BodyPartType, number>;
 	private readonly popMin: number;
 	private readonly popSlope: number;
 	private readonly ai: DecisionMaker<Creep, ScreepsResult>;
 	public constructor(
 		name: string,
-		body: BodyRatio,
+		body: CreepBuilder,
 		ai: DecisionMaker<Creep, ScreepsResult>,
 		features: Iterable<[BodyPartType, number]>,
 		popMin: number,

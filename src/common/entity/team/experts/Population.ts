@@ -36,6 +36,6 @@ export class Population implements Expert<Team, ScreepsResult> {
 		);
 		if (!underpopulated.length) return;
 		const spawnRole = underpopulated.reduce((best, current) => (best[1] > current[1] ? best : current))[0];
-		board.actions.push(new SpawnCreep(spawnRole.body.scaledTo(team.LocalInventory())));
+		board.actions.push(new SpawnCreep(spawnRole.body.withBudget(team.LocalInventory())));
 	}
 }

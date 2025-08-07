@@ -9,12 +9,12 @@ export type Predicate<arg_t> = (arg: arg_t) => boolean;
 export type BinaryPredicate<lhs_t, rhs_t> = (lhs: lhs_t, rhs: rhs_t) => boolean;
 export type Reducer<value_t> = (lhs: value_t, rhs: value_t) => value_t;
 export type SingleTargetIntent = (target: Proto.Creep | Proto.Structure) => ScreepsResult;
-export type Compare<value_t> = (lhs: value_t, rhs: value_t) => boolean;
-export const strict_equal: Compare<number> = (lhs: number, rhs: number) => lhs === rhs;
-export const greater: Compare<number> = (lhs: number, rhs: number) => lhs > rhs;
-export const greater_equal: Compare<number> = (lhs: number, rhs: number) => lhs >= rhs;
-export const less: Compare<number> = (lhs: number, rhs: number) => lhs < rhs;
-export const less_equal: Compare<number> = (lhs: number, rhs: number) => lhs <= rhs;
+export type Compare<value_t> = (lhs: value_t, rhs: value_t) => number;
+export const strict_equal: Compare<number> = (lhs: number, rhs: number) => (lhs === rhs ? 0 : -1);
+export const greater: Compare<number> = (lhs: number, rhs: number) => (lhs > rhs ? 1 : -1);
+export const greater_equal: Compare<number> = (lhs: number, rhs: number) => (lhs >= rhs ? 1 : -1);
+export const less: Compare<number> = (lhs: number, rhs: number) => (lhs < rhs ? -1 : 1);
+export const less_equal: Compare<number> = (lhs: number, rhs: number) => (lhs <= rhs ? -1 : 1);
 
 // Screeps Oversights
 export type ID = number | string;
@@ -43,5 +43,7 @@ export const FATIGUE_FACTOR: Record<Utils.Terrain, number> = {
 	[Consts.TERRAIN_WALL]: Infinity,
 	[Consts.TERRAIN_SWAMP]: 10
 };
-export const MOVE_FATIGUE_MODIFIER = 2;
+
+export const MIN_BODYPART_COST = Math.min(...(Object.values(Consts.BODYPART_COST) as number[]));
+export const FATIGUE_REDUCTION_PER_MOVE = 2; // Each MOVE body part decreases fatigue points by 2 per tick
 export const FLEE_SEARCH_RADIUS = 10;

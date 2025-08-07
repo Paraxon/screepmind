@@ -1,5 +1,5 @@
 import { Team } from "common/entity/team/Team";
-import { BodyRatio } from "common/gameobject/creep/BodyRatio";
+import { CreepBuilder } from "common/gameobject/creep/CreepBuilder";
 import { ScreepsResult } from "common/gameobject/Result";
 import { ERR_NOT_FOUND } from "game/constants";
 import { StructureSpawn } from "game/prototypes";
@@ -8,8 +8,8 @@ import { Logger } from "common/patterns/Logger";
 
 export class SpawnCreep implements Action<Team, ScreepsResult> {
 	flag = false;
-	ratio: BodyRatio;
-	public constructor(ratio: BodyRatio) {
+	ratio: CreepBuilder;
+	public constructor(ratio: CreepBuilder) {
 		this.ratio = ratio;
 	}
 	public decide(actor: Team): Action<Team, ScreepsResult> {
@@ -19,7 +19,7 @@ export class SpawnCreep implements Action<Team, ScreepsResult> {
 		this.flag = true;
 		const spawn = actor.GetFirst(StructureSpawn);
 		Logger.log("debug", `spawning creep from spawn ${spawn?.id}`);
-		return actor.GetFirst(StructureSpawn)?.spawnCreep(this.ratio.spawn).error ?? ERR_NOT_FOUND;
+		return actor.GetFirst(StructureSpawn)?.spawnCreep(this.ratio.finalize()).error ?? ERR_NOT_FOUND;
 	}
 	public canDoBoth(other: Action<Team, ScreepsResult>): boolean {
 		throw new Error("Method not implemented.");

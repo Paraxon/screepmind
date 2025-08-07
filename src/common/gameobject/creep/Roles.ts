@@ -22,7 +22,7 @@ import { AnyInRange } from "../condition/AnyInRange";
 import { FindAny } from "../condition/FindAny";
 import { RelativeCapacity } from "../condition/RelativeCapacity";
 import { RelativeHealth } from "../condition/RelativeHealth";
-import { BodyRatio } from "./BodyRatio";
+import { CreepBuilder } from "./CreepBuilder";
 import { CreepClassifier } from "./CreepClassifier";
 import { Role } from "./Role";
 import { AttackLowest } from "./action/AttackLowest";
@@ -38,11 +38,10 @@ import { Logger } from "common/patterns/Logger";
 
 // Predicates
 const isEnemy: Predicate<GameObject> = (object: OwnedGameObject) => object.my === false;
-const isArmed: Predicate<Creep> = (creep: Creep) =>
-	creep.body.some(({ type, hits }) => type === ATTACK || type === RANGED_ATTACK);
+const isArmed: Predicate<Creep> = (creep: Creep) => creep.body.some(({ type }) => type in [ATTACK, RANGED_ATTACK]);
 const isThreat: Predicate<Creep> = (creep: Creep) => isEnemy(creep) && isArmed(creep);
-const isVillager: Predicate<Creep> = (creep: Creep) => !isArmed(creep);
-const isEnemyVillager: Predicate<Creep> = (creep: Creep) => isEnemy(creep) && isVillager(creep);
+const isNotThreat: Predicate<Creep> = (creep: Creep) => !isArmed(creep);
+const isEnemyVillager: Predicate<Creep> = (creep: Creep) => isEnemy(creep) && isNotThreat(creep);
 const hasEnergy: Predicate<StructureContainer> = (container: StructureContainer) =>
 	container.store[RESOURCE_ENERGY] > 0;
 const isInjured: Predicate<Creep> = (creep: Creep) => creep.hits < creep.hitsMax;
@@ -53,7 +52,7 @@ const leastHealth = <target_t extends Health>(lhs: target_t, rhs: target_t) =>
 	(lhs.hits ?? 0) < (rhs.hits ?? 0) ? lhs : rhs;
 
 // Targeters
-const enemyVillagers = new Targeter(TEAM_ENEMY, Creep, isVillager);
+const enemyVillagers = new Targeter(TEAM_ENEMY, Creep, isNotThreat);
 const enemySpawn = new Targeter(TEAM_ENEMY, StructureSpawn, () => true);
 const friendlySpawn = new Targeter(TEAM_FRIENDLY, StructureSpawn, () => true);
 const threats = new Targeter(TEAM_ENEMY, Creep, isArmed);
@@ -130,11 +129,18 @@ const healOrPosition = new DecisionTree(anyAlliesInjured, touchOrRangedHeal, mov
 const medic = new DecisionTree(isSelfHurt, healSelf, healOrPosition);
 
 export const roles: Role[] = [
-	new Role("raider", new BodyRatio().with(ATTACK).moveEvery(TERRAIN_SWAMP), raider, [[ATTACK, 1]], 0, 33),
-	new Role("kiter", new BodyRatio().with(RANGED_ATTACK).moveEvery(TERRAIN_SWAMP), kiter, [[RANGED_ATTACK, 1]], 0, 50),
-	new Role("hauler", new BodyRatio().with(CARRY).moveEvery(), hauler, [[CARRY, 1]], 2, 100),
-	new Role("builder", new BodyRatio().with(CARRY).with(WORK).moveEvery(), builder, [[BUILD, 1]], 1, 200),
-	new Role("medic", new BodyRatio().with(HEAL).moveEvery(TERRAIN_SWAMP), medic, [[HEAL, 1]], 1, 150)
+	new Role("raider", new CreepBuilder().with(ATTACK).enableMovement(TERRAIN_SWAMP), raider, [[ATTACK, 1]], 0, 33),
+	new Role(
+		"kiter",
+		new CreepBuilder().with(RANGED_ATTACK).enableMovement(TERRAIN_SWAMP),
+		kiter,
+		[[RANGED_ATTACK, 1]],
+		0,
+		50
+	),
+	new Role("hauler", new CreepBuilder().with(CARRY).enableMovement(), hauler, [[CARRY, 1]], 2, 100),
+	new Role("builder", new CreepBuilder().with(CARRY).with(WORK).enableMovement(), builder, [[BUILD, 1]], 1, 200),
+	new Role("medic", new CreepBuilder().with(HEAL).enableMovement(TERRAIN_SWAMP), medic, [[HEAL, 1]], 1, 150)
 ];
 
 export const classifier = new CreepClassifier<Role>();

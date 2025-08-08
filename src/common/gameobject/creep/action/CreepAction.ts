@@ -6,10 +6,7 @@ import { ScreepsResult } from "../../Result";
 import { INTENT_EMOJI } from "common/gameobject/Emoji";
 
 export abstract class CreepAction implements Action<Creep, ScreepsResult> {
-	public readonly intent: Intent;
-	public constructor(intent: Intent) {
-		this.intent = intent;
-	}
+	public constructor(protected readonly intent: Intent) {}
 	public canDoBoth(other: Action<Creep, ScreepsResult>): boolean {
 		return other instanceof CreepAction ? !CreepAction.compareIntents(this.intent, other.intent) : true;
 	}
@@ -20,7 +17,9 @@ export abstract class CreepAction implements Action<Creep, ScreepsResult> {
 	protected emote(actor: Creep): void {
 		Speech.say(actor, INTENT_EMOJI[this.intent]);
 	}
-	public abstract decide(actor: Creep): Action<Creep, ScreepsResult>;
+	public decide(actor: Creep): Action<Creep, ScreepsResult> {
+		return this;
+	}
 	public abstract execute(actor: Creep): ScreepsResult | undefined;
 	public abstract isComplete(actor: Creep): boolean;
 }

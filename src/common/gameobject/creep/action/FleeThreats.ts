@@ -1,43 +1,27 @@
-import { Action } from "common/decisions/DecisionMaker";
 import { TEAM_ENEMY } from "common/entity/team/Team";
 import { ScreepsResult } from "common/gameobject/Result";
 import { Distance, FLEE_SEARCH_RADIUS, Prototype } from "common/library";
 import { ERR_NOT_FOUND, ERR_NO_PATH, MOVE } from "game/constants";
 import { Goal, searchPath, SearchPathOptions, SearchPathResult } from "game/path-finder";
 import { Creep, GameObject } from "game/prototypes";
-import { FindPathOptions, getDirection } from "game/utils";
+import { FindPathOptions, getDirection, getObjectsByPrototype } from "game/utils";
 import { Visual } from "game/visual";
 import { CreepAction } from "./CreepAction";
 import * as Func from "../../../Functional";
+import { Intent } from "../CreepIntent";
 
 export class FleeThreats<threat_t extends GameObject> extends CreepAction {
-	private readonly predicate: Func.BinaryPredicate<GameObject, threat_t>;
-	private readonly prototype: Prototype<threat_t>;
-	private readonly _options?: SearchPathOptions;
-	private readonly radius: Distance;
 	public constructor(
-		prototype: Prototype<threat_t>,
-		radius: Distance,
-		predicate: Func.BinaryPredicate<GameObject, threat_t> = () => true,
-		options?: SearchPathOptions
+		private readonly prototype: Prototype<threat_t>,
+		private readonly radius: Distance,
+		private readonly predicate: Func.VariadicPredicate<[GameObject, threat_t]> = () => true,
+		private readonly _options?: SearchPathOptions
 	) {
-		super(MOVE);
-		this.prototype = prototype;
-		this.radius = radius;
-		this.predicate = predicate;
-		this._options = { ...options };
-	}
-	public decide(actor: Creep): Action<Creep, ScreepsResult> {
-		return new FleeThreats(this.prototype, this.radius, this.predicate, this._options);
+		super(Intent.MOVE);
 	}
 	public execute(actor: Creep): ScreepsResult | undefined {
 		this.emote(actor);
-		return this.fleeMulti(actor, this.targets(actor));
-	}
-	private fleeSingle(actor: Creep, threat: threat_t) {
-		return actor.moveTo(threat, this.options);
-	}
-	private fleeMulti(actor: Creep, threats: threat_t[]) {
+		const threats = this.targets(actor);
 		if (threats.length === 0) return ERR_NOT_FOUND;
 		const goals: Goal[] = threats.map(threat => ({ pos: { x: threat.x, y: threat.y }, range: FLEE_SEARCH_RADIUS }));
 		const path = searchPath(actor, goals, this.options);
@@ -61,6 +45,6 @@ export class FleeThreats<threat_t extends GameObject> extends CreepAction {
 		return actor.move(getDirection(dx, dy));
 	}
 	private targets(actor: Creep) {
-		return TEAM_ENEMY.GetAll(this.prototype).filter(this.predicate.bind(null, actor));
+		return getObjectsByPrototype(Creep).filter(target => !target.my);
 	}
 }

@@ -10,10 +10,8 @@ import { CreepBuilder } from "./CreepBuilder";
 import { CreepClassifier } from "./CreepClassifier";
 import * as Intent from "./CreepIntent";
 import { Role } from "./Role";
-import { BoundAction } from "./action/BoundAction";
-import { DepositResource } from "./action/DepositResource";
+import { bindResourceAction, BoundAction } from "./action/BoundAction";
 import { FleeThreats } from "./action/FleeThreats";
-import { WithdrawResource } from "./action/WithdrawResource";
 
 // Predicates
 const isEnemy: Func.Predicate<Proto.GameObject> = (object: Lib.OwnedGameObject) => object.my === false;
@@ -50,16 +48,23 @@ const injuredFriendlies = (): Proto.Creep[] =>
 const armedFriendlies = (): Proto.Creep[] =>
 	Utils.getObjectsByPrototype(Proto.Creep).filter(creep => creep.my && isArmed(creep));
 
-const inWithdrawRange = Condition.inIntentRange(Intent.WITHDRAW);
+const inWithdrawRange = Condition.inRangeForIntent(Intent.WITHDRAW);
 const withdrawEnergy = new ActionSequence(
 	new BoundAction(Proto.Creep.prototype.moveTo, (actor: Proto.Creep) =>
 		Utils.getObjectsByPrototype(Proto.StructureContainer)
-			.filter((container: Proto.StructureContainer) => hasEnergy(container) && inWithdrawRange(actor, container))
-			.reduce((closest, current) =>
-				!closest || Utils.getRange(actor, current) < Utils.getRange(actor, closest) ? current : closest
+			.filter(hasEnergy)
+			.reduce((most, current) =>
+				!most || current.store[Consts.RESOURCE_ENERGY] > most.store[Consts.RESOURCE_ENERGY] ? current : most
 			)
 	),
-	new WithdrawResource(Proto.StructureContainer)
+	new BoundAction(bindResourceAction(Proto.Creep.prototype.withdraw), (actor: Proto.Creep) =>
+		Utils.getObjectsByPrototype(Proto.StructureContainer)
+			.filter(hasEnergy)
+			.filter((container: Proto.StructureContainer) => inWithdrawRange(actor, container))
+			.reduce((most, current) =>
+				!most || current.store[Consts.RESOURCE_ENERGY] > most.store[Consts.RESOURCE_ENERGY] ? current : most
+			)
+	)
 );
 const deliverToSpawn = new ActionSequence(
 	new BoundAction(Proto.Creep.prototype.moveTo, (actor: Proto.Creep) =>
@@ -67,7 +72,11 @@ const deliverToSpawn = new ActionSequence(
 			!closest || Utils.getRange(actor, current) < Utils.getRange(actor, closest) ? current : closest
 		)
 	),
-	new DepositResource(Proto.StructureSpawn)
+	new BoundAction(bindResourceAction(Proto.Creep.prototype.transfer), (actor: Proto.Creep) =>
+		friendlySpawns().reduce((closest, current) =>
+			!closest || Utils.getRange(actor, current) < Utils.getRange(actor, closest) ? current : closest
+		)
+	)
 );
 const isFull = Condition.isFull();
 export const hauler = new DecisionTree(isFull, deliverToSpawn, withdrawEnergy);

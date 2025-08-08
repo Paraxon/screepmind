@@ -38,6 +38,7 @@ export const METHOD = new Map<Function, Intent>([
 	[Proto.Creep.prototype.harvest, HARVEST],
 	[Proto.Creep.prototype.heal, Consts.HEAL],
 	[Proto.Creep.prototype.move, Consts.MOVE],
+	[Proto.Creep.prototype.moveTo, Consts.MOVE],
 	[Proto.Creep.prototype.pickup, PICKUP],
 	[Proto.Creep.prototype.pull, PULL],
 	[Proto.Creep.prototype.rangedAttack, Consts.RANGED_ATTACK],

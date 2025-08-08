@@ -12,7 +12,7 @@ export function inRange(
 	return (actor: Proto.GameObject): boolean => targets(actor).some(target => actor.getRangeTo(target) <= radius);
 }
 
-export function inIntentRange(intent: Intent.Intent) {
+export function inRangeForIntent(intent: Intent.Intent) {
 	return (actor: Proto.Creep, target: Proto.GameObject) => Utils.getRange(actor, target) <= Intent.RANGE[intent]!;
 }
 
@@ -25,7 +25,7 @@ export function healthAbovePercent(percent: number): Func.Predicate<{ hits?: num
 		actor.hits === undefined || actor.hitsMax === undefined || actor.hits / actor.hitsMax > percent;
 }
 
-export function hasResource(amount: number): Func.Predicate<{ store: Proto.Store }> {
+export function hasResourceAmmount(amount: number): Func.Predicate<{ store: Proto.Store }> {
 	return (actor: { store: Proto.Store }): boolean =>
 		(actor.store.getUsedCapacity(Consts.RESOURCE_ENERGY) ?? 0) >= amount;
 }

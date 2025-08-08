@@ -1,4 +1,4 @@
-import { Action } from "common/decisions/actions/Action";
+import { Action } from "common/decisions/DecisionMaker";
 import { CreepMind } from "common/entity/creep/CreepMind";
 import { ID, ScreepsReturnCode } from "common/Library";
 import { ERR_INVALID_TARGET, MOVE } from "game/constants";

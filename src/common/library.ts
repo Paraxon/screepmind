@@ -2,19 +2,6 @@ import Flatten from "@flatten-js/core";
 import * as Consts from "game/constants";
 import * as Proto from "game/prototypes";
 import * as Utils from "game/utils";
-import { ScreepsResult } from "./gameobject/Result";
-
-// Functional
-export type Predicate<arg_t> = (arg: arg_t) => boolean;
-export type BinaryPredicate<lhs_t, rhs_t> = (lhs: lhs_t, rhs: rhs_t) => boolean;
-export type Reducer<value_t> = (lhs: value_t, rhs: value_t) => value_t;
-export type SingleTargetIntent = (target: Proto.Creep | Proto.Structure) => ScreepsResult;
-export type Compare<value_t> = (lhs: value_t, rhs: value_t) => number;
-export const strict_equal: Compare<number> = (lhs: number, rhs: number) => (lhs === rhs ? 0 : -1);
-export const greater: Compare<number> = (lhs: number, rhs: number) => (lhs > rhs ? 1 : -1);
-export const greater_equal: Compare<number> = (lhs: number, rhs: number) => (lhs >= rhs ? 1 : -1);
-export const less: Compare<number> = (lhs: number, rhs: number) => (lhs < rhs ? -1 : 1);
-export const less_equal: Compare<number> = (lhs: number, rhs: number) => (lhs <= rhs ? -1 : 1);
 
 // Screeps Oversights
 export type ID = number | string;

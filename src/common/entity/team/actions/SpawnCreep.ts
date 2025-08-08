@@ -3,7 +3,7 @@ import { CreepBuilder } from "common/gameobject/creep/CreepBuilder";
 import { ScreepsResult } from "common/gameobject/Result";
 import { ERR_NOT_FOUND } from "game/constants";
 import { StructureSpawn } from "game/prototypes";
-import { Action } from "../../../decisions/actions/Action";
+import { Action } from "common/decisions/DecisionMaker";
 import { Logger } from "common/patterns/Logger";
 
 export class SpawnCreep implements Action<Team, ScreepsResult> {

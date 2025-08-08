@@ -1,4 +1,4 @@
-import { Action } from "common/decisions/actions/Action";
+import { Action } from "common/decisions/DecisionMaker";
 import { RANGE, WITHDRAW } from "common/gameobject/creep/CreepIntent";
 import { ScreepsResult } from "common/gameobject/Result";
 import { Prototype } from "common/library";

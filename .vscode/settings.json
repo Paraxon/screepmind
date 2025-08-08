@@ -1,27 +1,27 @@
 {
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
-  "editor.formatOnSave": true,
-"editor.renderWhitespace": "none",
-  "files.trimTrailingWhitespace": true,
-  "search.exclude": {
-    "_book/**": true,
-    ".rpt2_cache/**": true,
-    "dist/**": true,
-    "node_modules/**": true,
-    "typings/**": true
-  },
-"typescript.tsdk": "./node_modules/typescript/lib",
-"cSpell.words": [
-	"bodyratio",
-	"Buildable",
-	"bustin",
-	"concaveman",
-	"creepaction",
-	"gameobject",
-	"Screeps",
-	"targeter",
-	"Tilegraph"
-]
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
+	"editor.formatOnSave": true,
+	"editor.renderWhitespace": "none",
+	"files.trimTrailingWhitespace": true,
+	"search.exclude": {
+		"_book/**": true,
+		".rpt2_cache/**": true,
+		"dist/**": true,
+		"node_modules/**": true,
+		"typings/**": true
+	},
+	"typescript.tsdk": "./node_modules/typescript/lib",
+	"cSpell.words": [
+		"bodyratio",
+		"Buildable",
+		"bustin",
+		"concaveman",
+		"creepaction",
+		"gameobject",
+		"Screeps",
+		"targeter",
+		"Tilegraph"
+	]
 }

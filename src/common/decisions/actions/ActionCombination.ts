@@ -1,5 +1,5 @@
 import { DecisionMaker } from "common/decisions/DecisionMaker";
-import { Action } from "./Action";
+import { Action } from "../DecisionMaker";
 
 export class ActionCombination<actor_t, result_t = void>
 	implements Action<actor_t, result_t>, DecisionMaker<actor_t, result_t>
@@ -25,9 +25,12 @@ export class ActionCombination<actor_t, result_t = void>
 	}
 	public reduce(): Action<actor_t, result_t> | undefined {
 		switch (this.actions.length) {
-			case 0: return undefined;
-			case 1: return this.actions[0];
-			default: return this;
+			case 0:
+				return undefined;
+			case 1:
+				return this.actions[0];
+			default:
+				return this;
 		}
 	}
 }

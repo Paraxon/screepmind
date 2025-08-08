@@ -1,23 +1,24 @@
-import { Action } from "common/decisions/actions/Action";
+import { Action } from "common/decisions/DecisionMaker";
 import { TEAM_ENEMY } from "common/entity/team/Team";
 import { ScreepsResult } from "common/gameobject/Result";
-import { BinaryPredicate, Distance, FLEE_SEARCH_RADIUS, Prototype } from "common/library";
+import { Distance, FLEE_SEARCH_RADIUS, Prototype } from "common/library";
 import { ERR_NOT_FOUND, ERR_NO_PATH, MOVE } from "game/constants";
 import { Goal, searchPath, SearchPathOptions, SearchPathResult } from "game/path-finder";
 import { Creep, GameObject } from "game/prototypes";
 import { FindPathOptions, getDirection } from "game/utils";
 import { Visual } from "game/visual";
 import { CreepAction } from "./CreepAction";
+import * as Func from "../../../Functional";
 
 export class FleeThreats<threat_t extends GameObject> extends CreepAction {
-	private readonly predicate: BinaryPredicate<GameObject, threat_t>;
+	private readonly predicate: Func.BinaryPredicate<GameObject, threat_t>;
 	private readonly prototype: Prototype<threat_t>;
 	private readonly _options?: SearchPathOptions;
 	private readonly radius: Distance;
 	public constructor(
 		prototype: Prototype<threat_t>,
 		radius: Distance,
-		predicate: BinaryPredicate<GameObject, threat_t> = () => true,
+		predicate: Func.BinaryPredicate<GameObject, threat_t> = () => true,
 		options?: SearchPathOptions
 	) {
 		super(MOVE);

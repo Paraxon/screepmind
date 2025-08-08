@@ -1,27 +1,30 @@
 import * as Consts from "game/constants";
-import { BodyPartType } from "game/prototypes";
+import * as Proto from "game/prototypes";
 import * as Utils from "game/utils";
 import * as Lib from "../../library.js";
+import * as Func from "../../Functional.js";
 
-export const cheapestFirst: Lib.Compare<BodyPartType> = (a, b) => Consts.BODYPART_COST[a] - Consts.BODYPART_COST[b];
-export const expensiveFirst: Lib.Compare<BodyPartType> = (a, b) => Consts.BODYPART_COST[b] - Consts.BODYPART_COST[a];
-export const shuffled: Lib.Compare<BodyPartType> = (a, b) => Math.random() - 0.5;
+export const cheapestFirst: Func.Compare<Proto.BodyPartType> = (a, b) =>
+	Consts.BODYPART_COST[a] - Consts.BODYPART_COST[b];
+export const expensiveFirst: Func.Compare<Proto.BodyPartType> = (a, b) =>
+	Consts.BODYPART_COST[b] - Consts.BODYPART_COST[a];
+export const shuffled: Func.Compare<Proto.BodyPartType> = (a, b) => Math.random() - 0.5;
 
 export class CreepBuilder {
-	public readonly parts = new Map<BodyPartType, number>();
+	public readonly parts = new Map<Proto.BodyPartType, number>();
 
-	public with(type: BodyPartType, qty: number = 1) {
+	public with(type: Proto.BodyPartType, qty: number = 1) {
 		this.parts.set(type, qty);
 		return this;
 	}
-	public add(type: BodyPartType, qty: number = 1) {
+	public add(type: Proto.BodyPartType, qty: number = 1) {
 		this.parts.set(type, (this.parts.get(type) ?? 0) + qty);
 		return this;
 	}
 	public get cost() {
 		return Array.from(this.parts.entries()).reduce((sum, [type, qty]) => sum + Consts.BODYPART_COST[type] * qty, 0);
 	}
-	public finalize(compare: Lib.Compare<BodyPartType> = expensiveFirst): BodyPartType[] {
+	public finalize(compare: Func.Compare<Proto.BodyPartType> = expensiveFirst): Proto.BodyPartType[] {
 		return Array.from(this.parts.entries())
 			.flatMap(([type, qty]) => Array(qty).fill(type))
 			.sort(compare);
@@ -29,7 +32,7 @@ export class CreepBuilder {
 	public get size() {
 		return Array.from(this.parts.values()).reduce((sum, qty) => sum + qty);
 	}
-	public count(type: BodyPartType): number {
+	public count(type: Proto.BodyPartType): number {
 		return this.parts.get(type) ?? 0;
 	}
 	public fatigueGeneration(onTerrain: Utils.Terrain = Consts.TERRAIN_PLAIN) {
@@ -48,7 +51,7 @@ export class CreepBuilder {
 	}
 	public clone() {
 		const result = new CreepBuilder();
-		this.parts.forEach((qty: number, type: BodyPartType) => result.with(type, qty));
+		this.parts.forEach((qty: number, type: Proto.BodyPartType) => result.with(type, qty));
 		return result;
 	}
 	public withBudget(budget: number) {

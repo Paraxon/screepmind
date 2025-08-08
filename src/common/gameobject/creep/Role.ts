@@ -1,4 +1,4 @@
-import { Action } from "common/decisions/actions/Action";
+import { Action } from "common/decisions/DecisionMaker";
 import { DecisionMaker } from "common/decisions/DecisionMaker";
 import { CreepBuilder } from "common/gameobject/creep/CreepBuilder";
 import { ScreepsResult } from "common/gameobject/Result";
@@ -6,24 +6,16 @@ import { BodyPartType, Creep } from "game/prototypes";
 import { getTicks } from "game/utils";
 
 export class Role implements DecisionMaker<Creep, ScreepsResult> {
-	public readonly name: string;
-	public readonly body: CreepBuilder;
 	public readonly features: Map<BodyPartType, number>;
-	private readonly popMin: number;
 	private readonly popSlope: number;
-	private readonly ai: DecisionMaker<Creep, ScreepsResult>;
 	public constructor(
-		name: string,
-		body: CreepBuilder,
-		ai: DecisionMaker<Creep, ScreepsResult>,
+		public readonly name: string,
+		public readonly body: CreepBuilder,
+		private readonly ai: DecisionMaker<Creep, ScreepsResult>,
 		features: Iterable<[BodyPartType, number]>,
-		popMin: number,
+		private readonly popMin: number,
 		spawnPeriod: number
 	) {
-		this.name = name;
-		this.body = body;
-		this.ai = ai;
-		this.popMin = popMin;
 		this.popSlope = spawnPeriod ? 1 / spawnPeriod : 0;
 		this.features = new Map(features);
 	}

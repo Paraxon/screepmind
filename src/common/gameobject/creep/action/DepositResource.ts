@@ -1,4 +1,4 @@
-import { Action } from "common/decisions/actions/Action";
+import { Action } from "common/decisions/DecisionMaker";
 import { RANGE, TRANSFER } from "common/gameobject/creep/CreepIntent";
 import { Prototype } from "common/library";
 import { ERR_NOT_FOUND, RESOURCE_ENERGY } from "game/constants";

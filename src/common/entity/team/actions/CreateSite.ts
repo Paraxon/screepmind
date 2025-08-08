@@ -4,7 +4,7 @@ import { Prototype } from "common/Library";
 import { MAX_CONSTRUCTION_SITES, OK } from "game/constants";
 import { ConstructionSite, Position, Structure } from "game/prototypes";
 import { createConstructionSite } from "game/utils";
-import { Action } from "../../../decisions/actions/Action";
+import { Action } from "common/decisions/DecisionMaker";
 
 export class CreateSite implements Action<Team, ScreepsResult> {
 	private position: Position;

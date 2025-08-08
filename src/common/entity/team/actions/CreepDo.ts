@@ -6,7 +6,7 @@ import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
 import { Creep } from "game/prototypes";
 import { getObjectById } from "game/utils";
-import { Action } from "../../../decisions/actions/Action";
+import { Action } from "common/decisions/DecisionMaker";
 import { ERROR_EMOJI } from "common/gameobject/Emoji";
 
 export class CreepDo implements Action<Team, ScreepsResult> {

@@ -1,4 +1,4 @@
-import { Action } from "common/decisions/actions/Action";
+import { Action } from "common/decisions/DecisionMaker";
 import { ACTION_PIPELINES, Intent } from "common/gameobject/creep/CreepIntent";
 import { Speech } from "common/gameobject/Speech";
 import { Creep } from "game/prototypes";

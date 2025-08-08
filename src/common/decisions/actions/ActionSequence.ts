@@ -1,6 +1,6 @@
 import { Logger } from "common/patterns/Logger";
 import { Verbosity } from "common/patterns/Verbosity";
-import { Action } from "./Action";
+import { Action } from "../DecisionMaker";
 
 export class ActionSequence<actor_t, result_t = void> implements Action<actor_t, result_t> {
 	private actions = new Array<Action<actor_t, result_t>>();
@@ -23,9 +23,12 @@ export class ActionSequence<actor_t, result_t = void> implements Action<actor_t,
 	}
 	public reduce(): Action<actor_t, result_t> | undefined {
 		switch (this.actions.length) {
-			case 0: return undefined;
-			case 1: return this.actions[0];
-			default: return this;
+			case 0:
+				return undefined;
+			case 1:
+				return this.actions[0];
+			default:
+				return this;
 		}
 	}
 	public execute(actor: actor_t): result_t | undefined {

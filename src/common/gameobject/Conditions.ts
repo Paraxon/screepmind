@@ -33,3 +33,11 @@ export function hasResourceAmmount(amount: number): Func.Predicate<{ store: Prot
 export function isFull(): Func.Predicate<{ store: Proto.Store }> {
 	return (actor: { store: Proto.Store }): boolean => actor.store.getFreeCapacity(Consts.RESOURCE_ENERGY) === 0;
 }
+
+export function isSameTeam(actor: Lib.OwnedGameObject): Func.Predicate<Lib.OwnedGameObject> {
+	return (target: Lib.OwnedGameObject): boolean => actor.my === target.my;
+}
+
+export function isOnTeam(team?: boolean): Func.Predicate<Lib.OwnedGameObject> {
+	return (target: Lib.OwnedGameObject): boolean => target.my === team;
+}

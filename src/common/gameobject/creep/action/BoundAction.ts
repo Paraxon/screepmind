@@ -4,13 +4,13 @@ import * as Intent from "../CreepIntent";
 import { CreepAction } from "./CreepAction";
 import * as Result from "../../Result";
 import * as Consts from "game/constants";
-import { ResourceType } from "game/prototypes";
+import * as Func from "common/Functional";
 
-// transfer, withdraw, and drop are not implemented as BoundActions
 export class BoundAction<target_t> extends CreepAction {
 	public constructor(
 		protected action: (target: target_t) => Result.CreepResult,
-		protected selector: (actor: Proto.Creep) => target_t
+		protected selector: Func.Selector<Proto.Creep, target_t>,
+		protected complete: (actor: Proto.Creep, selector: Func.Selector<Proto.Creep, target_t>) => boolean
 	) {
 		super(Intent.METHOD.get(action) ?? (action.name as Intent.Intent));
 	}
@@ -19,10 +19,12 @@ export class BoundAction<target_t> extends CreepAction {
 	}
 	public execute(actor: Proto.Creep): Result.CreepResult | undefined {
 		this.emote(actor);
-		return this.action.call(actor, this.selector(actor));
+		const target = this.selector(actor);
+		console.log(`${actor.id} executing ${this.action.name ?? "unknown action"} on ${(target as Proto.GameObject).id}`);
+		return this.action.call(actor, target);
 	}
 	public isComplete(actor: Proto.Creep): boolean {
-		return !this.selector(actor);
+		return this.complete(actor, this.selector);
 	}
 }
 

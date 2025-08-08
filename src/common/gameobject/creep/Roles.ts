@@ -10,92 +10,117 @@ import { CreepBuilder } from "./CreepBuilder";
 import { CreepClassifier } from "./CreepClassifier";
 import * as Intent from "./CreepIntent";
 import { Role } from "./Role";
-import { bindResourceAction, BoundAction } from "./action/BoundAction";
+import { bindResourceAction, BoundAction, transfer, withdraw } from "./action/BoundAction";
 import { FleeThreats } from "./action/FleeThreats";
 
 // Predicates
-const isEnemy: Func.Predicate<Proto.GameObject> = (object: Lib.OwnedGameObject) => object.my === false;
-const isArmed: Func.Predicate<Proto.Creep> = (creep: Proto.Creep) =>
-	creep.body.some(({ type }) => type in [Intent.ATTACK, Intent.RANGED_ATTACK]);
-const isThreat: Func.Predicate<Proto.Creep> = (creep: Proto.Creep) => isEnemy(creep) && isArmed(creep);
-const isNotThreat: Func.Predicate<Proto.Creep> = (creep: Proto.Creep) => !isArmed(creep);
-const isEnemyVillager: Func.Predicate<Proto.Creep> = (creep: Proto.Creep) => isEnemy(creep) && isNotThreat(creep);
-const hasEnergy: Func.Predicate<Proto.StructureContainer> = (container: Proto.StructureContainer) =>
-	container.store[Consts.RESOURCE_ENERGY] > 0;
-const isInjured: Func.Predicate<Proto.Creep> = (creep: Proto.Creep) => creep.hits < creep.hitsMax;
-const targetDead = <actor_t, target_t extends Lib.Health>(actor: actor_t, target: target_t) => (target.hits ?? 0) > 0;
+const isEnemy = Condition.isOnTeam(false);
+const isAlly = Condition.isOnTeam(true);
+const isNeutral = Condition.isOnTeam(undefined);
+const isAttackPart = (part: Proto.BodyPartType) => part in [Consts.ATTACK, Consts.RANGED_ATTACK];
+const isArmed = (creep: Proto.Creep) => creep.body.some(isAttackPart);
+const isThreat = Func.and(isEnemy, isArmed);
+const isNotThreat = Func.not(isThreat);
+const isEnemyVillager = Func.and(isEnemy, isNotThreat);
+const hasEnergy = (container: { store: Proto.Store }) => container.store[Consts.RESOURCE_ENERGY] > 0;
+const isHurt = (target: Lib.Health) => target.hits! < target.hitsMax!;
+const isDead = (target: Lib.Health) => (target.hits ?? 1) > 0;
+const isFull = Condition.isFull();
+const isEmpty = (actor: { store: Proto.Store }) => (actor.store.getUsedCapacity(Consts.RESOURCE_ENERGY) ?? 0) === 0;
+const anyAlliesInjured = Condition.exists((_actor: Proto.GameObject) =>
+	Utils.getObjectsByPrototype(Proto.Creep).filter(creep => creep.my && creep.hits < creep.hitsMax)
+);
+const canTouchInjured = Condition.inRange(
+	() => Utils.getObjectsByPrototype(Proto.Creep).filter(creep => creep.my && creep.hits < creep.hitsMax),
+	Intent.RANGE[Intent.HEAL]!
+);
+const canReachInjured = Condition.inRange(
+	() => Utils.getObjectsByPrototype(Proto.Creep).filter(creep => creep.my && creep.hits < creep.hitsMax),
+	Intent.RANGE[Intent.RANGED_HEAL]!
+);
+const allyExists = Condition.exists(() =>
+	Utils.getObjectsByPrototype(Proto.Creep).filter(creep => creep.my && isArmed(creep))
+);
 
 // Reducers
-const leastHealth = <target_t extends Lib.Health>(lhs: target_t, rhs: target_t) =>
-	(lhs.hits ?? 0) < (rhs.hits ?? 0) ? lhs : rhs;
+const leastHealthCreep = (lowest: Proto.Creep | undefined, current: Proto.Creep) =>
+	!lowest || current.hits! < lowest.hits! ? current : lowest;
+const leastHealthSpawn = (lowest: Proto.StructureSpawn, current: Proto.StructureSpawn) =>
+	current.hits! < lowest.hits! ? current : lowest;
+const mostEnergy = (most: Proto.StructureContainer | undefined, current: Proto.StructureContainer) =>
+	!most || current.store[Consts.RESOURCE_ENERGY] > most.store[Consts.RESOURCE_ENERGY] ? current : most;
+function closestTo<target_t extends Proto.GameObject>(
+	actor: Proto.GameObject
+): (closest: target_t | undefined, current: target_t) => target_t {
+	return (closest: target_t | undefined, current: target_t) =>
+		!closest || Utils.getRange(actor, current) < Utils.getRange(actor, closest) ? current : closest;
+}
+const mostComplete = (closest: Proto.ConstructionSite | undefined, current: Proto.ConstructionSite) =>
+	!closest || current.progressTotal! - current.progress! < closest.progressTotal! - closest.progress!
+		? current
+		: closest;
 
 // Targeters
-const enemyVillagers = (): Proto.Creep[] => Utils.getObjectsByPrototype(Proto.Creep).filter(isEnemyVillager);
-const enemySpawns = (): Proto.StructureSpawn[] =>
-	Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(spawn => !spawn.my);
-const friendlySpawns = (): Proto.StructureSpawn[] =>
-	Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(spawn => spawn.my);
-const threats = (): Proto.Creep[] => Utils.getObjectsByPrototype(Proto.Creep).filter(isThreat);
-const enemyCreeps = (): Proto.Creep[] => Utils.getObjectsByPrototype(Proto.Creep).filter(isEnemy);
-const neutralEnergySource = (): Proto.StructureContainer[] =>
-	Utils.getObjectsByPrototype(Proto.StructureContainer).filter(
-		(container: Proto.StructureContainer) => container.my === undefined && container.store[Consts.RESOURCE_ENERGY] > 0
-	);
-const friendlySites = (): Proto.ConstructionSite[] =>
-	Utils.getObjectsByPrototype(Proto.ConstructionSite).filter(site => site.my);
-const injuredFriendlies = (): Proto.Creep[] =>
-	Utils.getObjectsByPrototype(Proto.Creep).filter(creep => creep.my && isInjured(creep));
-const armedFriendlies = (): Proto.Creep[] =>
-	Utils.getObjectsByPrototype(Proto.Creep).filter(creep => creep.my && isArmed(creep));
+const enemyVillagers = () => Utils.getObjectsByPrototype(Proto.Creep).filter(isEnemyVillager);
+const enemySpawns = () => Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(isEnemy);
+const friendlySpawns = () => Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(isAlly);
+const threats = () => Utils.getObjectsByPrototype(Proto.Creep).filter(isThreat);
+const enemyCreeps = () => Utils.getObjectsByPrototype(Proto.Creep).filter(isEnemy);
+const neutralEnergySource = () =>
+	Utils.getObjectsByPrototype(Proto.StructureContainer).filter(isNeutral).filter(hasEnergy);
+const friendlySites = () => Utils.getObjectsByPrototype(Proto.ConstructionSite).filter(isAlly);
+const injuredFriendlies = () => Utils.getObjectsByPrototype(Proto.Creep).filter(isAlly).filter(isHurt);
+const armedFriendlies = () => Utils.getObjectsByPrototype(Proto.Creep).filter(isAlly).filter(isArmed);
 
 const inWithdrawRange = Condition.inRangeForIntent(Intent.WITHDRAW);
+const inBuildRange = Condition.inRangeForIntent(Intent.BUILD);
+const inAttackRange = Condition.inRangeForIntent(Intent.ATTACK);
+const inShootingRange = Condition.inRangeForIntent(Intent.RANGED_ATTACK);
+const inHealRange = Condition.inRangeForIntent(Intent.HEAL);
+const inRangedHealRange = Condition.inRangeForIntent(Intent.RANGED_HEAL);
+
 const withdrawEnergy = new ActionSequence(
-	new BoundAction(Proto.Creep.prototype.moveTo, (actor: Proto.Creep) =>
-		Utils.getObjectsByPrototype(Proto.StructureContainer)
-			.filter(hasEnergy)
-			.reduce((most, current) =>
-				!most || current.store[Consts.RESOURCE_ENERGY] > most.store[Consts.RESOURCE_ENERGY] ? current : most
-			)
+	new BoundAction(
+		Proto.Creep.prototype.moveTo,
+		actor => Utils.getObjectsByPrototype(Proto.StructureContainer).reduce(mostEnergy),
+		(actor, selector) => inWithdrawRange(actor, selector(actor))
 	),
-	new BoundAction(bindResourceAction(Proto.Creep.prototype.withdraw), (actor: Proto.Creep) =>
-		Utils.getObjectsByPrototype(Proto.StructureContainer)
-			.filter(hasEnergy)
-			.filter((container: Proto.StructureContainer) => inWithdrawRange(actor, container))
-			.reduce((most, current) =>
-				!most || current.store[Consts.RESOURCE_ENERGY] > most.store[Consts.RESOURCE_ENERGY] ? current : most
-			)
+	new BoundAction(
+		bindResourceAction(withdraw),
+		actor =>
+			Utils.getObjectsByPrototype(Proto.StructureContainer)
+				.filter(container => inWithdrawRange(actor, container))
+				.reduce(mostEnergy),
+		(actor, selector) => actor.store.getFreeCapacity(Consts.RESOURCE_ENERGY) === 0
 	)
 );
 const deliverToSpawn = new ActionSequence(
-	new BoundAction(Proto.Creep.prototype.moveTo, (actor: Proto.Creep) =>
-		friendlySpawns().reduce((closest, current) =>
-			!closest || Utils.getRange(actor, current) < Utils.getRange(actor, closest) ? current : closest
-		)
+	new BoundAction(
+		Proto.Creep.prototype.moveTo,
+		actor => friendlySpawns().reduce(closestTo(actor)),
+		(actor, selector) => inWithdrawRange(actor, selector(actor))
 	),
-	new BoundAction(bindResourceAction(Proto.Creep.prototype.transfer), (actor: Proto.Creep) =>
-		friendlySpawns().reduce((closest, current) =>
-			!closest || Utils.getRange(actor, current) < Utils.getRange(actor, closest) ? current : closest
-		)
+	new BoundAction(
+		bindResourceAction(transfer),
+		actor => friendlySpawns().reduce(closestTo(actor)),
+		(actor, selector) => isEmpty(actor)
 	)
 );
-const isFull = Condition.isFull();
 export const hauler = new DecisionTree(isFull, deliverToSpawn, withdrawEnergy);
 
-const moveToSite = new BoundAction(Proto.Creep.prototype.moveTo, (actor: Proto.Creep) =>
-	friendlySites().reduce((closest, current) =>
-		!closest || Utils.getRange(actor, current) < Utils.getRange(actor, closest) ? current : closest
-	)
+const moveToSite = new BoundAction(
+	Proto.Creep.prototype.moveTo,
+	actor => friendlySites().reduce(closestTo(actor)),
+	(actor, selector) => inBuildRange(actor, selector(actor))
 );
-const build = new BoundAction(Proto.Creep.prototype.build, (actor: Proto.Creep) =>
-	Utils.getObjectsByPrototype(Proto.ConstructionSite)
-		.filter(site => site.my)
-		.filter(site => site.progress !== undefined || site.progressTotal !== undefined)
-		.filter(site => Utils.getRange(actor, site) <= Intent.RANGE[Intent.BUILD]!)
-		.reduce((closest, current) =>
-			!closest || current.progressTotal! - current.progress! < closest.progressTotal! - closest.progress!
-				? current
-				: closest
-		)
+const build = new BoundAction(
+	Proto.Creep.prototype.build,
+	actor =>
+		Utils.getObjectsByPrototype(Proto.ConstructionSite)
+			.filter(isAlly)
+			.filter(target => inBuildRange(actor, target))
+			.reduce(mostComplete),
+	(actor, selector) => !selector(actor)
 );
 const moveBuild = new ActionSequence(moveToSite, build);
 export const builder = new DecisionTree(isFull, moveBuild, withdrawEnergy);
@@ -112,28 +137,33 @@ const fleeThreats = new FleeThreats(
 	(actor: any, threat: Proto.Creep) => isThreat(threat),
 	ignoreSwamp
 );
-const moveToEnemyVillager = new BoundAction(Proto.Creep.prototype.moveTo, (actor: Proto.Creep) =>
-	enemyVillagers().reduce((closest, current) =>
-		!closest || Utils.getRange(actor, current) < Utils.getRange(actor, closest) ? current : closest
-	)
+const moveToEnemyVillager = new BoundAction(
+	Proto.Creep.prototype.moveTo,
+	(actor: Proto.Creep) => enemyVillagers().reduce(closestTo(actor)),
+	(actor, selector) => inAttackRange(actor, selector(actor))
 );
-const attackVillager = new BoundAction(Proto.Creep.prototype.attack, (actor: Proto.Creep) =>
-	Utils.getObjectsByPrototype(Proto.Creep)
-		.filter(creep => !creep.my && !isArmed(creep))
-		.filter(creep => Utils.getRange(actor, creep) <= Intent.RANGE[Intent.ATTACK]!)
-		.reduce((lowest, current) => (!lowest || current.hits < lowest.hits ? current : lowest))
+const attackVillager = new BoundAction(
+	Proto.Creep.prototype.attack,
+	(actor: Proto.Creep) =>
+		Utils.getObjectsByPrototype(Proto.Creep)
+			.filter(isThreat)
+			.filter(creep => inAttackRange(actor, creep))
+			.reduce(leastHealthCreep),
+	(actor, selector) => !selector(actor)
 );
-const moveToEnemySpawn = new BoundAction(Proto.Creep.prototype.moveTo, (actor: Proto.Creep) =>
-	enemySpawns().reduce((closest, current) =>
-		!closest || Utils.getRange(actor, current) < Utils.getRange(actor, closest) ? current : closest
-	)
+const moveToEnemySpawn = new BoundAction(
+	Proto.Creep.prototype.moveTo,
+	actor => enemySpawns().reduce(closestTo(actor)),
+	(actor, selector) => inAttackRange(actor, selector(actor))
 );
-const attackEnemySpawn = new BoundAction(Proto.Creep.prototype.attack, (actor: Proto.Creep) =>
-	Utils.getObjectsByPrototype(Proto.StructureSpawn)
-		.filter(spawn => !spawn.my)
-		.filter(spawn => Utils.getRange(actor, spawn) <= Intent.RANGE[Intent.ATTACK]!)
-		.filter(spawn => spawn.hits !== undefined)
-		.reduce((lowest, current) => (!lowest || current.hits! < lowest.hits! ? current : lowest))
+const attackEnemySpawn = new BoundAction(
+	Proto.Creep.prototype.attack,
+	actor =>
+		Utils.getObjectsByPrototype(Proto.StructureSpawn)
+			.filter(isEnemy)
+			.filter(spawn => inAttackRange(actor, spawn))
+			.reduce(leastHealthSpawn),
+	(actor, selector) => !selector(actor)
 );
 const moveAttackVillagers = new ActionSequence(moveToEnemyVillager, attackVillager);
 const moveAttackSpawn = new ActionSequence(moveToEnemySpawn, attackEnemySpawn);
@@ -145,74 +175,73 @@ const threatApproachingMelee = Condition.inRange(
 	() => Utils.getObjectsByPrototype(Proto.Creep).filter(isEnemy),
 	Intent.RANGE[Intent.ATTACK]! + 1
 );
-const moveToThreat = new BoundAction(Proto.Creep.prototype.moveTo, (actor: Proto.Creep) =>
-	threats().reduce((closest, current) =>
-		!closest || Utils.getRange(actor, current) < Utils.getRange(actor, closest) ? current : closest
-	)
+const moveToThreat = new BoundAction(
+	Proto.Creep.prototype.moveTo,
+	actor => threats().reduce(closestTo(actor)),
+	(actor, selector) => inShootingRange(actor, selector(actor))
 );
-const shootLowest = new BoundAction(Proto.Creep.prototype.rangedAttack, (actor: Proto.Creep) =>
-	Utils.getObjectsByPrototype(Proto.Creep)
-		.filter(creep => !creep.my)
-		.reduce((lowest, current) => (!lowest || current.hits < lowest.hits ? current : lowest))
+const shootLowest = new BoundAction(
+	Proto.Creep.prototype.rangedAttack,
+	actor => Utils.getObjectsByPrototype(Proto.Creep).filter(isEnemy).reduce(leastHealthCreep),
+	(actor, selector) => !selector(actor) || inShootingRange(actor, selector(actor))
 );
 const moveShootThreats = new ActionSequence(moveToThreat, shootLowest);
 const kiteThreats = new DecisionTree(threatApproachingMelee, fleeThreats, moveShootThreats);
-const shootEnemySpawn = new BoundAction(Proto.Creep.prototype.rangedAttack, (actor: Proto.Creep) =>
-	Utils.getObjectsByPrototype(Proto.StructureSpawn)
-		.filter(spawn => !spawn.my)
-		.filter(spawn => spawn.hits !== undefined)
-		.reduce((lowest, current) => (!lowest || current.hits! < lowest.hits! ? current : lowest))
+const shootEnemySpawn = new BoundAction(
+	Proto.Creep.prototype.rangedAttack,
+	actor => Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(isEnemy).reduce(leastHealthSpawn),
+	(actor, selector) => !selector(actor)
 );
-const moveRangeEnemySpawn = new BoundAction(Proto.Creep.prototype.moveTo, (actor: Proto.Creep) =>
-	enemySpawns().reduce((closest, current) =>
-		!closest || Utils.getRange(actor, current) < Utils.getRange(actor, closest) ? current : closest
-	)
+const moveRangeEnemySpawn = new BoundAction(
+	Proto.Creep.prototype.moveTo,
+	actor => enemySpawns().reduce(closestTo(actor)),
+	(actor, selector) => inShootingRange(actor, selector(actor))
 );
 const moveShootSpawn = new ActionSequence(moveRangeEnemySpawn, shootEnemySpawn);
 export const kiter = new DecisionTree(enemyHasThreats, kiteThreats, moveShootSpawn);
 
 const isSelfHurt = Func.not(Condition.healthAbovePercent(0.5));
-const healSelf = new BoundAction(Proto.Creep.prototype.heal, (actor: Proto.Creep) => actor);
-const anyAlliesInjured = Condition.exists((_actor: Proto.GameObject) =>
-	Utils.getObjectsByPrototype(Proto.Creep).filter(creep => creep.my && creep.hits < creep.hitsMax)
+const healSelf = new BoundAction(
+	Proto.Creep.prototype.heal,
+	actor => actor,
+	(actor, selector) => actor.hits >= actor.hitsMax
 );
-const canTouchInjured = Condition.inRange(
-	() => Utils.getObjectsByPrototype(Proto.Creep).filter(creep => creep.my && creep.hits < creep.hitsMax),
-	Intent.RANGE[Intent.HEAL]!
+
+const touchHeal = new BoundAction(
+	Proto.Creep.prototype.heal,
+	actor =>
+		Utils.getObjectsByPrototype(Proto.Creep)
+			.filter(isAlly)
+			.filter(creep => inHealRange(actor, creep))
+			.reduce(leastHealthCreep),
+	(actor, selector) => !selector(actor)
 );
-const touchHeal = new BoundAction(Proto.Creep.prototype.heal, (actor: Proto.Creep) =>
-	Utils.getObjectsByPrototype(Proto.Creep)
-		.filter(creep => creep.my && creep.hits < creep.hitsMax)
-		.filter(creep => Utils.getRange(actor, creep) <= Intent.RANGE[Intent.HEAL]!)
-		.reduce((lowest, current) => (!lowest || current.hits < lowest.hits ? current : lowest))
+
+const rangedHeal = new BoundAction(
+	Proto.Creep.prototype.rangedHeal,
+	actor =>
+		Utils.getObjectsByPrototype(Proto.Creep)
+			.filter(isAlly)
+			.filter(isHurt)
+			.filter(creep => inRangedHealRange(actor, creep))
+			.reduce(leastHealthCreep),
+	(actor, selector) => !selector(actor)
 );
-const canReachInjured = Condition.inRange(
-	() => Utils.getObjectsByPrototype(Proto.Creep).filter(creep => creep.my && creep.hits < creep.hitsMax),
-	Intent.RANGE[Intent.RANGED_HEAL]!
+const moveToWounded = new BoundAction(
+	Proto.Creep.prototype.moveTo,
+	actor => injuredFriendlies().reduce(closestTo(actor)),
+	(actor, selector) => !selector(actor) || inRangedHealRange(actor, selector(actor))
 );
-const rangedHeal = new BoundAction(Proto.Creep.prototype.rangedHeal, (actor: Proto.Creep) =>
-	Utils.getObjectsByPrototype(Proto.Creep)
-		.filter(creep => creep.my && creep.hits < creep.hitsMax)
-		.filter(creep => Utils.getRange(actor, creep) <= Intent.RANGE[Intent.RANGED_HEAL]!)
-		.reduce((lowest, current) => (!lowest || current.hits < lowest.hits ? current : lowest))
+
+const followAlly = new BoundAction(
+	Proto.Creep.prototype.moveTo,
+	actor => armedFriendlies().reduce(closestTo(actor)),
+	(actor, selector) => !selector(actor) || inRangedHealRange(actor, selector(actor))
 );
-const moveToWounded = new BoundAction(Proto.Creep.prototype.moveTo, (actor: Proto.Creep) =>
-	injuredFriendlies().reduce((closest, current) =>
-		!closest || Utils.getRange(actor, current) < Utils.getRange(actor, closest) ? current : closest
-	)
-);
-const allyExists = Condition.exists(() =>
-	Utils.getObjectsByPrototype(Proto.Creep).filter(creep => creep.my && isArmed(creep))
-);
-const followAlly = new BoundAction(Proto.Creep.prototype.moveTo, (actor: Proto.Creep) =>
-	armedFriendlies().reduce((closest, current) =>
-		!closest || Utils.getRange(actor, current) < Utils.getRange(actor, closest) ? current : closest
-	)
-);
-const goHome = new BoundAction(Proto.Creep.prototype.moveTo, (actor: Proto.Creep) =>
-	friendlySpawns().reduce((closest, current) =>
-		!closest || Utils.getRange(actor, current) < Utils.getRange(actor, closest) ? current : closest
-	)
+const goHome = new BoundAction(
+	Proto.Creep.prototype.moveTo,
+	actor => friendlySpawns().reduce(closestTo(actor)),
+	(actor, selector) => !selector(actor) || inRangedHealRange(actor, selector(actor))
 );
 const rangedHealOrMove = new DecisionTree(canReachInjured, rangedHeal, moveToWounded);
 const touchOrRangedHeal = new DecisionTree(canTouchInjured, touchHeal, rangedHealOrMove);
@@ -258,15 +287,3 @@ export const roles: Role[] = [
 
 export const classifier = new CreepClassifier<Role>();
 roles.forEach(role => classifier.add(role, role.features));
-
-// const harvestEnergy = new ActionSequence(
-// 	new MoveToNearest(Source),
-// 	new HarvestResource());
-// export const harvesterDecisionTree = new DecisionTree(isFull, deliverToSpawn, harvestEnergy);
-
-// const withdraw = new State("withdraw", withdrawEnergy);
-// const deliver = new State("deliver", deliverToSpawn);
-// const states = new AdjList(
-// 	[withdraw, deliver],
-// 	[new Transition(withdraw, deliver, isFull), new Transition(deliver, withdraw, isEmpty)])
-// export const haulerFSM = new StateMachine<Proto.CreepMind, ScreepsReturnCode>(withdraw, states);

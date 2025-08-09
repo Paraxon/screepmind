@@ -14,6 +14,9 @@ import { BoundAction } from "./action/BoundAction";
 import { FleeThreats } from "./action/FleeThreats";
 import * as Result from "../Result";
 import { Action } from "common/decisions/DecisionMaker";
+import { searchPath } from "game/path-finder";
+import { clear } from "console";
+import { Visual } from "game/visual";
 
 // Predicates
 const isEnemy = Condition.isOnTeam(false);
@@ -132,6 +135,25 @@ const build = new BoundAction(Proto.Creep.prototype.build, actor =>
 const moveBuild = new ActionSequence(moveToSite, build);
 export const builder = new DecisionTree(isFull, moveBuild, withdrawEnergy);
 
+function getObstacle(): Proto.StructureWall | undefined {
+	const friendlySpawn = Utils.getObjectsByPrototype(Proto.StructureSpawn).find(isAlly)!;
+	const paths = Utils.getObjectsByPrototype(Proto.StructureContainer)
+		.filter(container => container.getRangeTo(friendlySpawn) < 10)
+		.flatMap(container => searchPath(friendlySpawn, container).path)
+		.filter(pos => Utils.getTerrainAt(pos) == Consts.TERRAIN_WALL);
+	const obstacles = Utils.getObjectsByPrototype(Proto.StructureWall).filter(wall =>
+		paths.some(pos => pos.x === wall.x && pos.y === wall.y)
+	);
+	return obstacles.at(0);
+}
+const moveToObstacle = new BoundAction(
+	Proto.Creep.prototype.moveTo,
+	actor => getObstacle(),
+	(actor, target) => inAttackRange(actor, target)
+);
+const destroyObstacle = new BoundAction(Proto.Creep.prototype.attack, actor => getObstacle());
+const clearPath = new ActionSequence(moveToObstacle, destroyObstacle);
+
 const ignoreSwamp: Utils.FindPathOptions = { swampCost: Lib.PATH_COST[Consts.TERRAIN_PLAIN] };
 const fleeThreats = new FleeThreats(
 	Proto.Creep,
@@ -164,7 +186,8 @@ const attackEnemySpawn = new BoundAction(Proto.Creep.prototype.attack, actor =>
 const moveAttackVillagers = new ActionSequence(moveToEnemyVillager, attackVillager);
 const moveAttackSpawn = new ActionSequence(moveToEnemySpawn, attackEnemySpawn);
 const attackCreeps = new DecisionTree(threatInShootingRange, fleeThreats, moveAttackVillagers);
-export const raider = new DecisionTree(enemyHasCreeps, attackCreeps, moveAttackSpawn);
+const raid = new DecisionTree(enemyHasCreeps, attackCreeps, moveAttackSpawn);
+const raider = new DecisionTree(() => !!getObstacle(), clearPath, raid);
 
 const enemyHasThreats = Condition.exists(() => Utils.getObjectsByPrototype(Proto.Creep).filter(isEnemy));
 const threatApproachingMelee = Condition.inRange(
@@ -241,7 +264,7 @@ export const roles: Role[] = [
 		new CreepBuilder().with(Consts.ATTACK).enableMovement(Consts.TERRAIN_SWAMP),
 		raider,
 		[[Consts.ATTACK, 1]],
-		0,
+		1,
 		33
 	),
 	new Role(
@@ -252,13 +275,13 @@ export const roles: Role[] = [
 		0,
 		50
 	),
-	new Role("hauler", new CreepBuilder().with(Consts.CARRY).enableMovement(), hauler, [[Consts.CARRY, 1]], 2, 100),
+	new Role("hauler", new CreepBuilder().with(Consts.CARRY).enableMovement(), hauler, [[Consts.CARRY, 1]], 1, 100),
 	new Role(
 		"builder",
 		new CreepBuilder().with(Consts.CARRY).with(Consts.WORK).enableMovement(),
 		builder,
 		[[Intent.BUILD, 1]],
-		1,
+		0,
 		200
 	),
 	new Role(
@@ -266,7 +289,7 @@ export const roles: Role[] = [
 		new CreepBuilder().with(Consts.HEAL).enableMovement(Consts.TERRAIN_SWAMP),
 		medic,
 		[[Intent.HEAL, 1]],
-		1,
+		0,
 		150
 	)
 ];

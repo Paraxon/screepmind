@@ -2,11 +2,11 @@ import { Action } from "common/decisions/DecisionMaker";
 import { ACTION_PIPELINES, Intent } from "common/gameobject/creep/CreepIntent";
 import { Speech } from "common/gameobject/Speech";
 import { Creep } from "game/prototypes";
-import { ScreepsResult } from "../../Result";
+import { CreepResult, ScreepsResult } from "../../Result";
 import { INTENT_EMOJI } from "common/gameobject/Emoji";
 
 export abstract class CreepAction implements Action<Creep, ScreepsResult> {
-	public constructor(protected readonly intent: Intent) {}
+	public constructor(public readonly intent: Intent) {}
 	public canDoBoth(other: Action<Creep, ScreepsResult>): boolean {
 		return other instanceof CreepAction ? !CreepAction.compareIntents(this.intent, other.intent) : true;
 	}
@@ -20,6 +20,6 @@ export abstract class CreepAction implements Action<Creep, ScreepsResult> {
 	public decide(actor: Creep): Action<Creep, ScreepsResult> {
 		return this;
 	}
-	public abstract execute(actor: Creep): ScreepsResult | undefined;
+	public abstract execute(actor: Creep): ScreepsResult;
 	public abstract isComplete(actor: Creep): boolean;
 }

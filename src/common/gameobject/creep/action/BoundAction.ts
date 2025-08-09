@@ -6,13 +6,13 @@ import { CreepAction } from "./CreepAction";
 
 export class BoundAction<target_t extends Proto.GameObject> extends CreepAction {
 	public constructor(
-		protected action: (target: target_t) => Result.CreepResult,
+		protected action: (target: target_t) => Result.ScreepsResult,
 		protected targeter: (actor: Proto.Creep) => target_t | undefined,
 		protected complete?: (actor: Proto.Creep, target: target_t) => boolean
 	) {
 		super(Intent.METHOD.get(action)!);
 	}
-	public execute(actor: Proto.Creep): Result.CreepResult | undefined {
+	public execute(actor: Proto.Creep): Result.ScreepsResult {
 		this.emote(actor);
 		const target = this.targeter(actor);
 		return target ? this.action.call(actor, target) : Consts.ERR_INVALID_TARGET;

@@ -17,26 +17,16 @@ export const withdrawEnergyAction = bindResourceAction(Proto.Creep.prototype.wit
 
 // https://docs.screeps.com/simultaneous-actions.html
 
-export const BUILD = "build";
-export const DROP = "drop";
-export const HARVEST = "harvest";
-export const PICKUP = "pickup";
-export const PULL = "pull";
-export const RANGED_HEAL = "ranged_heal";
-export const RANGED_MASS_ATTACK = "ranged_mass_attack";
-export const TRANSFER = "transfer";
-export const WITHDRAW = "withdraw";
-
 export enum Intent {
-	ATTACK = Consts.ATTACK,
+	ATTACK = "attack",
 	BUILD = "build",
 	DROP = "drop",
 	HARVEST = "harvest",
-	HEAL = Consts.HEAL,
-	MOVE = Consts.MOVE,
+	HEAL = "heal",
+	MOVE = "move",
 	PICKUP = "pickup",
 	PULL = "pull",
-	RANGED_ATTACK = Consts.RANGED_ATTACK,
+	RANGED_ATTACK = "ranged_attack",
 	RANGED_HEAL = "ranged_heal",
 	RANGED_MASS_ATTACK = "ranged_mass_attack",
 	TRANSFER = "transfer",

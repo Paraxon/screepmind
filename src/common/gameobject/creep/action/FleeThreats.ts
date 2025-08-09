@@ -1,9 +1,9 @@
 import { TEAM_ENEMY } from "common/entity/team/Team";
-import { ScreepsResult } from "common/gameobject/Result";
+import { CreepResult, ScreepsResult } from "common/gameobject/Result";
 import { Distance, FLEE_SEARCH_RADIUS, Prototype } from "common/library";
-import { ERR_NOT_FOUND, ERR_NO_PATH, MOVE } from "game/constants";
+import { ERR_INVALID_ARGS, ERR_INVALID_TARGET, ERR_NOT_FOUND, ERR_NO_PATH, MOVE } from "game/constants";
 import { Goal, searchPath, SearchPathOptions, SearchPathResult } from "game/path-finder";
-import { Creep, GameObject } from "game/prototypes";
+import { Creep, CreepMoveResult, GameObject } from "game/prototypes";
 import { FindPathOptions, getDirection, getObjectsByPrototype } from "game/utils";
 import { Visual } from "game/visual";
 import { CreepAction } from "./CreepAction";
@@ -19,10 +19,10 @@ export class FleeThreats<threat_t extends GameObject> extends CreepAction {
 	) {
 		super(Intent.MOVE);
 	}
-	public execute(actor: Creep): ScreepsResult | undefined {
+	public execute(actor: Creep): CreepResult {
 		this.emote(actor);
 		const threats = this.targets(actor);
-		if (threats.length === 0) return ERR_NOT_FOUND;
+		if (threats.length === 0) return ERR_INVALID_TARGET;
 		const goals: Goal[] = threats.map(threat => ({ pos: { x: threat.x, y: threat.y }, range: FLEE_SEARCH_RADIUS }));
 		const path = searchPath(actor, goals, this.options);
 		new Visual().poly(path.path, { stroke: "#ffff00" });
@@ -37,8 +37,8 @@ export class FleeThreats<threat_t extends GameObject> extends CreepAction {
 	private get options(): FindPathOptions | undefined {
 		return { ...this._options, flee: true };
 	}
-	private followPath(actor: Creep, path: SearchPathResult) {
-		if (path.incomplete || !path.path.length) return ERR_NO_PATH;
+	private followPath(actor: Creep, path: SearchPathResult): CreepMoveResult {
+		if (path.incomplete || !path.path.length) return ERR_INVALID_ARGS;
 		const destination = path.path[0];
 		const dx = destination.x - actor.x;
 		const dy = destination.y - actor.y;

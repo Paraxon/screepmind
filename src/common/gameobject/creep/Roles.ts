@@ -12,6 +12,8 @@ import { Intent, RANGE, transferEnergyAction, withdrawEnergyAction } from "./Cre
 import { Role } from "./Role";
 import { BoundAction } from "./action/BoundAction";
 import { FleeThreats } from "./action/FleeThreats";
+import * as Result from "../Result";
+import { Action } from "common/decisions/DecisionMaker";
 
 // Predicates
 const isEnemy = Condition.isOnTeam(false);
@@ -86,7 +88,11 @@ const inRangedHealRange = Condition.inRangeForIntent(Intent.RANGED_HEAL);
 const withdrawEnergy = new ActionSequence(
 	new BoundAction(
 		Proto.Creep.prototype.moveTo,
-		actor => Utils.getObjectsByPrototype(Proto.StructureContainer).reduce(mostEnergy),
+		actor =>
+			Utils.findClosestByPath(
+				Utils.getObjectsByPrototype(Proto.StructureSpawn).find(isAlly)!,
+				Utils.getObjectsByPrototype(Proto.StructureContainer).filter(hasEnergy)
+			),
 		(actor, target) => inWithdrawRange(actor, target)
 	),
 	new BoundAction(
@@ -95,7 +101,7 @@ const withdrawEnergy = new ActionSequence(
 			Utils.getObjectsByPrototype(Proto.StructureContainer)
 				.filter(container => inWithdrawRange(actor, container))
 				.reduce(mostEnergy),
-		(actor, selector) => actor.store.getFreeCapacity(Consts.RESOURCE_ENERGY) === 0
+		(actor, target) => actor.store.getFreeCapacity(Consts.RESOURCE_ENERGY) === 0
 	)
 );
 const deliverToSpawn = new ActionSequence(

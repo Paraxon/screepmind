@@ -78,6 +78,6 @@ export class StateMachine<actor_t extends Stateful<actor_t, result_t>, result_t>
 			.then(transition.from.body?.decide(actor))
 			.then(transition.logic?.decide(actor))
 			.then(transition.to.entry?.decide(actor))
-			.reduce();
+			.flatten();
 	}
 }

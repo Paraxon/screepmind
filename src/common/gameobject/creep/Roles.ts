@@ -185,8 +185,8 @@ const attackEnemySpawn = new BoundAction(Proto.Creep.prototype.attack, actor =>
 );
 const moveAttackVillagers = new ActionSequence(moveToEnemyVillager, attackVillager);
 const moveAttackSpawn = new ActionSequence(moveToEnemySpawn, attackEnemySpawn);
-const attackCreeps = new DecisionTree(threatInShootingRange, fleeThreats, moveAttackVillagers);
-const raid = new DecisionTree(enemyHasCreeps, attackCreeps, moveAttackSpawn);
+const bullyVillagers = new DecisionTree(threatInShootingRange, fleeThreats, moveAttackVillagers);
+const raid = new DecisionTree(enemyHasCreeps, bullyVillagers, moveAttackSpawn);
 const raider = new DecisionTree(() => !!getObstacle(), clearPath, raid);
 
 const enemyHasThreats = Condition.exists(() => Utils.getObjectsByPrototype(Proto.Creep).filter(isEnemy));

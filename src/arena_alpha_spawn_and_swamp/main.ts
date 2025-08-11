@@ -40,11 +40,11 @@ export function loop() {
 
 function start() {
 	Logger.verbosity = Verbosity.Trace;
-	regions = ConnectRegions(new TileGraph(), kmeans.execute());
+	// regions = ConnectRegions(new TileGraph(), kmeans.execute());
 }
 
 function visualize(visual = new Visual()) {
-	drawRegions(visual);
+	// drawRegions(visual);
 	Speech.draw(visual);
 }
 

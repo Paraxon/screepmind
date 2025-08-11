@@ -5,17 +5,19 @@ export class ActionCombination<actor_t, result_t = void>
 	implements Action<actor_t, result_t>, DecisionMaker<actor_t, result_t>
 {
 	private actions = new Array<Action<actor_t, result_t>>();
-	public constructor(...actions: Action<actor_t, result_t>[]) {
-		this.actions = actions;
+	public constructor(action: Action<actor_t, result_t>, ...actions: Action<actor_t, result_t>[]) {
+		this.actions = [action, ...actions];
 	}
 	public decide(actor: actor_t): Action<actor_t, result_t> {
-		return new ActionCombination(...this.actions.map(action => action.decide(actor)));
+		const clones = this.actions.map(action => action.decide(actor));
+		return new ActionCombination(clones[0], ...clones.slice(1));
 	}
-	public execute(actor: actor_t): result_t | undefined {
+	public execute(actor: actor_t): result_t {
+		if (!this.actions.length) throw new Error("ActionCombination has no actions to execute.");
 		return this.actions
 			.filter(action => !action.isComplete(actor))
 			.map(action => action.execute(actor))
-			.reduce((prev, current) => current);
+			.at(-1)!;
 	}
 	public canDoBoth(other: Action<actor_t, result_t>): boolean {
 		return this.actions.every(action => action.canDoBoth(other));
@@ -23,14 +25,7 @@ export class ActionCombination<actor_t, result_t = void>
 	public isComplete(actor: actor_t): boolean {
 		return this.actions.every(action => action.isComplete(actor));
 	}
-	public reduce(): Action<actor_t, result_t> | undefined {
-		switch (this.actions.length) {
-			case 0:
-				return undefined;
-			case 1:
-				return this.actions[0];
-			default:
-				return this;
-		}
+	public flatten(): Action<actor_t, result_t> {
+		return this.actions.length > 1 ? this : this.actions[0];
 	}
 }

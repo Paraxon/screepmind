@@ -10,8 +10,8 @@ export interface Expert<actor_t, result_t> {
 export class Blackboard<actor_t, result_t> {
 	data = new Map<string, any>();
 	actions = new Array<Action<actor_t, result_t>>();
-	action(): Action<actor_t, result_t> | undefined {
-		return new ActionCombination<actor_t, result_t>(...this.actions).reduce();
+	action(): Action<actor_t, result_t> {
+		return new ActionCombination<actor_t, result_t>(this.actions[0], ...this.actions.slice(1));
 	}
 	clear(): void {
 		this.data.clear();
@@ -21,7 +21,7 @@ export class Blackboard<actor_t, result_t> {
 
 export class Arbiter<actor_t, result_t> implements DecisionMaker<actor_t, result_t> {
 	public experts = new Array<Expert<actor_t, result_t>>();
-	decide(actor: actor_t): Action<actor_t, result_t> | undefined {
+	decide(actor: actor_t): Action<actor_t, result_t> {
 		const board = new Blackboard<actor_t, result_t>();
 		// this.arbitrate(actor, board)?.write(actor, board);
 		this.experts.filter(expert => expert.insistence(actor, board) > 0).forEach(expert => expert.write(actor, board));

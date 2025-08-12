@@ -15,7 +15,7 @@ export class SpawnCreep implements Action<Team, ScreepsResult> {
 	public decide(actor: Team): Action<Team, ScreepsResult> {
 		return new SpawnCreep(this.ratio);
 	}
-	public execute(actor: Team): ScreepsResult | undefined {
+	public execute(actor: Team): ScreepsResult {
 		this.flag = true;
 		const spawn = actor.GetFirst(StructureSpawn);
 		Logger.log("debug", `spawning creep from spawn ${spawn?.id}`);

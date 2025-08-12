@@ -20,7 +20,7 @@ export class CreepDo implements Action<Team, ScreepsResult> {
 		const creep = getObjectById(this.id as string)! as Creep;
 		return new CreepDo(this.id, this.action.decide(creep));
 	}
-	execute(actor: Team): ScreepsResult | undefined {
+	execute(actor: Team): ScreepsResult {
 		const creep = getObjectById(this.id as string)! as Creep;
 		const result = this.action.execute(creep)!;
 		if (is_error(result)) {

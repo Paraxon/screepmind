@@ -15,6 +15,7 @@ export class BoundAction<target_t extends Proto.GameObject> extends CreepAction 
 	public execute(actor: Proto.Creep): Result.ScreepsResult {
 		this.emote(actor);
 		const target = this.targeter(actor);
+		console.log(`actor #${actor.id} selected target #${target?.id} for intent ${this.intent}`);
 		return target ? this.action.call(actor, target) : Consts.ERR_INVALID_TARGET;
 	}
 	public isComplete(actor: Proto.Creep): boolean {

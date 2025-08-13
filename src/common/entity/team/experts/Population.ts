@@ -2,12 +2,10 @@ import { Blackboard, Expert } from "common/decisions/Blackboard";
 import { ScreepsResult } from "common/gameobject/Result";
 import { Role } from "common/gameobject/creep/Role";
 import { classifier, roles } from "common/gameobject/creep/Roles";
-import { Logger } from "common/patterns/Logger";
 import { Creep } from "game/prototypes";
 import { Team } from "../Team";
 import { CreepDo } from "../actions/CreepDo";
 import { SpawnCreep } from "../actions/SpawnCreep";
-import { Classification } from "common/classification/Classification";
 
 export class Population implements Expert<Team, ScreepsResult> {
 	insistence(actor: Team, board: Blackboard<Team, ScreepsResult>): number {

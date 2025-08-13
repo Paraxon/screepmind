@@ -13,7 +13,6 @@ export class ActionCombination<actor_t, result_t = void>
 		return new ActionCombination(clones[0], ...clones.slice(1));
 	}
 	public execute(actor: actor_t): result_t {
-		if (!this.actions.length) throw new Error("ActionCombination has no actions to execute.");
 		return this.actions
 			.filter(action => !action.isComplete(actor))
 			.map(action => action.execute(actor))

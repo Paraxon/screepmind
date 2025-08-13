@@ -20,18 +20,18 @@ export const INTENT_EMOJI: Record<Intent, string> = {
 
 export const ERROR_EMOJI: Record<ScreepsResult, string> = {
 	[Result.OK]: "👍",
-	[Result.ERR_NOT_OWNER]: "💢🙅",
-	[Result.ERR_NO_PATH]: "🗺️🤷",
-	[Result.ERR_NAME_EXISTS]: "🪪🙅",
-	[Result.ERR_BUSY]: "💦🙅",
-	[Result.ERR_NOT_FOUND]: "🔍🤷",
-	[Result.ERR_NOT_ENOUGH_ENERGY]: "🪫🙅",
-	[Result.ERR_INVALID_TARGET]: "🎯🤦",
-	[Result.ERR_FULL]: "🫃🙅",
-	[Result.ERR_NOT_IN_RANGE]: "📏🙅",
-	[Result.ERR_INVALID_ARGS]: "🎁🤦",
-	[Result.ERR_TIRED]: "💤🙅",
-	[Result.ERR_NO_BODYPART]: "💪🙅"
-	// [Result.ERR_NOT_ENOUGH_RESOURCES]: "💰🙅",
-	// [Result.ERR_NOT_ENOUGH_EXTENSIONS]: "🔌🙅"
+	[Result.ERR_NOT_OWNER]: "💢",
+	[Result.ERR_NO_PATH]: "🗺️",
+	[Result.ERR_NAME_EXISTS]: "🪪",
+	[Result.ERR_BUSY]: "💦",
+	[Result.ERR_NOT_FOUND]: "🔍",
+	[Result.ERR_NOT_ENOUGH_ENERGY]: "🪫",
+	[Result.ERR_INVALID_TARGET]: "🎯",
+	[Result.ERR_FULL]: "🫃",
+	[Result.ERR_NOT_IN_RANGE]: "📏",
+	[Result.ERR_INVALID_ARGS]: "🎁",
+	[Result.ERR_TIRED]: "💤",
+	[Result.ERR_NO_BODYPART]: "💪"
+	// [Result.ERR_NOT_ENOUGH_RESOURCES]: "💸",
+	// [Result.ERR_NOT_ENOUGH_EXTENSIONS]: "🔌"
 };

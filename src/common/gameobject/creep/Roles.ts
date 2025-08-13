@@ -12,12 +12,8 @@ import * as Intents from "./CreepIntent";
 import { Role } from "./Role";
 import { BoundAction } from "./action/BoundAction";
 import { NavAction } from "./action/NavAction";
-import * as Result from "../Result";
-import { Action } from "common/decisions/DecisionMaker";
 import { searchPath } from "game/path-finder";
-import { clear } from "console";
 import { Visual } from "game/visual";
-import { Position } from "game/prototypes";
 
 // Predicates
 const isEnemy = Condition.isOnTeam(false);
@@ -95,7 +91,8 @@ const withdrawEnergy = new ActionSequence(
 		actor =>
 			Utils.findClosestByPath(
 				Utils.getObjectsByPrototype(Proto.StructureSpawn).find(isAlly)!,
-				Utils.getObjectsByPrototype(Proto.StructureContainer).filter(hasEnergy)
+				Utils.getObjectsByPrototype(Proto.StructureContainer).filter(hasEnergy),
+				{ ignore: [actor] }
 			),
 		(actor, target) => inWithdrawRange(actor, target)
 	),
@@ -105,7 +102,8 @@ const withdrawEnergy = new ActionSequence(
 			Utils.getObjectsByPrototype(Proto.StructureContainer)
 				.filter(container => inWithdrawRange(actor, container))
 				.reduce(mostEnergy),
-		(actor, target) => actor.store.getFreeCapacity(Consts.RESOURCE_ENERGY) === 0
+		(actor, target) =>
+			actor.store.getUsedCapacity(Consts.RESOURCE_ENERGY)! > target.store.getUsedCapacity(Consts.RESOURCE_ENERGY)!
 	)
 );
 const deliverToSpawn = new ActionSequence(
@@ -137,14 +135,19 @@ const moveBuild = new ActionSequence(moveToSite, build);
 export const builder = new DecisionTree(isFull, moveBuild, withdrawEnergy);
 
 function getClosestObstacle(actor: Proto.Creep): Proto.StructureWall | undefined {
-	const friendlySpawn = Utils.getObjectsByPrototype(Proto.StructureSpawn).find(isAlly)!;
-	const pos = Utils.getObjectsByPrototype(Proto.StructureContainer)
-		.filter(container => container.getRangeTo(friendlySpawn) < 10)
-		.map(container => searchPath(friendlySpawn, container).path)
-		.map(path => path.find(pos => Utils.getTerrainAt(pos) == Consts.TERRAIN_WALL))
-		.filter(tile => tile !== undefined)
-		.reduce((prev, current) => (!prev || actor.getRangeTo(current!) < actor.getRangeTo(prev) ? current! : prev))!;
-	return Utils.getObjectsByPrototype(Proto.StructureWall).find(wall => wall.x === pos.x && wall.y === pos.y);
+	const searchRadius = 10;
+	const spawn = Utils.getObjectsByPrototype(Proto.StructureSpawn).find(isAlly)!;
+	const walls = Utils.getObjectsByPrototype(Proto.StructureWall).filter(wall => wall.getRangeTo(spawn) < searchRadius);
+	// Do not use getTerrainAt(pos) to check for walls constructed before the start of the game
+	return Utils.getObjectsByPrototype(Proto.StructureContainer)
+		.filter(container => container.getRangeTo(spawn) < searchRadius)
+		.map(container => searchPath(spawn, container).path)
+		.flatMap(path => path.map(pos => walls.find(wall => wall.x == pos.x && wall.y == pos.y)))
+		.filter(match => match != undefined)
+		.reduce(
+			(prev, current) => (!prev || actor.getRangeTo(current!) < actor.getRangeTo(prev) ? current! : prev),
+			undefined as Proto.StructureWall | undefined
+		);
 }
 const moveToObstacle = new BoundAction(
 	Proto.Creep.prototype.moveTo,

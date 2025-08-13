@@ -5,16 +5,17 @@
 		"target": "esnext",
 		"moduleResolution": "Node",
 		"outDir": "dist",
-		"baseUrl": "src/",
+		"baseUrl": "./src",
 		"sourceMap": true,
 		"strict": true,
 		"experimentalDecorators": true,
 		"noImplicitReturns": true,
 		"allowSyntheticDefaultImports": true,
 		"allowUnreachableCode": false,
-		"typeRoots": ["./node_modules/@types", "./@types"],
+		"typeRoots": ["./node_modules/@types", "./@types", "./node_modules/@types/screeps-arena/dist"],
 		"paths": {
-			"game/*": ["./typings/game/*"]
+			"game/*": ["src/arena_alpha_spawn_and_swamp/typings/game"],
+			"common": ["src/common"]
 		}
 	},
 	"exclude": ["node_modules"]

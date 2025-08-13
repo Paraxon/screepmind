@@ -1,7 +1,6 @@
-import { DiGraph } from "./digraph";
+import { DiGraph } from "./Digraph";
 import Flatten from "@flatten-js/core";
 import { Region } from "./region";
-import { Summary } from "common/math/Statistics";
 import { VertexRecord } from "./Span/VertexRecord";
 
 export class KMeans {

@@ -1,6 +1,6 @@
 import Flatten from "@flatten-js/core";
 import { AdjList } from "./AdjacencyList";
-import { DiGraph, DirectedEdge, Edge, Weighted } from "./digraph";
+import { DiGraph, DirectedEdge, Edge, Weighted } from "./Digraph";
 import { Region } from "./region";
 
 export class Border implements DirectedEdge<Region>, Weighted {
@@ -9,7 +9,7 @@ export class Border implements DirectedEdge<Region>, Weighted {
 	public to: Region;
 	private minCost?: number;
 	public get cost(): number {
-		return this.minCost ??= this.edges.reduce((min, edge) => Math.min(min, edge.cost), Infinity);
+		return (this.minCost ??= this.edges.reduce((min, edge) => Math.min(min, edge.cost), Infinity));
 	}
 	public constructor(from: Region, to: Region) {
 		this.from = from;

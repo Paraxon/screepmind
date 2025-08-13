@@ -1,5 +1,11 @@
 {
-  "extension": ["ts"],
-  "spec": "src/**/*.test.ts",
-  "require": "ts-node/register"
+  "extension": [
+    ".test.ts"
+  ],
+  "spec": "test/**/*.test.ts",
+  "require": [
+    "ts-node/register",
+    "tsconfig-paths/register"
+  ],
+  "recursive": true
 }

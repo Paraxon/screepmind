@@ -11,7 +11,6 @@ import * as Lib from "common/library";
 import * as Roles from "common/gameobject/creep/Role";
 import { CreepBuilder } from "../CreepBuilder";
 
-const enemyHasThreats = AI.exists(() => Utils.getObjectsByPrototype(Proto.Creep).filter(AI.isEnemy));
 const threatApproachingMelee = AI.inRange(
 	() => Utils.getObjectsByPrototype(Proto.Creep).filter(AI.isEnemy),
 	Intents.RANGE[Intents.Intent.ATTACK]! + 1
@@ -40,7 +39,7 @@ const moveRangeEnemySpawn = new BoundAction(
 	(actor, target) => AI.inRangedAttackRange(actor, target)
 );
 const moveShootSpawn = new ActionSequence(moveRangeEnemySpawn, shootEnemySpawn);
-export const kiter = new DecisionTree(enemyHasThreats, kiteThreats, moveShootSpawn);
+export const kiter = new DecisionTree(AI.enemyHasThreats, kiteThreats, moveShootSpawn);
 
 const kiterRole = new Roles.Role(
 	"kiter",
@@ -50,5 +49,6 @@ const kiterRole = new Roles.Role(
 	0,
 	50
 );
+
 Roles.roles.push(kiterRole);
 Roles.classifier.add(kiterRole, kiterRole.features);

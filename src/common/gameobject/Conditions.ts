@@ -73,6 +73,8 @@ export const allyExists = exists(() =>
 	Utils.getObjectsByPrototype(Proto.Creep).filter(creep => creep.my && isArmed(creep))
 );
 export const isFullEnergy = isFull();
+export const isSelfHurt = Func.not(healthAbovePercent(0.5));
+export const enemyHasThreats = exists(() => Utils.getObjectsByPrototype(Proto.Creep).filter(isEnemy));
 
 // Targeters
 export function getClosestObstacle(actor: Proto.Creep): Proto.StructureWall | undefined {

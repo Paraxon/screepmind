@@ -16,6 +16,7 @@ import { Region } from "../common/graph/region";
 import { TileGraph } from "../common/graph/tilegraph";
 import { Logger } from "../common/patterns/Logger";
 import { Verbosity } from "../common/patterns/Verbosity";
+import * as Medic from "../common/gameobject/creep/roles/Medic";
 
 const kmeans = new KMeans(new TileGraph(), 33, 4);
 let regions: AdjList<Region, Border>;

@@ -19,7 +19,7 @@ export class SpawnCreep implements Action<Team, ScreepsResult> {
 		this.flag = true;
 		const spawn = actor.GetFirst(StructureSpawn);
 		Logger.log("debug", `spawning creep from spawn ${spawn?.id}`);
-		return actor.GetFirst(StructureSpawn)?.spawnCreep(this.ratio.finalize()).error ?? ERR_NOT_FOUND;
+		return actor.GetFirst(StructureSpawn)?.spawnCreep(this.ratio.body()).error ?? ERR_NOT_FOUND;
 	}
 	public canDoBoth(other: Action<Team, ScreepsResult>): boolean {
 		throw new Error("Method not implemented.");

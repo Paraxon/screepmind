@@ -1,7 +1,7 @@
 import { Blackboard, Expert } from "common/decisions/Blackboard";
 import { ScreepsResult } from "common/gameobject/Result";
 import { Role } from "common/gameobject/creep/Role";
-import { classifier, roles } from "common/gameobject/creep/Roles";
+import { classifier, roles } from "common/gameobject/creep/Role";
 import { Creep } from "game/prototypes";
 import { Team } from "../Team";
 import { CreepDo } from "../actions/CreepDo";

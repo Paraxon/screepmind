@@ -4,6 +4,7 @@ import { CreepBuilder } from "common/gameobject/creep/CreepBuilder";
 import { ScreepsResult } from "common/gameobject/Result";
 import { BodyPartType, Creep } from "game/prototypes";
 import { getTicks } from "game/utils";
+import { CreepClassifier } from "./CreepClassifier";
 
 export class Role implements DecisionMaker<Creep, ScreepsResult> {
 	public readonly features: Map<BodyPartType, number>;
@@ -26,3 +27,6 @@ export class Role implements DecisionMaker<Creep, ScreepsResult> {
 		return this.ai.decide(actor)!;
 	}
 }
+
+export let roles: Role[] = new Array<Role>();
+export const classifier = new CreepClassifier<Role>();

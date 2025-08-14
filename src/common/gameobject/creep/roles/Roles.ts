@@ -6,6 +6,6 @@ import { kiterRole } from "./Kiter";
 import { medicRole } from "./Medic";
 import { raiderRole } from "./Raider";
 
-export var roles = [medicRole, haulerRole, builderRole, kiterRole, raiderRole];
+export const roles = [haulerRole, builderRole, kiterRole, raiderRole, medicRole];
 export const classifier = new CreepClassifier<Role>();
 roles.forEach(role => classifier.add(role, role.features));

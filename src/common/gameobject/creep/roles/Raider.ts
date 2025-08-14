@@ -52,7 +52,7 @@ const bullyVillagers = new DecisionTree(AI.threatInShootingRange, fleeThreats, m
 const raid = new DecisionTree(AI.enemyHasCreeps, bullyVillagers, moveAttackSpawn);
 const raider = new DecisionTree(actor => !!AI.getClosestObstacle(actor), clearPath, raid);
 
-const raiderRole = new Roles.Role(
+export const raiderRole = new Roles.Role(
 	"raider",
 	new CreepBuilder().with(Consts.ATTACK).enableMovement(Consts.TERRAIN_SWAMP),
 	raider,
@@ -60,5 +60,3 @@ const raiderRole = new Roles.Role(
 	1,
 	33
 );
-Roles.roles.push(raiderRole);
-Roles.classifier.add(raiderRole, raiderRole.features);

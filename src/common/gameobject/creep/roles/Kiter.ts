@@ -39,9 +39,9 @@ const moveRangeEnemySpawn = new BoundAction(
 	(actor, target) => AI.inRangedAttackRange(actor, target)
 );
 const moveShootSpawn = new ActionSequence(moveRangeEnemySpawn, shootEnemySpawn);
-export const kiter = new DecisionTree(AI.enemyHasThreats, kiteThreats, moveShootSpawn);
+const kiter = new DecisionTree(AI.enemyHasThreats, kiteThreats, moveShootSpawn);
 
-const kiterRole = new Roles.Role(
+export const kiterRole = new Roles.Role(
 	"kiter",
 	new CreepBuilder().with(Consts.RANGED_ATTACK).enableMovement(Consts.TERRAIN_SWAMP),
 	kiter,
@@ -49,6 +49,3 @@ const kiterRole = new Roles.Role(
 	0,
 	50
 );
-
-Roles.roles.push(kiterRole);
-Roles.classifier.add(kiterRole, kiterRole.features);

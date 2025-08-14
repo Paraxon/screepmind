@@ -43,7 +43,7 @@ const build = new BoundAction(Proto.Creep.prototype.build, actor =>
 );
 const moveBuild = new ActionSequence(moveToSite, build);
 const builder = new DecisionTree(AI.isFullEnergy, moveBuild, withdrawEnergy);
-const builderRole = new Roles.Role(
+export const builderRole = new Roles.Role(
 	"builder",
 	new CreepBuilder().with(Consts.CARRY).with(Consts.WORK).enableMovement(),
 	builder,
@@ -51,5 +51,3 @@ const builderRole = new Roles.Role(
 	0,
 	200
 );
-Roles.roles.push(builderRole);
-Roles.classifier.add(builderRole, builderRole.features);

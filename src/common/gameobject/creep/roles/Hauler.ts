@@ -42,8 +42,8 @@ const deliverToSpawn = new ActionSequence(
 		(actor, target) => AI.isEmpty(actor)
 	)
 );
-export const hauler = new DecisionTree(AI.isFullEnergy, deliverToSpawn, withdrawEnergy);
-const haulerRole = new Roles.Role(
+const hauler = new DecisionTree(AI.isFullEnergy, deliverToSpawn, withdrawEnergy);
+export const haulerRole = new Roles.Role(
 	"hauler",
 	new CreepBuilder().with(Consts.CARRY).enableMovement(),
 	hauler,
@@ -51,5 +51,3 @@ const haulerRole = new Roles.Role(
 	1,
 	100
 );
-Roles.roles.push(haulerRole);
-Roles.classifier.add(haulerRole, haulerRole.features);

@@ -10,13 +10,12 @@ import { ERROR_EMOJI } from "../common/gameobject/Emoji";
 import * as Result from "../common/gameobject/Result";
 import { Speech } from "../common/gameobject/Speech";
 import { AdjList } from "../common/graph/AdjacencyList";
-import { Border, ConnectRegions } from "../common/graph/Hierarchy";
+import { Border } from "../common/graph/Hierarchy";
 import { KMeans } from "../common/graph/kmeans";
 import { Region } from "../common/graph/region";
 import { TileGraph } from "../common/graph/tilegraph";
 import { Logger } from "../common/patterns/Logger";
 import { Verbosity } from "../common/patterns/Verbosity";
-import * as Medic from "../common/gameobject/creep/roles/Medic";
 
 const kmeans = new KMeans(new TileGraph(), 33, 4);
 let regions: AdjList<Region, Border>;

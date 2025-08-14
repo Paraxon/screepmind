@@ -1,9 +1,10 @@
+// Update the import path below if the actual location is different
 import { Blackboard, Expert } from "common/decisions/Blackboard";
 import { ScreepsResult } from "common/gameobject/Result";
 import { Role } from "common/gameobject/creep/Role";
-import { classifier, roles } from "common/gameobject/creep/Role";
+import { roles, classifier } from "common/gameobject/creep/roles/Roles";
 import { Creep } from "game/prototypes";
-import { Team } from "../Team";
+import { Team } from "common/entity/team/Team";
 import { CreepDo } from "../actions/CreepDo";
 import { SpawnCreep } from "../actions/SpawnCreep";
 

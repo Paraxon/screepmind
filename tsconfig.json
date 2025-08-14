@@ -5,7 +5,7 @@
 		"target": "esnext",
 		"moduleResolution": "Node",
 		"outDir": "dist",
-		"baseUrl": "./src",
+		"baseUrl": "src",
 		"sourceMap": true,
 		"strict": true,
 		"experimentalDecorators": true,

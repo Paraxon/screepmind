@@ -3,7 +3,7 @@ import * as AI from "common/gameobject/Conditions";
 import * as Proto from "game/prototypes";
 import * as Utils from "game/utils";
 import { BoundAction } from "../action/BoundAction";
-import * as Roles from "common/gameobject/creep/Role";
+import { Role } from "common/gameobject/creep/Role";
 import { CreepBuilder } from "../CreepBuilder";
 import * as Consts from "game/constants";
 import * as Intents from "../CreepIntent";
@@ -50,7 +50,7 @@ const moveToSafety = new DecisionTree(AI.allyExists, followAlly, goHome);
 const healOrPosition = new DecisionTree(AI.anyAlliesInjured, touchOrRangedHeal, moveToSafety);
 const medic = new DecisionTree(AI.isSelfHurt, healSelf, healOrPosition);
 
-const medicRole = new Roles.Role(
+export const medicRole = new Role(
 	"medic",
 	new CreepBuilder().with(Consts.HEAL).enableMovement(Consts.TERRAIN_SWAMP),
 	medic,
@@ -58,6 +58,3 @@ const medicRole = new Roles.Role(
 	0,
 	150
 );
-console.log("pushing medic role");
-Roles.roles.push(medicRole);
-Roles.classifier.add(medicRole, medicRole.features);

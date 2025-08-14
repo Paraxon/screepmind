@@ -1,6 +1,6 @@
-import { OwnedGameObject, Prototype } from "common/library";
-import { RESOURCE_ENERGY } from "game/constants";
-import { Creep, ResourceType, StructureSpawn } from "game/prototypes";
+import * as Lib from "../../library";
+import * as Consts from "game/constants";
+import * as Proto from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
 
 export class Team {
@@ -9,32 +9,32 @@ export class Team {
 		this.my = my;
 	}
 	public get Creeps() {
-		return this.GetAll(Creep).filter(creep => !creep.spawning);
+		return this.GetAll<Proto.Creep>(Proto.Creep).filter(creep => !creep.spawning);
 	}
-	public GetAll<object_t extends OwnedGameObject>(prototype: Prototype<object_t>): object_t[] {
+	public GetAll<object_t extends Lib.OwnedGameObject>(prototype: Lib.Prototype<object_t>): object_t[] {
 		return getObjectsByPrototype(prototype).filter(object => object.my === this.my);
 	}
-	public GetFirst<object_t extends OwnedGameObject>(prototype: Prototype<object_t>): object_t | undefined {
+	public GetFirst<object_t extends Lib.OwnedGameObject>(prototype: Lib.Prototype<object_t>): object_t | undefined {
 		return getObjectsByPrototype(prototype).find(object => object.my === this.my);
 	}
-	public LocalInventory(resource: ResourceType = RESOURCE_ENERGY): number {
-		return this.GetAll(StructureSpawn)
+	public LocalInventory(resource: Proto.ResourceType = Consts.RESOURCE_ENERGY): number {
+		return this.GetAll(Proto.StructureSpawn)
 			.map(spawn => spawn.store.getUsedCapacity(resource) ?? 0)
 			.reduce((max, current) => Math.max(max, current));
 	}
-	public GlobalInventory(resource: ResourceType = RESOURCE_ENERGY): number {
-		return this.GetAll(StructureSpawn)
+	public GlobalInventory(resource: Proto.ResourceType = Consts.RESOURCE_ENERGY): number {
+		return this.GetAll(Proto.StructureSpawn)
 			.map(spawn => spawn.store.getUsedCapacity(resource) ?? 0)
 			.reduce((sum, current) => sum + current);
 	}
 	/* public FindRole(role: Role, membership: number = 1): Creep[] {
 		return this.Creeps.filter(creep => classifier.classify(creep).test(role) >= membership);
 	} */
-	public CanAfford(cost: number, resource: ResourceType = RESOURCE_ENERGY): boolean {
+	public CanAfford(cost: number, resource: Proto.ResourceType = Consts.RESOURCE_ENERGY): boolean {
 		return this.GlobalInventory(resource) >= cost;
 	}
 	public get Population(): number {
-		return this.GetAll(Creep).length;
+		return this.GetAll(Proto.Creep).length;
 	}
 }
 

@@ -11,17 +11,17 @@ import * as Lib from "common/library";
 import * as Roles from "common/gameobject/creep/Role";
 import { CreepBuilder } from "../CreepBuilder";
 
-const threatApproachingMelee = AI.inRange(
-	() => Utils.getObjectsByPrototype(Proto.Creep).filter(AI.isEnemy),
+const threatApproachingMelee = AI.anyInRange(
+	() => Utils.getObjectsByPrototype(Proto.Creep).filter(AI.isOpponent),
 	Intents.RANGE[Intents.Intent.ATTACK]! + 1
 );
 const moveToThreat = new BoundAction(
 	Proto.Creep.prototype.moveTo,
 	actor => AI.threats().reduce(AI.closestTo(actor)),
-	(actor, target) => AI.inRangedAttackRange(actor, target)
+	AI.inRangeFor(Intents.Intent.RANGED_ATTACK)
 );
 const shootLowest = new BoundAction(Proto.Creep.prototype.rangedAttack, actor =>
-	Utils.getObjectsByPrototype(Proto.Creep).filter(AI.isEnemy).reduce(AI.leastHealthCreep)
+	Utils.getObjectsByPrototype(Proto.Creep).filter(AI.isOpponent).reduce(AI.leastHealthCreep)
 );
 const ignoreSwamp: Utils.FindPathOptions = { swampCost: Lib.PATH_COST[Consts.TERRAIN_PLAIN] };
 const fleeThreats = new NavAction(
@@ -31,12 +31,12 @@ const fleeThreats = new NavAction(
 const moveShootThreats = new ActionSequence(moveToThreat, shootLowest);
 const kiteThreats = new DecisionTree(threatApproachingMelee, fleeThreats, moveShootThreats);
 const shootEnemySpawn = new BoundAction(Proto.Creep.prototype.rangedAttack, actor =>
-	Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(AI.isEnemy).reduce(AI.leastHealthSpawn)
+	Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(AI.isOpponent).reduce(AI.leastHealthSpawn)
 );
 const moveRangeEnemySpawn = new BoundAction(
 	Proto.Creep.prototype.moveTo,
 	actor => AI.enemySpawns().reduce(AI.closestTo(actor)),
-	(actor, target) => AI.inRangedAttackRange(actor, target)
+	AI.inRangeFor(Intents.Intent.RANGED_ATTACK)
 );
 const moveShootSpawn = new ActionSequence(moveRangeEnemySpawn, shootEnemySpawn);
 const kiter = new DecisionTree(AI.enemyHasThreats, kiteThreats, moveShootSpawn);

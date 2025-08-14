@@ -7,23 +7,20 @@ import { Role } from "common/gameobject/creep/Role";
 import { CreepBuilder } from "../CreepBuilder";
 import * as Consts from "game/constants";
 import * as Intents from "../CreepIntent";
+import * as Func from "common/Functional";
 
-const healSelf = new BoundAction(
-	Proto.Creep.prototype.heal,
-	actor => actor,
-	(actor, target) => actor.hits >= actor.hitsMax
-);
+const healSelf = new BoundAction(Proto.Creep.prototype.heal, actor => actor, AI.isNotHurt);
 
 const touchHeal = new BoundAction(Proto.Creep.prototype.heal, actor =>
 	Utils.getObjectsByPrototype(Proto.Creep)
-		.filter(AI.isAlly)
+		.filter(AI.isPlayer)
 		.filter(creep => AI.inHealRange(actor, creep))
 		.reduce(AI.leastHealthCreep)
 );
 
 const rangedHeal = new BoundAction(Proto.Creep.prototype.rangedHeal, actor =>
 	Utils.getObjectsByPrototype(Proto.Creep)
-		.filter(AI.isAlly)
+		.filter(AI.isPlayer)
 		.filter(AI.isHurt)
 		.filter(creep => AI.inRangedHealRange(actor, creep))
 		.reduce(AI.leastHealthCreep)
@@ -48,7 +45,7 @@ const rangedHealOrMove = new DecisionTree(AI.canReachInjured, rangedHeal, moveTo
 const touchOrRangedHeal = new DecisionTree(AI.canTouchInjured, touchHeal, rangedHealOrMove);
 const moveToSafety = new DecisionTree(AI.allyExists, followAlly, goHome);
 const healOrPosition = new DecisionTree(AI.anyAlliesInjured, touchOrRangedHeal, moveToSafety);
-const medic = new DecisionTree(AI.isSelfHurt, healSelf, healOrPosition);
+const medic = new DecisionTree(AI.isHurt, healSelf, healOrPosition);
 
 export const medicRole = new Role(
 	"medic",

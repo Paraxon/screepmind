@@ -42,7 +42,7 @@ const moveToEnemySpawn = new BoundAction(
 );
 const attackEnemySpawn = new BoundAction(Proto.Creep.prototype.attack, actor =>
 	Utils.getObjectsByPrototype(Proto.StructureSpawn)
-		.filter(AI.isEnemy)
+		.filter(AI.isOpponent)
 		.filter(spawn => AI.inAttackRange(actor, spawn))
 		.reduce(AI.leastHealthSpawn)
 );

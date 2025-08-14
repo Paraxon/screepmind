@@ -1,12 +1,12 @@
 export type Predicate<arg_t> = (arg: arg_t) => boolean;
 export type VariadicPredicate<args_t extends any[]> = (...args: args_t) => boolean;
 export type Reducer<value_t> = (lhs: value_t, rhs: value_t) => value_t;
-export type Compare<value_t> = (lhs: value_t, rhs: value_t) => number;
-export const strict_equal: Compare<number> = (lhs: number, rhs: number) => (lhs === rhs ? 0 : -1);
-export const greater: Compare<number> = (lhs: number, rhs: number) => (lhs > rhs ? 1 : -1);
-export const greater_equal: Compare<number> = (lhs: number, rhs: number) => (lhs >= rhs ? 1 : -1);
-export const less: Compare<number> = (lhs: number, rhs: number) => (lhs < rhs ? -1 : 1);
-export const less_equal: Compare<number> = (lhs: number, rhs: number) => (lhs <= rhs ? -1 : 1);
+export type Compare<value_t> = (lhs: value_t, rhs: value_t) => boolean;
+export const strict_equal: Compare<number> = (a: number, b: number) => a === b;
+export const greater: Compare<number> = (a: number, b: number) => a > b;
+export const greater_equal: Compare<number> = (a: number, b: number) => a >= b;
+export const less: Compare<number> = (a: number, b: number) => a < b;
+export const less_equal: Compare<number> = (a: number, b: number) => a <= b;
 
 export function not<actor_t>(predicate: Predicate<actor_t>): Predicate<actor_t> {
 	return (actor: actor_t) => !predicate(actor);

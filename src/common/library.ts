@@ -6,9 +6,9 @@ import * as Utils from "game/utils";
 // Screeps Oversights
 export type ID = number | string;
 export type Prototype<object_t extends Proto.GameObject> = new () => object_t;
-export type Health = { hits?: number; hitsMax?: number };
+export type Health = { hits: number; hitsMax: number };
 export type Target = Proto.GameObject & Health;
-export type Distance = number;
+export type Range = number;
 export type Inventory = Proto.GameObject & { store: Proto.Store };
 export interface OwnedGameObject extends Proto.GameObject {
 	my?: boolean;

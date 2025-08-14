@@ -8,17 +8,18 @@ import { BoundAction } from "../action/BoundAction";
 import * as Intents from "../CreepIntent";
 import * as Roles from "common/gameobject/creep/Role";
 import { CreepBuilder } from "../CreepBuilder";
+import * as Func from "common/Functional";
 
 const withdrawEnergy = new ActionSequence(
 	new BoundAction(
 		Proto.Creep.prototype.moveTo,
 		actor =>
 			Utils.findClosestByPath(
-				Utils.getObjectsByPrototype(Proto.StructureSpawn).find(AI.isAlly)!,
+				Utils.getObjectsByPrototype(Proto.StructureSpawn).find(AI.isPlayer)!,
 				Utils.getObjectsByPrototype(Proto.StructureContainer).filter(AI.hasEnergy),
 				{ ignore: [actor] }
 			),
-		(actor, target) => AI.inWithdrawRange(actor, target)
+		AI.inRangeFor(Intents.Intent.WITHDRAW)
 	),
 	new BoundAction(
 		Intents.withdrawEnergyAction,
@@ -26,21 +27,16 @@ const withdrawEnergy = new ActionSequence(
 			Utils.getObjectsByPrototype(Proto.StructureContainer)
 				.filter(container => AI.inWithdrawRange(actor, container))
 				.reduce(AI.mostEnergy),
-		(actor, target) =>
-			actor.store.getUsedCapacity(Consts.RESOURCE_ENERGY)! > target.store.getUsedCapacity(Consts.RESOURCE_ENERGY)!
+		AI.resourceCompare(Func.greater)
 	)
 );
 const deliverToSpawn = new ActionSequence(
 	new BoundAction(
 		Proto.Creep.prototype.moveTo,
 		actor => AI.friendlySpawns().reduce(AI.closestTo(actor)),
-		(actor, target) => AI.inWithdrawRange(actor, target)
+		AI.inRangeFor(Intents.Intent.WITHDRAW)
 	),
-	new BoundAction(
-		Intents.transferEnergyAction,
-		actor => AI.friendlySpawns().reduce(AI.closestTo(actor)),
-		(actor, target) => AI.isEmpty(actor)
-	)
+	new BoundAction(Intents.transferEnergyAction, actor => AI.friendlySpawns().reduce(AI.closestTo(actor)), AI.isEmpty)
 );
 const hauler = new DecisionTree(AI.isFullEnergy, deliverToSpawn, withdrawEnergy);
 export const haulerRole = new Roles.Role(

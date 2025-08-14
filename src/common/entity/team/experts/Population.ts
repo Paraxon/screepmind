@@ -7,6 +7,7 @@ import { Creep } from "game/prototypes";
 import { Team } from "common/entity/team/Team";
 import { CreepDo } from "../actions/CreepDo";
 import { SpawnCreep } from "../actions/SpawnCreep";
+import { expect } from "chai";
 
 export class Population implements Expert<Team, ScreepsResult> {
 	insistence(actor: Team, board: Blackboard<Team, ScreepsResult>): number {
@@ -23,18 +24,15 @@ export class Population implements Expert<Team, ScreepsResult> {
 			.forEach(action => board.actions.push(action));
 	}
 	private spawn(team: Team, board: Blackboard<Team, ScreepsResult>) {
-		const counts = new Map<Role, number>(roles.map(role => [role, 0]));
-		team.Creeps.map(creep => classifier.classify(creep).best)
-			.filter(role => role != undefined)
-			.forEach(role => counts.set(role!, counts.get(role!) ?? 0 + 1));
-		const diffs = new Map<Role, number>(
-			Array.from(counts.entries()).map(([role, count]) => [role, role.expectedPop() - count])
-		);
-		const underpopulated = Array.from(diffs.entries()).filter(
-			([role, diff]) => diff > 0 && team.CanAfford(role.body.cost)
-		);
-		if (!underpopulated.length) return;
-		const spawnRole = underpopulated.reduce((best, current) => (best[1] > current[1] ? best : current))[0];
-		board.actions.push(new SpawnCreep(spawnRole.body.withBudget(team.LocalInventory())));
+		const classifications = team.Creeps.map(creep => classifier.classify(creep).best).filter(role => role != undefined);
+		const toSpawn = roles
+			.map(role => ({
+				role,
+				diff: role.expectedPop() - classifications.filter(result => result === role).length
+			}))
+			.reduce((prev, current) => (current.diff > prev.diff ? current : prev));
+		// console.log(`spawning role ${toSpawn.role.name} ${toSpawn.role.body.cost} with budget ${team.LocalInventory()}`);
+		if (toSpawn.role.body.cost <= team.LocalInventory())
+			board.actions.push(new SpawnCreep(toSpawn.role.body.withBudget(team.LocalInventory())));
 	}
 }

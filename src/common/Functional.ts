@@ -1,7 +1,7 @@
 export type Predicate<arg_t> = (arg: arg_t) => boolean;
 export type VariadicPredicate<args_t extends any[]> = (...args: args_t) => boolean;
-export type Reducer<value_t> = (lhs: value_t, rhs: value_t) => value_t;
-export type Compare<value_t> = (lhs: value_t, rhs: value_t) => boolean;
+export type Reducer<value_t> = (a: value_t, b: value_t) => value_t;
+export type Compare<value_t> = (a: value_t, b: value_t) => boolean;
 export const strict_equal: Compare<number> = (a: number, b: number) => a === b;
 export const greater: Compare<number> = (a: number, b: number) => a > b;
 export const greater_equal: Compare<number> = (a: number, b: number) => a >= b;

@@ -5,11 +5,11 @@ import * as Lib from "../../library.js";
 import * as Func from "../../Functional.js";
 
 export const MAX_BODY_PARTS = 50;
-export const cheapestFirst: Func.Compare<Proto.BodyPartType> = (a, b) =>
+export const cheapestFirst = (a: Proto.BodyPartType, b: Proto.BodyPartType) =>
 	Consts.BODYPART_COST[a] - Consts.BODYPART_COST[b];
-export const expensiveFirst: Func.Compare<Proto.BodyPartType> = (a, b) =>
+export const expensiveFirst = (a: Proto.BodyPartType, b: Proto.BodyPartType) =>
 	Consts.BODYPART_COST[b] - Consts.BODYPART_COST[a];
-export const shuffled: Func.Compare<Proto.BodyPartType> = (a, b) => Math.random() - 0.5;
+export const shuffled: Func.Compare<Proto.BodyPartType> = (a, b) => Math.random() - 0.5 > 0;
 
 export class CreepBuilder {
 	public readonly parts: Record<Proto.BodyPartType, number> = {
@@ -35,9 +35,9 @@ export class CreepBuilder {
 			.map(([type, qty]) => Consts.BODYPART_COST[type] * qty)
 			.reduce((sum, current) => sum + current, 0);
 	}
-	public body(compare: Func.Compare<Proto.BodyPartType> = expensiveFirst): Proto.BodyPartType[] {
+	public body(compare: (a: Proto.BodyPartType, b: Proto.BodyPartType) => number = cheapestFirst): Proto.BodyPartType[] {
 		return Object.entries(this.parts)
-			.flatMap(([type, qty]) => Array(qty).fill(type))
+			.flatMap(([type, qty]) => Array<Proto.BodyPartType>(qty).fill(type))
 			.sort(compare)
 			.slice(0, MAX_BODY_PARTS);
 	}

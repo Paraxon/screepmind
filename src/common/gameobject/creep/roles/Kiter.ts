@@ -10,41 +10,41 @@ import { NavAction } from "../action/NavAction";
 import * as Lib from "common/library";
 import * as Roles from "common/gameobject/creep/Role";
 import { CreepBuilder } from "../CreepBuilder";
+import { ActionCombination } from "common/decisions/actions/ActionCombination";
 
-const threatApproachingMelee = AI.anyInRange(
-	() => Utils.getObjectsByPrototype(Proto.Creep).filter(AI.isOpponent),
-	Intents.RANGE[Intents.Intent.ATTACK]! + 1
-);
-const moveToThreat = new BoundAction(
-	Proto.Creep.prototype.moveTo,
-	actor => AI.threats().reduce(AI.closestTo(actor)),
-	AI.inRangeFor(Intents.Intent.RANGED_ATTACK)
-);
-const shootLowest = new BoundAction(Proto.Creep.prototype.rangedAttack, actor =>
-	Utils.getObjectsByPrototype(Proto.Creep).filter(AI.isOpponent).reduce(AI.leastHealthCreep)
-);
+const threatNearTouch = AI.anyInRange(AI.enemyMelee, 3);
 const ignoreSwamp: Utils.FindPathOptions = { swampCost: Lib.PATH_COST[Consts.TERRAIN_PLAIN] };
+const shootLowest = new BoundAction(Proto.Creep.prototype.rangedAttack, AI.enemyCreeps, AI.leastHealth);
 const fleeThreats = new NavAction(
-	actor => AI.threats().filter(target => actor.getRangeTo(target) < Intents.RANGE[Intents.Intent.RANGED_ATTACK]!),
+	actor => AI.enemyArmed().filter(target => actor.getRangeTo(target) < Intents.RANGE[Intents.Intent.RANGED_ATTACK]!),
 	{ ...ignoreSwamp, flee: true }
 );
-const moveShootThreats = new ActionSequence(moveToThreat, shootLowest);
-const kiteThreats = new DecisionTree(threatApproachingMelee, fleeThreats, moveShootThreats);
-const shootEnemySpawn = new BoundAction(Proto.Creep.prototype.rangedAttack, actor =>
-	Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(AI.isOpponent).reduce(AI.leastHealthSpawn)
-);
-const moveRangeEnemySpawn = new BoundAction(
+const fightingRetreat = new ActionCombination(fleeThreats, shootLowest);
+const chase = new BoundAction(
 	Proto.Creep.prototype.moveTo,
-	actor => AI.enemySpawns().reduce(AI.closestTo(actor)),
+	_actor => AI.enemyArmed(),
+	AI.closest,
 	AI.inRangeFor(Intents.Intent.RANGED_ATTACK)
 );
-const moveShootSpawn = new ActionSequence(moveRangeEnemySpawn, shootEnemySpawn);
-const kiter = new DecisionTree(AI.enemyHasThreats, kiteThreats, moveShootSpawn);
+const moveShootThreats = new ActionCombination(chase, shootLowest);
+const kiteThreats = new DecisionTree(threatNearTouch, fightingRetreat, moveShootThreats);
+
+const moveToEnemySpawn = new BoundAction(
+	Proto.Creep.prototype.moveTo,
+	actor => AI.opponentSpawns(actor),
+	AI.closest,
+	AI.inRangeFor(Intents.Intent.RANGED_ATTACK)
+);
+const shootSpawn = new BoundAction(Proto.Creep.prototype.rangedAttack, AI.opponentSpawns, AI.leastHealth);
+const driveBy = new ActionSequence(shootSpawn, shootLowest);
+
+const moveShootSpawn = new ActionCombination(moveToEnemySpawn, driveBy);
+const kiterTree = new DecisionTree(AI.enemyHasThreats, kiteThreats, moveShootSpawn);
 
 export const kiterRole = new Roles.Role(
 	"kiter",
 	new CreepBuilder().with(Consts.RANGED_ATTACK).enableMovement(Consts.TERRAIN_SWAMP),
-	kiter,
+	kiterTree,
 	[[Consts.RANGED_ATTACK, 1]],
 	0,
 	50

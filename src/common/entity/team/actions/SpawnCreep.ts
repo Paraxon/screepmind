@@ -12,19 +12,19 @@ export class SpawnCreep implements Action<Team, ScreepsResult> {
 	public constructor(ratio: CreepBuilder) {
 		this.ratio = ratio;
 	}
-	public decide(actor: Team): Action<Team, ScreepsResult> {
+	public decide(_actor: Team): Action<Team, ScreepsResult> {
 		return new SpawnCreep(this.ratio);
 	}
 	public execute(actor: Team): ScreepsResult {
 		this.flag = true;
 		const spawn = actor.GetFirst(StructureSpawn);
-		Logger.log("debug", `spawning creep from spawn ${spawn?.id}`);
+		Logger.log("spawn", `spawning creep from spawn ${spawn?.id}`);
 		return actor.GetFirst(StructureSpawn)?.spawnCreep(this.ratio.body()).error ?? ERR_NOT_FOUND;
 	}
-	public canDoBoth(other: Action<Team, ScreepsResult>): boolean {
+	public canDoBoth(_other: Action<Team, ScreepsResult>): boolean {
 		throw new Error("Method not implemented.");
 	}
-	public isComplete(actor: Team): boolean {
+	public isComplete(_actor: Team): boolean {
 		return this.flag;
 	}
 }

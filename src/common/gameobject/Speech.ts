@@ -4,6 +4,7 @@ import { Visual, TextVisualStyle } from "game/visual";
 export class Speech {
 	private static messages = new Map<GameObject, string>();
 	public static say(actor: GameObject, message: string) {
+		if (message == undefined) console.log(`actor #${actor.id} attempted to say undefined`);
 		message = (this.messages.get(actor) ?? "") + message;
 		this.messages.set(actor, message);
 	}

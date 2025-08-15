@@ -5,14 +5,12 @@ import * as Utils from "game/utils";
 
 // Screeps Oversights
 export type ID = number | string;
-export type Prototype<object_t extends Proto.GameObject> = new () => object_t;
-export type Health = { hits: number; hitsMax: number };
-export type Target = Proto.GameObject & Health;
+export type Health = Proto.Structure | Proto.Creep;
 export type Range = number;
+export type Ticks = number;
+export type Fatigue = number;
 export type Inventory = Proto.GameObject & { store: Proto.Store };
-export interface OwnedGameObject extends Proto.GameObject {
-	my?: boolean;
-}
+export type OwnedGameObject = Proto.GameObject & { my?: boolean };
 
 // Arena Dimensions
 export const ARENA_SHAPE = new Flatten.Box(0, 0, 99, 99);

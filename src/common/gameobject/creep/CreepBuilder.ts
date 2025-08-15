@@ -9,7 +9,7 @@ export const cheapestFirst = (a: Proto.BodyPartType, b: Proto.BodyPartType) =>
 	Consts.BODYPART_COST[a] - Consts.BODYPART_COST[b];
 export const expensiveFirst = (a: Proto.BodyPartType, b: Proto.BodyPartType) =>
 	Consts.BODYPART_COST[b] - Consts.BODYPART_COST[a];
-export const shuffled: Func.Compare<Proto.BodyPartType> = (a, b) => Math.random() - 0.5 > 0;
+export const shuffled: Func.Compare<Proto.BodyPartType> = (_a, _b) => Math.random() - 0.5 > 0;
 
 export class CreepBuilder {
 	public readonly parts: Record<Proto.BodyPartType, number> = {
@@ -45,14 +45,14 @@ export class CreepBuilder {
 		return Object.values(this.parts).reduce((sum, current) => sum + current);
 	}
 	public count(type: Proto.BodyPartType): number {
-		return this.parts[type];
+		return this.parts[type] ?? 0;
 	}
-	public fatigueGeneration(onTerrain: Utils.Terrain = Consts.TERRAIN_PLAIN): number {
+	public fatigueGeneration(onTerrain: Utils.Terrain = Consts.TERRAIN_PLAIN): Lib.Fatigue {
 		// MOVE (and empty CARRY, assume they are full) parts do not generate fatigue
-		return (this.size - this.parts[Consts.MOVE]) * Lib.FATIGUE_FACTOR[onTerrain];
+		return (this.size - this.parts[Consts.MOVE]!) * Lib.FATIGUE_FACTOR[onTerrain];
 	}
-	public fatigueReduction(): number {
-		return this.parts[Consts.MOVE] * Lib.FATIGUE_REDUCTION_PER_MOVE;
+	public fatigueReduction(): Lib.Fatigue {
+		return this.parts[Consts.MOVE]! * Lib.FATIGUE_REDUCTION_PER_MOVE;
 	}
 	public enableMovement(onTerrain: Utils.Terrain = Consts.TERRAIN_PLAIN, tickPeriod = 1): CreepBuilder {
 		// Calculate the number of MOVE parts needed so that fatigue generated is offset by MOVE fatigue reduction per period
@@ -74,5 +74,8 @@ export class CreepBuilder {
 			(result, [type, qty]) => result.with(type, Math.floor(qty * scale)),
 			new CreepBuilder()
 		);
+	}
+	public get spawnTime(): Lib.Ticks {
+		return this.size * Consts.CREEP_SPAWN_TIME;
 	}
 }

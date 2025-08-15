@@ -1,3 +1,4 @@
+export type Prototype<object_t> = new () => object_t;
 export type Predicate<arg_t> = (arg: arg_t) => boolean;
 export type VariadicPredicate<args_t extends any[]> = (...args: args_t) => boolean;
 export type Reducer<value_t> = (a: value_t, b: value_t) => value_t;

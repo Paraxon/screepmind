@@ -10,7 +10,7 @@ export class ActionCombination<actor_t, result_t = void>
 	}
 	public decide(actor: actor_t): Action<actor_t, result_t> {
 		const clones = this.actions.map(action => action.decide(actor));
-		return new ActionCombination(clones[0], ...clones.slice(1));
+		return new ActionCombination(clones[0]!, ...clones.slice(1));
 	}
 	public execute(actor: actor_t): result_t {
 		return this.actions
@@ -25,6 +25,6 @@ export class ActionCombination<actor_t, result_t = void>
 		return this.actions.every(action => action.isComplete(actor));
 	}
 	public flatten(): Action<actor_t, result_t> {
-		return this.actions.length > 1 ? this : this.actions[0];
+		return this.actions.length > 1 ? this : this.actions[0]!;
 	}
 }

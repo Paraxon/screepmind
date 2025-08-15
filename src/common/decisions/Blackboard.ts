@@ -29,9 +29,9 @@ export class Arbiter<actor_t, result_t> implements DecisionMaker<actor_t, result
 			case 0:
 				return this.idle.decide(actor);
 			case 1:
-				return board.actions[0];
+				return board.actions[0]!;
 			default:
-				return new ActionCombination(board.actions[0], ...board.actions.slice(1));
+				return new ActionCombination(board.actions[0]!, ...board.actions.slice(1));
 		}
 	}
 	arbitrate(actor: actor_t, board: Blackboard<actor_t, result_t>): Expert<actor_t, result_t> | undefined {

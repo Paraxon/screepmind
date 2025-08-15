@@ -3,46 +3,22 @@ import { DecisionTree } from "common/decisions/DecisionTree";
 import * as AI from "common/gameobject/Conditions";
 import * as Consts from "game/constants";
 import * as Proto from "game/prototypes";
-import * as Utils from "game/utils";
 import { BoundAction } from "../action/BoundAction";
 import * as Intents from "../CreepIntent";
 import * as Roles from "common/gameobject/creep/Role";
 import { CreepBuilder } from "../CreepBuilder";
-import { resourceCompare } from "../../Conditions";
-import { greater_equal } from "../../../Functional";
-import * as Func from "common/Functional";
 
 const withdrawEnergy = new ActionSequence(
 	new BoundAction(
 		Proto.Creep.prototype.moveTo,
-		actor =>
-			Utils.findClosestByPath(
-				Utils.getObjectsByPrototype(Proto.StructureSpawn).find(AI.isPlayer)!,
-				Utils.getObjectsByPrototype(Proto.StructureContainer).filter(AI.hasEnergy),
-				{ ignore: [actor] }
-			),
+		AI.playerStartingContainers, //TODO: this will break when the containers are behind walls
+		AI.mostEnergy,
 		AI.inRangeFor(Intents.Intent.WITHDRAW)
 	),
-	new BoundAction(
-		Intents.withdrawEnergyAction,
-		actor =>
-			Utils.getObjectsByPrototype(Proto.StructureContainer)
-				.filter(container => AI.inWithdrawRange(actor, container))
-				.reduce(AI.mostEnergy),
-		AI.resourceCompare(Func.greater_equal)
-	)
+	new BoundAction(Intents.withdrawEnergyAction, AI.playerStartingContainers, AI.mostEnergy)
 );
-const moveToSite = new BoundAction(
-	Proto.Creep.prototype.moveTo,
-	actor => AI.friendlySites().reduce(AI.closestTo(actor)),
-	AI.inRangeFor(Intents.Intent.BUILD)
-);
-const build = new BoundAction(Proto.Creep.prototype.build, actor =>
-	Utils.getObjectsByPrototype(Proto.ConstructionSite)
-		.filter(AI.isPlayer)
-		.filter(target => AI.inBuildRange(actor, target))
-		.reduce(AI.mostComplete)
-);
+const moveToSite = new BoundAction(Proto.Creep.prototype.moveTo, AI.playerSites, AI.closest);
+const build = new BoundAction(Proto.Creep.prototype.build, AI.playerSites, AI.mostComplete);
 const moveBuild = new ActionSequence(moveToSite, build);
 const builder = new DecisionTree(AI.isFullEnergy, moveBuild, withdrawEnergy);
 export const builderRole = new Roles.Role(

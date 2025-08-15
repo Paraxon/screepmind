@@ -1,45 +1,24 @@
 import { DecisionTree } from "common/decisions/DecisionTree";
 import * as AI from "common/gameobject/Conditions";
 import * as Proto from "game/prototypes";
-import * as Utils from "game/utils";
 import { BoundAction } from "../action/BoundAction";
 import { Role } from "common/gameobject/creep/Role";
 import { CreepBuilder } from "../CreepBuilder";
 import * as Consts from "game/constants";
 import * as Intents from "../CreepIntent";
-import * as Func from "common/Functional";
 
-const healSelf = new BoundAction(Proto.Creep.prototype.heal, actor => actor, AI.isNotHurt);
-
-const touchHeal = new BoundAction(Proto.Creep.prototype.heal, actor =>
-	Utils.getObjectsByPrototype(Proto.Creep)
-		.filter(AI.isPlayer)
-		.filter(creep => AI.inHealRange(actor, creep))
-		.reduce(AI.leastHealthCreep)
+const healSelf = new BoundAction(Proto.Creep.prototype.heal, actor => [actor], undefined, AI.isUnhurt);
+const touchHeal = new BoundAction(Proto.Creep.prototype.heal, AI.hurtAllies, AI.leastHealth);
+const rangedHeal = new BoundAction(Proto.Creep.prototype.rangedHeal, AI.hurtAllies, AI.leastHealth);
+const moveToWounded = new BoundAction(Proto.Creep.prototype.moveTo, AI.hurtAllies, AI.closest, (actor, target) =>
+	AI.inRangedHealRange(actor, target)
 );
 
-const rangedHeal = new BoundAction(Proto.Creep.prototype.rangedHeal, actor =>
-	Utils.getObjectsByPrototype(Proto.Creep)
-		.filter(AI.isPlayer)
-		.filter(AI.isHurt)
-		.filter(creep => AI.inRangedHealRange(actor, creep))
-		.reduce(AI.leastHealthCreep)
+const followAlly = new BoundAction(Proto.Creep.prototype.moveTo, AI.armedFriendlies, AI.closest, (actor, target) =>
+	AI.inRangedHealRange(actor, target)
 );
-const moveToWounded = new BoundAction(
-	Proto.Creep.prototype.moveTo,
-	actor => AI.injuredFriendlies().reduce(AI.closestTo(actor)),
-	(actor, target) => AI.inRangedHealRange(actor, target)
-);
-
-const followAlly = new BoundAction(
-	Proto.Creep.prototype.moveTo,
-	actor => AI.armedFriendlies().reduce(AI.closestTo(actor)),
-	(actor, target) => AI.inRangedHealRange(actor, target)
-);
-const goHome = new BoundAction(
-	Proto.Creep.prototype.moveTo,
-	actor => AI.friendlySpawns().reduce(AI.closestTo(actor)),
-	(actor, target) => AI.inRangedHealRange(actor, target)
+const goHome = new BoundAction(Proto.Creep.prototype.moveTo, AI.playerSpawns, undefined, (actor, target) =>
+	AI.inRangedHealRange(actor, target)
 );
 const rangedHealOrMove = new DecisionTree(AI.canReachInjured, rangedHeal, moveToWounded);
 const touchOrRangedHeal = new DecisionTree(AI.canTouchInjured, touchHeal, rangedHealOrMove);

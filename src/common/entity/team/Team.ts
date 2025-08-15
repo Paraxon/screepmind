@@ -2,6 +2,7 @@ import * as Lib from "../../library";
 import * as Consts from "game/constants";
 import * as Proto from "game/prototypes";
 import { getObjectsByPrototype } from "game/utils";
+import * as Func from "common/Functional";
 
 export class Team {
 	my?: boolean;
@@ -11,10 +12,10 @@ export class Team {
 	public get Creeps() {
 		return this.GetAll<Proto.Creep>(Proto.Creep).filter(creep => !creep.spawning);
 	}
-	public GetAll<object_t extends Lib.OwnedGameObject>(prototype: Lib.Prototype<object_t>): object_t[] {
+	public GetAll<object_t extends Lib.OwnedGameObject>(prototype: Func.Prototype<object_t>): object_t[] {
 		return getObjectsByPrototype(prototype).filter(object => object.my === this.my);
 	}
-	public GetFirst<object_t extends Lib.OwnedGameObject>(prototype: Lib.Prototype<object_t>): object_t | undefined {
+	public GetFirst<object_t extends Lib.OwnedGameObject>(prototype: Func.Prototype<object_t>): object_t | undefined {
 		return getObjectsByPrototype(prototype).find(object => object.my === this.my);
 	}
 	public LocalInventory(resource: Proto.ResourceType = Consts.RESOURCE_ENERGY): number {

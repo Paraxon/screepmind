@@ -14,7 +14,6 @@ export class NavAction extends CreepAction {
 		super(Intent.Intent.MOVE);
 	}
 	public execute(actor: Proto.Creep): Result.ScreepsResult {
-		this.emote(actor);
 		const targets = this.targets(actor);
 		if (!targets.length) return Const.ERR_INVALID_TARGET;
 		const goals: Nav.Goal[] = this.targets(actor).map(pos => ({
@@ -26,7 +25,9 @@ export class NavAction extends CreepAction {
 		if (!destination) return Const.ERR_NO_PATH;
 		const dx = destination.x - actor.x;
 		const dy = destination.y - actor.y;
-		return actor.move(Utils.getDirection(dx, dy));
+		const result = actor.move(Utils.getDirection(dx, dy));
+		this.emote(actor, result);
+		return result;
 	}
 	public isComplete(actor: Proto.Creep): boolean {
 		return !this.targets(actor).length;

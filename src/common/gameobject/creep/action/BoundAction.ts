@@ -4,6 +4,7 @@ import * as Intent from "../CreepIntent";
 import * as Consts from "game/constants";
 import { CreepAction } from "./CreepAction";
 import * as Draw from "game/visual";
+import Flatten from "@flatten-js/core";
 
 export type Targeter<actor_t, target_t> = (actor: actor_t) => target_t[];
 export type Selector<actor_t, target_t> = (actor: actor_t, targets: target_t[]) => target_t | undefined;
@@ -18,39 +19,46 @@ export class BoundAction<target_t extends Proto.GameObject> extends CreepAction 
 		super(Intent.METHOD.get(action)!);
 	}
 	public execute(actor: Proto.Creep): Result.ScreepsResult {
-		const target = this.getTarget(actor);
+		const target = this.selectTargetInRange(actor);
 		const result = target != undefined ? this.action.call(actor, target) : Consts.ERR_INVALID_TARGET;
 		this.emote(actor, result);
-		if (actor.id == 38) this.visualize(actor);
+		if (actor.id == 31) this.visualize(actor);
 		return result;
 	}
 	public isComplete(actor: Proto.Creep): boolean {
-		const target = this.getTarget(actor);
-		if (target == undefined) return true;
-		const intentRange = Intent.RANGE[this.intent];
-		return (intentRange != undefined && actor.getRangeTo(target) > intentRange) || !!this.complete?.(actor, target);
+		const target = this.selectTargetInRange(actor);
+		return (target && this.complete?.(actor, target)) ?? false;
 	}
-	private getTarget(actor: Proto.Creep): target_t | undefined {
+	private selectTargetInRange(actor: Proto.Creep): target_t | undefined {
 		const targets = this.targeter(actor);
-		const intentRange = Intent.RANGE[this.intent];
-		// Filter targets by intent range
-		const targetsInRange = intentRange ? targets.filter(target => actor.getRangeTo(target) <= intentRange) : targets;
-		return this.selector ? this.selector(actor, targetsInRange) : targetsInRange.at(0);
+		const range = Intent.RANGE[this.intent];
+		const inRange = range ? targets.filter(target => actor.getRangeTo(target) <= range) : targets;
+		return this.selector && inRange.length ? this.selector(actor, inRange) : inRange.at(0);
 	}
 	public visualize(actor: Proto.Creep, visual = new Draw.Visual()) {
 		const targets = this.targeter(actor);
-		const target = this.selector ? this.selector(actor, targets) : targets.at(0);
-		targets.forEach(current =>
-			visual.line(actor, current, { lineStyle: "dashed", color: current == target ? "#00ff00" : "#808080" })
-		);
+		// const selected = this.selector ? this.selector(actor, targets) : targets.at(0);
+		const start = Flatten.point(actor.x, actor.y);
+		targets
+			.map(target => Flatten.point(target.x, target.y))
+			.map(end => Flatten.segment(start, end).middle())
+			.forEach(mid =>
+				visual.line(actor, mid, {
+					lineStyle: "dashed",
+					color: "#00ff00"
+				})
+			);
 		const range = Intent.RANGE[this.intent];
-		if (range)
-			visual.rect({ x: actor.x - range, y: actor.y - range }, range * 2, range * 2, {
+		if (range) {
+			const topLeft = { x: actor.x - range - 0.5, y: actor.y - range - 0.5 };
+			const size = range * 2 + 1;
+			visual.rect(topLeft, size, size, {
 				lineStyle: "dotted",
 				opacity: 0.1,
 				fill: undefined,
 				stroke: "#ffffff",
 				strokeWidth: 0.1
 			});
+		}
 	}
 }

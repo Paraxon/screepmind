@@ -27,7 +27,7 @@ export class CreepBuilder {
 		return this;
 	}
 	public add(type: Proto.BodyPartType, qty: number = 1) {
-		this.parts[type] += Math.min(qty, MAX_BODY_PARTS - this.size, 0);
+		this.parts[type]! += Math.min(qty, MAX_BODY_PARTS - this.size, 0);
 		return this;
 	}
 	public get cost(): number {

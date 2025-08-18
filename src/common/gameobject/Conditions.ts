@@ -16,7 +16,7 @@ const STARTING_CONTAINER_RANGE = 10;
 export function isOnTeam(...teams: (boolean | undefined)[]): Func.Predicate<Lib.OwnedGameObject> {
 	return (target: Lib.OwnedGameObject): boolean => teams.some(team => team === target.my);
 }
-export function isSameTeam(actor: Lib.OwnedGameObject): Func.Predicate<Lib.OwnedGameObject> {
+export function isSameTeamAs(actor: Lib.OwnedGameObject): Func.Predicate<Lib.OwnedGameObject> {
 	return (target: Lib.OwnedGameObject): boolean => actor.my === target.my;
 }
 export function hasPart(...parts: Proto.BodyPartType[]): Func.Predicate<Proto.Creep> {
@@ -141,6 +141,20 @@ export const playerStartingObstacles: Targeter<Proto.GameObject, Proto.Structure
 };
 export const playerAccessibleStartingContainers = (actor: Proto.GameObject) =>
 	playerStartingContainers(actor).filter(container => accessibleFromSpawn(actor, container));
+export function accessibleNeutralContainersWithEnergy(actor: Proto.GameObject) {
+	const enemySpawn = opponentSpawns(actor)[0];
+	return Utils.getObjectsByPrototype(Proto.StructureContainer)
+		.filter(isNeutral)
+		.filter(hasEnergy)
+		.filter(container => !enemySpawn || Utils.getRange(enemySpawn, container) > STARTING_CONTAINER_RANGE)
+		.filter(container => accessibleFromSpawn(actor, container));
+}
+export function alliedBanks(actor: Proto.GameObject) {
+	return [
+		...Utils.getObjectsByPrototype(Proto.StructureSpawn),
+		...Utils.getObjectsByPrototype(Proto.StructureExtension)
+	].filter(isSameTeamAs(actor));
+}
 
 //#endregion
 

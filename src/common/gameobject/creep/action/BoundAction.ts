@@ -22,7 +22,7 @@ export class BoundAction<target_t extends Proto.GameObject> extends CreepAction 
 		const target = this.selectTargetInRange(actor);
 		const result = target != undefined ? this.action.call(actor, target) : Consts.ERR_INVALID_TARGET;
 		this.emote(actor, result);
-		if (actor.id == 31) this.visualize(actor);
+		if (actor.id == 32) this.visualize(actor);
 		return result;
 	}
 	public isComplete(actor: Proto.Creep): boolean {
@@ -37,17 +37,24 @@ export class BoundAction<target_t extends Proto.GameObject> extends CreepAction 
 	}
 	public visualize(actor: Proto.Creep, visual = new Draw.Visual()) {
 		const targets = this.targeter(actor);
-		// const selected = this.selector ? this.selector(actor, targets) : targets.at(0);
+		const selected = this.selectTargetInRange(actor);
 		const start = Flatten.point(actor.x, actor.y);
 		targets
-			.map(target => Flatten.point(target.x, target.y))
-			.map(end => Flatten.segment(start, end).middle())
+			.filter(target => target != selected)
+			.map(target => Flatten.segment(start, Flatten.point(target.x, target.y)))
+			.map(segment => (segment.length > 3 ? segment.pointAtLength(3)! : segment.end))
 			.forEach(mid =>
 				visual.line(actor, mid, {
 					lineStyle: "dashed",
-					color: "#00ff00"
+					color: Intent.COLOR[this.intent] ?? "#8e8e8e"
 				})
 			);
+		if (selected) {
+			visual.line(actor, selected, {
+				lineStyle: "dashed",
+				color: "#ffffffff"
+			});
+		}
 		const range = Intent.RANGE[this.intent];
 		if (range) {
 			const topLeft = { x: actor.x - range - 0.5, y: actor.y - range - 0.5 };
@@ -56,7 +63,7 @@ export class BoundAction<target_t extends Proto.GameObject> extends CreepAction 
 				lineStyle: "dotted",
 				opacity: 0.1,
 				fill: undefined,
-				stroke: "#ffffff",
+				stroke: Intent.COLOR[this.intent] ?? "#8e8e8e",
 				strokeWidth: 0.1
 			});
 		}

@@ -11,6 +11,7 @@ import * as Result from "../common/gameobject/Result";
 import { Speech } from "../common/gameobject/Speech";
 import { Logger } from "../common/patterns/Logger";
 import { Verbosity } from "../common/patterns/Verbosity";
+import * as AI from "../common/gameobject/Conditions";
 
 // const kmeans = new KMeans(new TileGraph(), 33, 4);
 // let regions: AdjList<Region, Border>;
@@ -35,6 +36,8 @@ function start() {
 function visualize(visual = new Draw.Visual()) {
 	// drawRegions(visual);
 	Speech.draw(visual);
+	const spawn = Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(spawn => spawn.my)[0]!;
+	AI.playerStartingObstacles(spawn).forEach(obstacle => visual.circle(obstacle));
 }
 
 // function drawRegions(visual = new Draw.Visual()) {

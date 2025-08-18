@@ -2,6 +2,7 @@ import { Creep } from "game/prototypes";
 import * as Consts from "game/constants";
 import * as Result from "../Result";
 import * as Proto from "game/prototypes";
+import { Color } from "game/visual";
 
 export function bindResourceAction<target_t extends Proto.GameObject>(
 	action: (target: target_t, resource: Proto.ResourceType, amount?: number | undefined) => Result.CreepResult,
@@ -66,6 +67,22 @@ export const RANGE: Record<Intent, number | undefined> = {
 	[Intent.RANGED_MASS_ATTACK]: 3,
 	[Intent.TRANSFER]: 1,
 	[Intent.WITHDRAW]: 1
+};
+
+export const COLOR: Record<Intent, Color> = {
+	[Intent.ATTACK]: "#f93842",
+	[Intent.BUILD]: "#ffe56d",
+	[Intent.DROP]: "#777",
+	[Intent.HARVEST]: "#ffe56d",
+	[Intent.HEAL]: "#65fd62",
+	[Intent.MOVE]: "#a9b7c6",
+	[Intent.PICKUP]: "#777",
+	[Intent.PULL]: "#a9b7c6",
+	[Intent.RANGED_ATTACK]: "#5d80b2",
+	[Intent.RANGED_HEAL]: "#65fd62",
+	[Intent.RANGED_MASS_ATTACK]: "#5d80b2",
+	[Intent.TRANSFER]: "#777",
+	[Intent.WITHDRAW]: "#777"
 };
 
 export const ACTION_PIPELINES: Intent[][] = [

@@ -5,8 +5,8 @@ import * as Consts from "game/constants";
 import * as Proto from "game/prototypes";
 import * as Utils from "game/utils";
 import * as Intents from "./creep/CreepIntent";
-import * as Nav from "game/path-finder";
 import { Selector, Targeter } from "./creep/action/BoundAction";
+import Flatten from "@flatten-js/core";
 
 // Containers within this range from spawn are considered starting containers
 const STARTING_CONTAINER_RANGE = 10;
@@ -132,12 +132,16 @@ export const playerStartingObstacles: Targeter<Proto.GameObject, Proto.Structure
 	const walls = Utils.getObjectsByPrototype(Proto.StructureWall).filter(
 		wall => wall.getRangeTo(spawn) < STARTING_CONTAINER_RANGE
 	);
-	// Do not use getTerrainAt(pos) to check for walls constructed before the start of the game
 	return playerStartingContainers(actor)
-		.map(container => Nav.searchPath(spawn, container).path)
-		.flatMap(path => path.map(pos => walls.find(wall => wall.x == pos.x && wall.y == pos.y)))
+		.map(container =>
+			Flatten.point(
+				container.x + Math.sign(Math.floor(spawn.x - container.x)),
+				container.y /* + Math.sign(Math.floor(spawn.y - container.y)) */
+			)
+		)
+		.map(point => walls.find(wall => wall.x == point!.x && wall.y == point!.y))
 		.filter(match => match !== undefined)
-		.map(match => match as Proto.StructureWall);
+		.map(match => match!);
 };
 export const playerAccessibleStartingContainers = (actor: Proto.GameObject) =>
 	playerStartingContainers(actor).filter(container => accessibleFromSpawn(actor, container));

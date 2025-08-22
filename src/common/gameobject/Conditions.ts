@@ -5,6 +5,7 @@ import * as Consts from "game/constants";
 import * as Proto from "game/prototypes";
 import * as Utils from "game/utils";
 import * as Intents from "./creep/CreepIntent";
+import { world } from "../Polling";
 import { Selector, Targeter } from "./creep/action/BoundAction";
 import Flatten from "@flatten-js/core";
 
@@ -102,12 +103,12 @@ export const inRangedHealRange = inRangeFor(Intents.Intent.RANGED_HEAL);
 
 //#region Targeters
 // Targeters, Player Creeps
-export const playerCreeps = () => Utils.getObjectsByPrototype(Proto.Creep).filter(isPlayer);
+export const playerCreeps = () => world.getAll(Proto.Creep).filter(isPlayer);
 export const armedFriendlies = () => playerCreeps().filter(isArmed);
 export const hurtAllies = () => playerCreeps().filter(isHurt);
 
 // Targeters, OpponentCreeps
-export const enemyCreeps = () => Utils.getObjectsByPrototype(Proto.Creep).filter(isOpponent);
+export const enemyCreeps = () => world.getAll(Proto.Creep).filter(isOpponent);
 export const enemyVillagers = () => enemyCreeps().filter(isUnarmed);
 export const enemyArmed = () => enemyCreeps().filter(isArmed);
 export const enemyMelee = () => enemyCreeps().filter(hasPart(Consts.ATTACK));
@@ -115,25 +116,24 @@ export const enemyRanged = () => enemyCreeps().filter(hasPart(Consts.RANGED_ATTA
 
 // Targeters, Structures
 export const playerSites: Targeter<Proto.GameObject, Proto.ConstructionSite> = _actor =>
-	Utils.getObjectsByPrototype(Proto.ConstructionSite).filter(isPlayer);
+	world.getAll(Proto.ConstructionSite).filter(isPlayer);
 export const playerSpawns: Targeter<Proto.GameObject, Proto.StructureSpawn> = _actor =>
-	Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(isPlayer);
+	world.getAll(Proto.StructureSpawn).filter(isPlayer);
 export const alliedSpawns: Targeter<Proto.GameObject, Proto.StructureSpawn> = actor =>
-	Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(isSameTeamAs(actor));
+	world.getAll(Proto.StructureSpawn).filter(isSameTeamAs(actor));
 export const opponentSpawns: Targeter<Proto.GameObject, Proto.StructureSpawn> = _actor =>
-	Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(isOpponent);
+	world.getAll(Proto.StructureSpawn).filter(isOpponent);
 export const teamStartingContainers: Targeter<Proto.GameObject, Proto.StructureContainer> = actor => {
 	const spawn = playerSpawns(actor)[0]!;
-	return Utils.getObjectsByPrototype(Proto.StructureContainer)
+	return world
+		.getAll(Proto.StructureContainer)
 		.filter(isNeutral)
 		.filter(hasEnergy)
 		.filter(container => spawn.getRangeTo(container) <= STARTING_STRUCTURE_RANGE);
 };
 export const teamObstacles: Targeter<Proto.GameObject, Proto.StructureWall> = actor => {
 	const spawn = alliedSpawns(actor)[0]!;
-	const walls = Utils.getObjectsByPrototype(Proto.StructureWall).filter(
-		wall => wall.getRangeTo(spawn) < STARTING_STRUCTURE_RANGE
-	);
+	const walls = world.getAll(Proto.StructureWall).filter(wall => wall.getRangeTo(spawn) < STARTING_STRUCTURE_RANGE);
 	return teamStartingContainers(actor)
 		.map(container =>
 			Flatten.point(
@@ -149,17 +149,15 @@ export const playerAccessibleStartingContainers = (actor: Proto.GameObject) =>
 	teamStartingContainers(actor).filter(container => accessibleFromSpawn(actor, container));
 export function accessibleNeutralContainersWithEnergy(actor: Proto.GameObject) {
 	const enemySpawn = opponentSpawns(actor)[0];
-	return Utils.getObjectsByPrototype(Proto.StructureContainer)
+	return world
+		.getAll(Proto.StructureContainer)
 		.filter(isNeutral)
 		.filter(hasEnergy)
 		.filter(container => !enemySpawn || Utils.getRange(enemySpawn, container) > STARTING_STRUCTURE_RANGE)
 		.filter(container => accessibleFromSpawn(actor, container));
 }
 export function alliedBanks(actor: Proto.GameObject) {
-	return [
-		...Utils.getObjectsByPrototype(Proto.StructureSpawn),
-		...Utils.getObjectsByPrototype(Proto.StructureExtension)
-	].filter(isSameTeamAs(actor));
+	return [...world.getAll(Proto.StructureSpawn), ...world.getAll(Proto.StructureExtension)].filter(isSameTeamAs(actor));
 }
 
 //#endregion
@@ -168,12 +166,12 @@ export function alliedBanks(actor: Proto.GameObject) {
 export const allyExists = anyFound(armedFriendlies);
 export const enemyHasThreats = anyFound(enemyArmed);
 export const anyAlliesInjured = anyFound(hurtAllies);
-export const enemyHasCreeps = anyFound(() => Utils.getObjectsByPrototype(Proto.Creep).filter(isOpponent));
+export const enemyHasCreeps = anyFound(() => world.getAll(Proto.Creep).filter(isOpponent));
 export const canTouchInjured = anyInRangeFor(hurtAllies, Intents.Intent.HEAL);
 export const canReachInjured = anyInRangeFor(hurtAllies, Intents.Intent.RANGED_HEAL);
 export const canTouchSpawn = anyInRangeFor(playerSpawns, Intents.Intent.TRANSFER);
 export const threatInShootingRange = anyInRange(
-	() => Utils.getObjectsByPrototype(Proto.Creep).filter(isOpponent),
+	() => world.getAll(Proto.Creep).filter(isOpponent),
 	Intents.RANGE[Intents.Intent.RANGED_ATTACK]!
 );
 

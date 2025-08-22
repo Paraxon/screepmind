@@ -11,11 +11,11 @@ import { CreepBuilder } from "../CreepBuilder";
 const withdrawEnergy = new ActionSequence(
 	new BoundAction(
 		Proto.Creep.prototype.moveTo,
-		AI.playerStartingContainers, //TODO: this will break when the containers are behind walls
+		AI.teamStartingContainers, //TODO: this will break when the containers are behind walls
 		AI.mostEnergy,
 		AI.inRangeFor(Intents.Intent.WITHDRAW)
 	),
-	new BoundAction(Intents.withdrawEnergyAction, AI.playerStartingContainers, AI.mostEnergy)
+	new BoundAction(Intents.withdrawEnergyAction, AI.teamStartingContainers, AI.mostEnergy)
 );
 const moveToSite = new BoundAction(Proto.Creep.prototype.moveTo, AI.playerSites, AI.closest);
 const build = new BoundAction(Proto.Creep.prototype.build, AI.playerSites, AI.mostComplete);

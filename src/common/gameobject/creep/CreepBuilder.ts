@@ -1,8 +1,9 @@
 import * as Consts from "game/constants";
 import * as Proto from "game/prototypes";
 import * as Utils from "game/utils";
-import * as Lib from "../../library.js";
-import * as Func from "../../Functional.js";
+import * as Lib from "../../library";
+import * as Func from "../../Functional";
+import { Body } from "./Body";
 
 export const MAX_BODY_PARTS = 50;
 export const cheapestFirst = (a: Proto.BodyPartType, b: Proto.BodyPartType) =>
@@ -11,7 +12,7 @@ export const expensiveFirst = (a: Proto.BodyPartType, b: Proto.BodyPartType) =>
 	Consts.BODYPART_COST[b] - Consts.BODYPART_COST[a];
 export const shuffled: Func.Compare<Proto.BodyPartType> = (_a, _b) => Math.random() - 0.5 > 0;
 
-export class CreepBuilder {
+export class CreepBuilder extends Body {
 	public readonly parts: Record<Proto.BodyPartType, number> = {
 		[Consts.ATTACK]: 0,
 		[Consts.CARRY]: 0,
@@ -30,34 +31,16 @@ export class CreepBuilder {
 		this.parts[type]! += Math.min(qty, MAX_BODY_PARTS - this.size, 0);
 		return this;
 	}
-	public get cost(): number {
-		return Object.entries(this.parts)
-			.map(([type, qty]) => Consts.BODYPART_COST[type] * qty)
-			.reduce((sum, current) => sum + current, 0);
-	}
 	public body(compare: (a: Proto.BodyPartType, b: Proto.BodyPartType) => number = cheapestFirst): Proto.BodyPartType[] {
 		return Object.entries(this.parts)
 			.flatMap(([type, qty]) => Array<Proto.BodyPartType>(qty).fill(type))
 			.sort(compare)
 			.slice(0, MAX_BODY_PARTS);
 	}
-	public get size(): number {
-		return Object.values(this.parts).reduce((sum, current) => sum + current);
-	}
-	public count(type: Proto.BodyPartType): number {
-		return this.parts[type] ?? 0;
-	}
-	public fatigueGeneration(onTerrain: Utils.Terrain = Consts.TERRAIN_PLAIN): Lib.Fatigue {
-		// MOVE (and empty CARRY, assume they are full) parts do not generate fatigue
-		return (this.size - this.parts[Consts.MOVE]!) * Lib.FATIGUE_FACTOR[onTerrain];
-	}
-	public fatigueReduction(): Lib.Fatigue {
-		return this.parts[Consts.MOVE]! * Lib.FATIGUE_REDUCTION_PER_MOVE;
-	}
 	public enableMovement(onTerrain: Utils.Terrain = Consts.TERRAIN_PLAIN, tickPeriod = 1): CreepBuilder {
 		// Calculate the number of MOVE parts needed so that fatigue generated is offset by MOVE fatigue reduction per period
 		const movesNeeded = Math.ceil(this.fatigueGeneration(onTerrain) / (Lib.FATIGUE_REDUCTION_PER_MOVE * tickPeriod));
-		// Overwrite previous MOVE counts and use the calculated required number
+		// Overwrite previous MOVE count
 		return this.with(Consts.MOVE, movesNeeded);
 	}
 	public clone(): CreepBuilder {
@@ -75,7 +58,23 @@ export class CreepBuilder {
 			new CreepBuilder()
 		);
 	}
-	public get spawnTime(): Lib.Ticks {
-		return this.size * Consts.CREEP_SPAWN_TIME;
+	// #region Body
+	public get cost(): number {
+		return Object.entries(this.parts)
+			.map(([type, qty]) => Consts.BODYPART_COST[type] * qty)
+			.reduce((sum, current) => sum + current, 0);
 	}
+	public get size(): number {
+		return Object.values(this.parts).reduce((sum, current) => sum + current);
+	}
+	public fatigueGeneration(terrain: Utils.Terrain = Consts.TERRAIN_PLAIN): Lib.Fatigue {
+		// MOVE (and empty CARRY, assume they are full) parts do not generate fatigue
+		return (this.size - this.countParts(Consts.MOVE)) * Lib.FATIGUE_FACTOR[terrain];
+	}
+	public countParts(...types: Proto.BodyPartType[]): number {
+		return Object.entries(this.parts)
+			.filter(([type, _qty]) => types.includes(type))
+			.reduce((sum, [_type, qty]) => sum + qty, 0);
+	}
+	// #endregion Body
 }

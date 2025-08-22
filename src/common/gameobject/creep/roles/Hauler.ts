@@ -11,7 +11,7 @@ import { BoundAction } from "../action/BoundAction";
 import { CreepBuilder } from "../CreepBuilder";
 import * as Intents from "../CreepIntent";
 import { NavAction } from "../action/NavAction";
-import * as Lib from "common/library";
+import { CreepWrapper } from "../CreepWrapper";
 
 // Threat nearby?
 // 		Y: Flee Threats
@@ -53,7 +53,9 @@ const giveEnergy = new ActionCombination(transferEnergy, moveToEnergy);
 const touchingAlliedBank = AI.anyInRange(AI.alliedBanks, 1);
 const destinationFull = (actor: Proto.Creep) => AI.alliedBanks(actor).some(AI.isFullEnergy);
 const canReachAnyContainerBeforeDecay = (actor: Proto.Creep) =>
-	AI.accessibleNeutralContainersWithEnergy(actor).some(container => Lib.canReachBeforeDecay(actor, container));
+	AI.accessibleNeutralContainersWithEnergy(actor).some(container =>
+		new CreepWrapper(actor).canReachBeforeDecay(container)
+	);
 const threatApproaching = AI.anyInRange(AI.enemyMelee, 3);
 
 const waitOrTransfer = new DecisionTree(destinationFull, wait, giveEnergy);

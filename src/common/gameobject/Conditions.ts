@@ -9,7 +9,7 @@ import { Selector, Targeter } from "./creep/action/BoundAction";
 import Flatten from "@flatten-js/core";
 
 // Containers within this range from spawn are considered starting containers
-const STARTING_CONTAINER_RANGE = 10;
+const STARTING_STRUCTURE_RANGE = 10;
 
 //#region Generators
 // Unary Predicates
@@ -118,21 +118,23 @@ export const playerSites: Targeter<Proto.GameObject, Proto.ConstructionSite> = _
 	Utils.getObjectsByPrototype(Proto.ConstructionSite).filter(isPlayer);
 export const playerSpawns: Targeter<Proto.GameObject, Proto.StructureSpawn> = _actor =>
 	Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(isPlayer);
+export const alliedSpawns: Targeter<Proto.GameObject, Proto.StructureSpawn> = actor =>
+	Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(isSameTeamAs(actor));
 export const opponentSpawns: Targeter<Proto.GameObject, Proto.StructureSpawn> = _actor =>
 	Utils.getObjectsByPrototype(Proto.StructureSpawn).filter(isOpponent);
-export const playerStartingContainers: Targeter<Proto.GameObject, Proto.StructureContainer> = actor => {
+export const teamStartingContainers: Targeter<Proto.GameObject, Proto.StructureContainer> = actor => {
 	const spawn = playerSpawns(actor)[0]!;
 	return Utils.getObjectsByPrototype(Proto.StructureContainer)
 		.filter(isNeutral)
 		.filter(hasEnergy)
-		.filter(container => spawn.getRangeTo(container) <= STARTING_CONTAINER_RANGE);
+		.filter(container => spawn.getRangeTo(container) <= STARTING_STRUCTURE_RANGE);
 };
-export const playerStartingObstacles: Targeter<Proto.GameObject, Proto.StructureWall> = actor => {
-	const spawn = playerSpawns(actor)[0]!;
+export const teamObstacles: Targeter<Proto.GameObject, Proto.StructureWall> = actor => {
+	const spawn = alliedSpawns(actor)[0]!;
 	const walls = Utils.getObjectsByPrototype(Proto.StructureWall).filter(
-		wall => wall.getRangeTo(spawn) < STARTING_CONTAINER_RANGE
+		wall => wall.getRangeTo(spawn) < STARTING_STRUCTURE_RANGE
 	);
-	return playerStartingContainers(actor)
+	return teamStartingContainers(actor)
 		.map(container =>
 			Flatten.point(
 				container.x + Math.sign(Math.floor(spawn.x - container.x)),
@@ -144,13 +146,13 @@ export const playerStartingObstacles: Targeter<Proto.GameObject, Proto.Structure
 		.map(match => match!);
 };
 export const playerAccessibleStartingContainers = (actor: Proto.GameObject) =>
-	playerStartingContainers(actor).filter(container => accessibleFromSpawn(actor, container));
+	teamStartingContainers(actor).filter(container => accessibleFromSpawn(actor, container));
 export function accessibleNeutralContainersWithEnergy(actor: Proto.GameObject) {
 	const enemySpawn = opponentSpawns(actor)[0];
 	return Utils.getObjectsByPrototype(Proto.StructureContainer)
 		.filter(isNeutral)
 		.filter(hasEnergy)
-		.filter(container => !enemySpawn || Utils.getRange(enemySpawn, container) > STARTING_CONTAINER_RANGE)
+		.filter(container => !enemySpawn || Utils.getRange(enemySpawn, container) > STARTING_STRUCTURE_RANGE)
 		.filter(container => accessibleFromSpawn(actor, container));
 }
 export function alliedBanks(actor: Proto.GameObject) {
@@ -207,15 +209,15 @@ export function selectProperty<target_t, key_t extends keyof target_t, value_t e
 			: undefined;
 	};
 }
-export const leastHealth = selectProperty<Lib.Health, "hits", number>("hits", Func.less);
-// export function leastHealth<actor_t, target_t extends Proto.Creep | Proto.Structure>(
-// 	_actor: actor_t,
-// 	targets: target_t[]
-// ): target_t | undefined {
-// 	return targets.length > 0
-// 		? targets.reduce((lowest, current) => (current.hits! < lowest.hits! ? current : lowest))
-// 		: undefined;
-// }
+// export const leastHealth = selectProperty<Lib.Health, "hits", number>("hits", Func.less);
+export function leastHealth<actor_t, target_t extends Proto.Creep | Proto.Structure>(
+	_actor: actor_t,
+	targets: target_t[]
+): target_t | undefined {
+	return targets.length > 0
+		? targets.reduce((lowest, current) => (current.hits! < lowest.hits! ? current : lowest))
+		: undefined;
+}
 export function closest<actor_t extends Proto.GameObject, target_t extends Proto.Position>(
 	actor: actor_t,
 	targets: target_t[]

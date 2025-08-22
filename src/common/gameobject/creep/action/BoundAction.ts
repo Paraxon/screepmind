@@ -19,25 +19,26 @@ export class BoundAction<target_t extends Proto.GameObject> extends CreepAction 
 		super(Intent.METHOD.get(action)!);
 	}
 	public execute(actor: Proto.Creep): Result.ScreepsResult {
-		const target = this.selectTargetInRange(actor);
+		const targets = this.targeter(actor);
+		const target = this.selectTarget(actor, targets);
 		const result = target != undefined ? this.action.call(actor, target) : Consts.ERR_INVALID_TARGET;
 		this.emote(actor, result);
 		if (actor.id == 32) this.visualize(actor);
 		return result;
 	}
 	public isComplete(actor: Proto.Creep): boolean {
-		const target = this.selectTargetInRange(actor);
+		const targets = this.targeter(actor);
+		const target = this.selectTarget(actor, targets);
 		return (target && this.complete?.(actor, target)) ?? false;
 	}
-	private selectTargetInRange(actor: Proto.Creep): target_t | undefined {
-		const targets = this.targeter(actor);
+	private selectTarget(actor: Proto.Creep, targets: target_t[]): target_t | undefined {
 		const range = Intent.RANGE[this.intent];
 		const inRange = range ? targets.filter(target => actor.getRangeTo(target) <= range) : targets;
 		return this.selector && inRange.length ? this.selector(actor, inRange) : inRange.at(0);
 	}
 	public visualize(actor: Proto.Creep, visual = new Draw.Visual()) {
 		const targets = this.targeter(actor);
-		const selected = this.selectTargetInRange(actor);
+		const selected = this.selectTarget(actor, targets);
 		const start = Flatten.point(actor.x, actor.y);
 		targets
 			.filter(target => target != selected)
